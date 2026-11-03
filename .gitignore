@@ -1,0 +1,47 @@
+# 의존성 · 빌드 결과
+node_modules/
+dist/
+dist-ssr/
+dev-dist/
+*.tsbuildinfo
+
+# 로그
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 에디터 · OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.sw?
+
+# 로컬 전용 — 인계 문서 · 디자인 참고 파일 · PR 초안 · Claude 설정은 올리지 않는다
+# (꼭 올려야 하면 git add -f <파일>)
+temp/
+docs/
+design/
+*.fig
+*.zip
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+
+# 비밀값 — 절대 올리지 않는다. 예시가 필요하면 .env.example
+.env
+.env.*
+!.env.example
+*.local
+
+# 인증서 · 키
+*.pem
+*.key
+*.p12
+*.keystore
+*credentials*.json
+service-account*.json

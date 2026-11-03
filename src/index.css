@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/noto-sans-kr";
+
+/* 비회원 = 라이트(기본), 로그인한 회원 = <html class="dark"> */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Noto Sans KR Variable', 'Apple SD Gothic Neo', system-ui, sans-serif;
+
+    /* GDGhost 고유 색 — 시안 04 */
+    --color-brand: var(--brand);
+    --color-brand-soft: var(--brand-soft);
+    --color-brand-text: var(--brand-text);
+    --color-panel: var(--panel);
+    --color-title: var(--title);
+
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* 라이트 — 비회원 */
+:root {
+    --brand: #2466DD;          /* GDG blue: 주 버튼 · 분류 라벨 · 로고 GDG */
+    --brand-soft: #E6EFFF;     /* Light chip: 보조 버튼 · 선택 칩 배경 */
+    --brand-text: #2466DD;     /* 파랑 글씨 */
+    --panel: #FDFEFF;          /* Guest panel: 잠금 안내 */
+    --title: #172133;          /* Board title */
+
+    --background: #F6F8FC;     /* Cloud */
+    --foreground: #172234;     /* Light ink */
+    --card: #FFFFFF;
+    --card-foreground: #172133;
+    --popover: #FFFFFF;
+    --popover-foreground: #172234;
+    --primary: #2466DD;
+    --primary-foreground: #FFFFFF;
+    --secondary: #E6EFFF;
+    --secondary-foreground: #2466DD;
+    --muted: #EEF2F7;          /* Board light */
+    --muted-foreground: #53647A; /* Light slate */
+    --accent: #E2E9F2;         /* Member panel */
+    --accent-foreground: #172234;
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: #DCE4EE;         /* Light line */
+    --input: #DCE4EE;
+    --ring: #1769F4;           /* Action blue */
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: #FFFFFF;
+    --sidebar-foreground: #172234;
+    --sidebar-primary: #2466DD;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #E6EFFF;
+    --sidebar-accent-foreground: #2466DD;
+    --sidebar-border: #DCE4EE;
+    --sidebar-ring: #1769F4;
+}
+
+/* 다크 — 로그인한 회원. 검정 글씨 금지, 밝은 글씨 유지 */
+.dark {
+    --brand: #2466DD;
+    --brand-soft: #303742;     /* Dark button */
+    --brand-text: #A9C7FF;     /* Sky blue */
+    --panel: #252A32;
+    --title: #F7F9FC;
+
+    --background: #181B21;     /* Night */
+    --foreground: #F7F9FC;     /* Dark text */
+    --card: #252A32;           /* Surface */
+    --card-foreground: #F7F9FC;
+    --popover: #252A32;
+    --popover-foreground: #F7F9FC;
+    --primary: #2466DD;
+    --primary-foreground: #FFFFFF;
+    --secondary: #303742;      /* Dark button */
+    --secondary-foreground: #F7F9FC;
+    --muted: #252A32;
+    --muted-foreground: #CFD7E1; /* Dark secondary */
+    --accent: #303742;
+    --accent-foreground: #F7F9FC;
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: #46515F;         /* Dark line */
+    --input: #3C4554;          /* Picker line */
+    --ring: #A9C7FF;
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: #252A32;
+    --sidebar-foreground: #F7F9FC;
+    --sidebar-primary: #2466DD;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #303742;
+    --sidebar-accent-foreground: #F7F9FC;
+    --sidebar-border: #46515F;
+    --sidebar-ring: #A9C7FF;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
