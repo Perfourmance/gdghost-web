@@ -1,11 +1,50 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type SignupStep = 'invite' | 'email' | 'profile'
+import type { MemberStatus, Position } from '@/features/member/labels'
 
-/** 가입 단계 순서. F2-b · F2-c에서 뒤 단계를 더한다 */
-export const SIGNUP_STEPS: SignupStep[] = ['invite', 'email', 'profile']
-/** 화면에 보여 줄 전체 단계 수 (초대 코드 · 이메일 · 기본 정보 · 답할 수 있는 것 · 아이디) */
-export const SIGNUP_STEP_TOTAL = 5
+export type SignupStep = 'invite' | 'email' | 'profile' | 'interests' | 'experiences' | 'about' | 'account'
+
+/** 가입 단계 순서. ③-2 답할 수 있는 것은 관심 분야 · 경험 · 근황과 소개 세 화면으로 나눈다 (알림 준비 단계는 F20) */
+export const SIGNUP_STEPS: SignupStep[] = ['invite', 'email', 'profile', 'interests', 'experiences', 'about', 'account']
+
+/** 단계마다 제목 위에 보이는 작은 이름 */
+export const SIGNUP_STEP_LABELS: Record<SignupStep, string> = {
+  invite: '초대 코드',
+  email: '이메일 인증',
+  profile: '기본 정보',
+  interests: '답할 수 있는 것 · 1/3',
+  experiences: '답할 수 있는 것 · 2/3',
+  about: '답할 수 있는 것 · 3/3',
+  account: '아이디 · 비밀번호',
+}
+
+/** ③-1 기본 정보 */
+export interface BasicInfo {
+  name: string
+  nickname: string
+  position: Position | null
+  studentNo: string
+  department: string
+  status: MemberStatus | null
+}
+
+/** ③-2 답할 수 있는 것 */
+export interface AnswerableInfo {
+  interestTagIds: number[]
+  skillTagIds: number[]
+  experienceTagIds: number[]
+  statusNote: string
+  bio: string
+}
+
+export const EMPTY_BASIC: BasicInfo = { name: '', nickname: '', position: null, studentNo: '', department: '', status: null }
+export const EMPTY_ANSWERABLE: AnswerableInfo = {
+  interestTagIds: [],
+  skillTagIds: [],
+  experienceTagIds: [],
+  statusNote: '',
+  bio: '',
+}
 
 /** 가입 중 입력값. 비밀번호는 넣지 않는다 */
 export interface SignupDraft {
@@ -19,6 +58,8 @@ export interface SignupDraft {
   codeSentTo?: string
   resendAvailableAt?: string
   emailVerified?: boolean
+  basic?: BasicInfo
+  answerable?: AnswerableInfo
 }
 
 const EMPTY: SignupDraft = { step: 'invite' }

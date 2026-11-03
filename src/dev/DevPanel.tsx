@@ -39,7 +39,7 @@ export default function DevPanel() {
   }
 
   return (
-    <div className="fixed right-2 bottom-20 z-50 text-xs">
+    <div className="fixed top-16 right-2 z-50 text-xs">
       {open ? (
         <div className="w-56 space-y-2 rounded-lg border bg-card p-3 text-card-foreground shadow-lg">
           <div className="flex items-center justify-between font-bold">
