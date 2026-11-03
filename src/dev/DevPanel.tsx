@@ -4,22 +4,22 @@ import { api, toApiError } from '@/lib/api'
 import { switchSession, type Me } from '@/features/auth/session'
 
 // 개발용 테스트 도구 — `npm run dev`에서만 보이고 빌드 결과에는 들어가지 않는다 (main.tsx에서 DEV일 때만 불러옴)
-// 계정은 백엔드 로컬 계정 (인계 문서 4장)
+// 로컬 DB 계정 (인계 문서 4장). 비밀번호가 바뀌면 여기도 고친다
 const ACCOUNTS = [
-  { loginId: 'senior01', label: '부원 senior01 (개발자)' },
-  { loginId: 'asker01', label: '부원 asker01 (운영진)' },
+  { loginId: 'test01', password: 'test1234!', label: 'test01 (부원)' },
+  { loginId: 'asker01', password: 'test1234!', label: 'asker01 (운영진)' },
+  { loginId: 'senior01', password: 'Test1234!', label: 'senior01 (개발자)' },
 ]
-const PASSWORD = 'Test1234!'
 
 export default function DevPanel() {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState('')
 
-  async function login(loginId: string) {
+  async function login(loginId: string, password: string) {
     setMessage('로그인 중…')
     try {
-      const { data } = await api.post<Me>('/auth/login', { loginId, password: PASSWORD })
+      const { data } = await api.post<Me>('/auth/login', { loginId, password })
       switchSession(queryClient, data)
       setMessage(`${data.nickname}(으)로 로그인함`)
     } catch (error) {
@@ -53,7 +53,7 @@ export default function DevPanel() {
               key={account.loginId}
               type="button"
               className="block w-full rounded-md bg-secondary px-2 py-1.5 text-left text-secondary-foreground"
-              onClick={() => login(account.loginId)}
+              onClick={() => login(account.loginId, account.password)}
             >
               {account.label}로 로그인
             </button>

@@ -1,0 +1,39 @@
+// 백엔드 enum → 화면 이름. 모르는 값은 '기타' (인계 문서 5장)
+
+const QUESTION_CATEGORIES: Record<string, string> = {
+  JOB: '취업·채용',
+  CAREER: '커리어·이직',
+  PATH: '진로 고민',
+  CAMPUS: '학교생활',
+  STUDY: '기술·공부',
+}
+
+const QUESTION_STATES: Record<string, string> = {
+  WAITING: '답변 대기',
+  ANSWERED: '답변 있음',
+  ADOPTED: '채택됨',
+}
+
+const SCHEDULE_KINDS: Record<string, string> = {
+  CLUB: '동아리',
+  ACADEMIC: '학사',
+  CONTEST: '공모전',
+  JOB: '채용',
+}
+
+// 노션 API 목록 '공유 목록'
+const SHARE_CATEGORIES: Record<string, string> = {
+  CAREER_PREP: '취업 준비',
+  FOOD: '맛집',
+  PLACE: '놀 곳',
+  TIP: '꿀팁',
+  EXTRA: '비교과',
+  LECTURE: '강의',
+}
+
+const label = (map: Record<string, string>) => (value: string) => map[value] ?? '기타'
+
+export const questionCategoryLabel = label(QUESTION_CATEGORIES)
+export const questionStateLabel = label(QUESTION_STATES)
+export const scheduleKindLabel = label(SCHEDULE_KINDS)
+export const shareCategoryLabel = label(SHARE_CATEGORIES)
