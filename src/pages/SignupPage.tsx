@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react'
 import { ChevronLeft } from 'lucide-react'
 import { Navigate, useBlocker, useNavigate } from 'react-router'
-import { Button } from '@/components/ui/button'
 import { useMe } from '@/features/auth/session'
 import { AboutStep } from '@/features/signup/AboutStep'
+import { AccountStep } from '@/features/signup/AccountStep'
 import { BasicInfoStep } from '@/features/signup/BasicInfoStep'
 import { EmailStep } from '@/features/signup/EmailStep'
 import { ExperienceStep } from '@/features/signup/ExperienceStep'
 import { InterestStep } from '@/features/signup/InterestStep'
 import { InviteCodeStep } from '@/features/signup/InviteCodeStep'
-import { StepHeader } from '@/features/signup/StepLayout'
 import {
   clearSignupDraft,
   isDraftExpired,
-  SIGNUP_STEP_LABELS,
   SIGNUP_STEPS,
   useSignupDraft,
   type SignupDraft,
+  type SignupStep,
 } from '@/features/signup/draft'
 
 const EXPIRED_MESSAGE = '가입 시간(30분)이 지났어요. 초대 코드부터 다시 입력해 주세요.'
@@ -62,6 +61,12 @@ export function SignupPage() {
 
   function restart(message: string) {
     reset()
+    setNotice(message)
+  }
+
+  // 마지막 가입 요청에서 다른 단계의 값이 막혔을 때
+  function redirect(step: SignupStep, message: string, patch?: Partial<SignupDraft>) {
+    update({ ...patch, step })
     setNotice(message)
   }
 
@@ -122,17 +127,15 @@ export function SignupPage() {
         {draft.step === 'experiences' && <ExperienceStep draft={draft} onUpdate={goTo} />}
         {draft.step === 'about' && <AboutStep draft={draft} onUpdate={goTo} />}
         {draft.step === 'account' && (
-          // F2-c에서 아이디 · 비밀번호 단계로 바꾼다
-          <section className="pb-10">
-            <StepHeader
-              eyebrow={SIGNUP_STEP_LABELS.account}
-              title="프로필 입력 완료"
-              description="다음 단계(아이디 · 비밀번호)는 준비 중이에요."
-            />
-            <Button variant="secondary" className="w-full" onClick={() => restart('')}>
-              처음부터 다시
-            </Button>
-          </section>
+          <AccountStep
+            draft={draft}
+            onRedirect={redirect}
+            onRestart={restart}
+            onFinished={() => {
+              clearSignupDraft()
+              reset()
+            }}
+          />
         )}
       </main>
     </div>
