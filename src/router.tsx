@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
 import { ErrorPage } from '@/pages/ErrorPage'
+import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
           { path: 'feed', element: <TabPlaceholder title="피드" /> },
         ],
       },
+      { path: 'login', element: <LoginPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

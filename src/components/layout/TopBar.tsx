@@ -1,13 +1,18 @@
 import { Bell, Search, UserRound } from 'lucide-react'
-import { Link } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { Logo } from '@/components/Logo'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useMe } from '@/features/auth/session'
+import { loginPath, useLogout } from '@/features/auth/useAuthActions'
 
 const iconLinkClass = 'relative flex size-10 items-center justify-center rounded-lg text-foreground hover:bg-accent'
 
 /** 상단 바 — 비회원은 로그인 버튼, 회원은 검색 · 알림 · 내 프로필 */
 export function TopBar() {
   const { data: me } = useMe()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const logout = useLogout()
 
   return (
     <header className="sticky top-0 z-10 border-b bg-card">
@@ -33,12 +38,21 @@ export function TopBar() {
                 </span>
               )}
             </Link>
-            <Link to={`/members/${me.id}`} className={iconLinkClass} aria-label="내 프로필">
-              <UserRound className="size-5" />
-            </Link>
+            {/* 로그아웃은 설정 화면(F10)이 생기면 그쪽으로 옮긴다 */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className={iconLinkClass} aria-label="내 메뉴 열기">
+                <UserRound className="size-5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem onClick={() => navigate(`/members/${me.id}`)}>내 프로필</DropdownMenuItem>
+                <DropdownMenuItem disabled={logout.isPending} onClick={() => logout.mutate()}>
+                  로그아웃
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
         ) : (
-          <Link to="/login" className="px-2 py-1 text-sm font-bold text-brand-text">
+          <Link to={loginPath(location.pathname + location.search)} className="px-2 py-1 text-sm font-bold text-brand-text">
             로그인
           </Link>
         )}
