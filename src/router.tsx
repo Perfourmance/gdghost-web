@@ -4,6 +4,7 @@ import { TabLayout } from '@/components/layout/TabLayout'
 import { ErrorPage } from '@/pages/ErrorPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { SignupPage } from '@/pages/SignupPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
 export const router = createBrowserRouter([
@@ -23,6 +24,7 @@ export const router = createBrowserRouter([
         ],
       },
       { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <SignupPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
