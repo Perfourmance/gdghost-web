@@ -5,6 +5,12 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GDGhost</title>
+    <script>
+      // 지난번에 회원이었으면 JS가 뜨기 전부터 다크로 둔다 (최종 판단은 앱의 /auth/me)
+      try {
+        if (localStorage.getItem('gdghost.lastSession') === 'member') document.documentElement.classList.add('dark')
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
