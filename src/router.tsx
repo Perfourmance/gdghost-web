@@ -4,6 +4,7 @@ import { TabLayout } from '@/components/layout/TabLayout'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
 import { ErrorPage } from '@/pages/ErrorPage'
 import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
+import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
@@ -19,7 +20,7 @@ export const router = createBrowserRouter([
         // 첫 화면은 홈 (로그인 화면을 먼저 띄우지 않는다)
         element: <TabLayout />,
         children: [
-          { index: true, element: <TabPlaceholder title="홈" /> },
+          { index: true, element: <HomePage /> },
           { path: 'questions', element: <TabPlaceholder title="질문" /> },
           { path: 'schedules', element: <TabPlaceholder title="일정" /> },
           { path: 'shares', element: <TabPlaceholder title="공유" /> },
