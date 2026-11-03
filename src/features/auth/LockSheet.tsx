@@ -9,13 +9,19 @@ interface Props {
   next: string | null
   onClose: () => void
   title?: string
+  description?: string
 }
 
 /**
  * 잠금 안내 — 비회원이 부원 전용 내용을 누르면 아래에서 올라온다 (디자인 가이드 4장).
  * 쉿 포즈 → 굵은 한 줄 → 로그인 버튼. 로그인하면 next로 돌아온다
  */
-export function LockSheet({ next, onClose, title = '부원에게 열려 있어요' }: Props) {
+export function LockSheet({
+  next,
+  onClose,
+  title = '부원에게 열려 있어요',
+  description = 'GDGoC SMU 부원으로 로그인하면 볼 수 있어요.',
+}: Props) {
   return (
     <Sheet open={next != null} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
@@ -26,7 +32,7 @@ export function LockSheet({ next, onClose, title = '부원에게 열려 있어�
           <img src={shh} alt="" className="w-24" />
           <SheetTitle className="mt-4 text-lg font-bold text-title">{title}</SheetTitle>
           <SheetDescription className="mt-1 text-sm text-muted-foreground">
-            GDGoC SMU 부원으로 로그인하면 볼 수 있어요.
+            {description}
           </SheetDescription>
         </div>
         <div className="mt-2 space-y-2">

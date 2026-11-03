@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router'
+import { PencilLine } from 'lucide-react'
+import { Link, useSearchParams } from 'react-router'
 import { Chip } from '@/components/Chip'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
@@ -9,10 +10,9 @@ import { useLockSheet } from '@/features/auth/useLockSheet'
 import { EmptyCard, QuestionCard, type CardTarget } from '@/features/content/Cards'
 import { questionCategoryLabel } from '@/features/content/labels'
 import { useQuestionList, type QuestionFilters } from '@/features/questions/api'
+import { QUESTION_CATEGORIES as CATEGORIES } from '@/features/questions/write'
 import { useInView } from '@/hooks/useInView'
 import { useNowEveryMinute } from '@/lib/time'
-
-const CATEGORIES = ['JOB', 'CAREER', 'PATH', 'CAMPUS', 'STUDY']
 
 /** 질문 목록 (S20) — 분류 필터 · 내 질문 · 답변 기다리는 질문만 · 무한 스크롤. 필터는 주소에 둔다(뒤로 와도 유지) */
 export function QuestionsPage() {
@@ -114,10 +114,41 @@ export function QuestionsPage() {
         )}
       </div>
 
-      <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 회원에게 열려요" />
+      {/* 질문 쓰기 — 하단 탭 위에 떠 있다. 비회원은 잠금 안내 */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-10 mx-auto flex max-w-md justify-end px-4">
+        {member ? (
+          <Link to={WRITE_PATH} className={writeButtonClass}>
+            <PencilLine aria-hidden />
+            질문하기
+          </Link>
+        ) : (
+          <button type="button" className={writeButtonClass} onClick={() => lock.open(WRITE_PATH)}>
+            <PencilLine aria-hidden />
+            질문하기
+          </button>
+        )}
+      </div>
+
+      {lock.next === WRITE_PATH ? (
+        <LockSheet
+          next={lock.next}
+          onClose={lock.close}
+          title="질문은 부원만 남길 수 있어요"
+          description="GDGoC SMU 부원으로 로그인하면 선배에게 물어볼 수 있어요."
+        />
+      ) : (
+        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 회원에게 열려요" />
+      )}
     </div>
   )
 }
+
+const WRITE_PATH = '/questions/new'
+
+const writeButtonClass = buttonVariants({
+  size: 'lg',
+  className: 'pointer-events-auto h-12 rounded-full px-5 text-[15px] font-bold shadow-lg',
+})
 
 function ToggleText({
   checked,
