@@ -2,8 +2,8 @@ import type { ReactNode } from 'react'
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router'
 import { questionCategoryLabel, questionStateLabel, scheduleKindLabel, shareCategoryLabel } from '@/features/content/labels'
-import type { HomePinnedNotice, HomeQuestion, HomeSchedule, HomeShare } from '@/features/home/useHome'
-import { authorName } from '@/features/member/author'
+import type { HomePinnedNotice, HomeSchedule, HomeShare } from '@/features/home/useHome'
+import { authorName, type Author } from '@/features/member/author'
 import { formatDayRange, formatRelative } from '@/lib/time'
 import { cn } from '@/lib/utils'
 
@@ -67,7 +67,38 @@ export function NoticeCard({ notice, target }: { notice: HomePinnedNotice; targe
   )
 }
 
-export function QuestionCard({ question, target, now }: { question: HomeQuestion; target: CardTarget; now: number }) {
+/** 질문 카드에 필요한 값 — 홈 · 질문 목록이 같이 쓴다. 부원에게만 오는 값은 선택 */
+export interface QuestionCardData {
+  id: number
+  category: string
+  title: string
+  author: Author
+  createdAt: string
+  answerCount: number
+  state?: string
+  answererPreview?: Author[]
+  viewCount?: number
+}
+
+/** "테스트선배 외 1명" */
+function answererText(answerers: Author[] | undefined): string | null {
+  if (!answerers?.length) return null
+  const first = authorName(answerers[0])
+  return answerers.length > 1 ? `${first} 외 ${answerers.length - 1}명 답변` : `${first} 답변`
+}
+
+export function QuestionCard({
+  question,
+  target,
+  now,
+  showDetails = false,
+}: {
+  question: QuestionCardData
+  target: CardTarget
+  now: number
+  /** 질문 목록 — 답변자 · 조회수까지 */
+  showDetails?: boolean
+}) {
   return (
     <CardLink to={`/questions/${question.id}`} target={target}>
       <div className="flex items-start justify-between gap-2">
@@ -84,7 +115,17 @@ export function QuestionCard({ question, target, now }: { question: HomeQuestion
         )}
       </div>
       <Title>{question.title}</Title>
-      <Meta items={[authorName(question.author), formatRelative(question.createdAt, now), `답변 ${question.answerCount}`]} />
+      <Meta
+        items={[
+          authorName(question.author),
+          formatRelative(question.createdAt, now),
+          `답변 ${question.answerCount}`,
+          showDetails && question.viewCount != null && `조회 ${question.viewCount}`,
+        ]}
+      />
+      {showDetails && answererText(question.answererPreview) && (
+        <p className="mt-1 text-xs text-brand-text">{answererText(question.answererPreview)}</p>
+      )}
     </CardLink>
   )
 }
