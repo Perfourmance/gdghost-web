@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { checkInviteCode } from '@/features/signup/api'
 import { SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
-import { StepFooter, StepHeader } from '@/features/signup/StepLayout'
+import { StepFooter, StepHeader } from '@/components/form/StepLayout'
 import { toApiError } from '@/lib/api'
 import { commonErrorMessage, formatWait } from '@/lib/errorMessage'
 

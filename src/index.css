@@ -153,4 +153,9 @@
   html {
     @apply font-sans;
   }
+  html,
+  body {
+    /* 옆으로 밀 때 화면이 밀리는 브라우저 효과(뒤로 가기 제스처 · 고무줄)를 막아 앱처럼 고정한다 */
+    overscroll-behavior-x: none;
+  }
 }

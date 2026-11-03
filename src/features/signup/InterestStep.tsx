@@ -3,7 +3,7 @@ import { Chip } from '@/components/Chip'
 import { Button } from '@/components/ui/button'
 import { MAX_INTERESTS, MAX_SKILLS_PER_INTEREST, toggleId } from '@/features/signup/answerableRules'
 import { EMPTY_ANSWERABLE, SIGNUP_STEP_LABELS, type AnswerableInfo, type SignupDraft } from '@/features/signup/draft'
-import { FieldLabel, StepFooter, StepHeader } from '@/features/signup/StepLayout'
+import { FieldLabel, StepFooter, StepHeader } from '@/components/form/StepLayout'
 import { TagsState } from '@/features/signup/TagsState'
 import { useTags } from '@/features/tags/useTags'
 
