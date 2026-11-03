@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
@@ -9,6 +9,7 @@ import { useMe } from '@/features/auth/session'
 import { questionCategoryLabel, questionStateLabel } from '@/features/content/labels'
 import { AnswerList, AuthorLink } from '@/features/questions/AnswerList'
 import { useQuestionDetail, type QuestionDetail, type RoutingDelivery } from '@/features/questions/api'
+import { QuestionOwnerMenu } from '@/features/questions/QuestionOwnerMenu'
 import { toApiError } from '@/lib/api'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
 import { cn } from '@/lib/utils'
@@ -22,6 +23,7 @@ export function QuestionDetailPage() {
   const location = useLocation()
   const detail = useQuestionDetail(id, validId && me != null)
   const now = useNowEveryMinute()
+  const [actionError, setActionError] = useState<string | null>(null)
 
   // #answer-{id}로 들어오면 그 답변으로 내려간다 (IA 5장 딥링크)
   useEffect(() => {
@@ -43,8 +45,15 @@ export function QuestionDetailPage() {
 
   const notFound = !validId || (detail.isError && toApiError(detail.error).code === 'NOT_FOUND')
 
+  const ownerMenu = detail.data?.mine ? <QuestionOwnerMenu questionId={detail.data.id} onError={setActionError} /> : null
+
   return (
-    <SubPageLayout fallback="/questions">
+    <SubPageLayout fallback="/questions" actions={ownerMenu}>
+      {actionError && (
+        <p className="mb-4 rounded-lg bg-muted px-3 py-2.5 text-sm text-destructive" role="alert">
+          {actionError}
+        </p>
+      )}
       {notFound && <GoneNotice />}
 
       {!notFound && detail.isPending && (

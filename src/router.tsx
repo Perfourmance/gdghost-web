@@ -9,7 +9,9 @@ import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
+import { QuestionEditPage } from '@/pages/QuestionEditPage'
 import { QuestionsPage } from '@/pages/QuestionsPage'
+import { QuestionWritePage } from '@/pages/QuestionWritePage'
 import { SignupPage } from '@/pages/SignupPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
@@ -30,7 +32,9 @@ export const router = createBrowserRouter([
         ],
       },
       // 상세 · 작성 화면은 하단 탭을 숨긴다 (IA 2장)
+      { path: 'questions/new', element: <QuestionWritePage /> },
       { path: 'questions/:questionId', element: <QuestionDetailPage /> },
+      { path: 'questions/:questionId/edit', element: <QuestionEditPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'find-login-id', element: <FindLoginIdPage /> },
