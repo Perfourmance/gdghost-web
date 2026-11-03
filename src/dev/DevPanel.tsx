@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { api, toApiError } from '@/lib/api'
-import { meQueryKey, type Me } from '@/features/auth/session'
+import { switchSession, type Me } from '@/features/auth/session'
 
 // 개발용 테스트 도구 — `npm run dev`에서만 보이고 빌드 결과에는 들어가지 않는다 (main.tsx에서 DEV일 때만 불러옴)
 // 계정은 백엔드 로컬 계정 (인계 문서 4장)
@@ -16,17 +16,11 @@ export default function DevPanel() {
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState('')
 
-  // clear()를 쓰면 화면이 보고 있던 /auth/me까지 끊겨 갱신이 안 된다 → me만 바꾸고 나머지만 지운다
-  function switchSession(me: Me | null) {
-    queryClient.setQueryData(meQueryKey, me)
-    queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== meQueryKey[0] })
-  }
-
   async function login(loginId: string) {
     setMessage('로그인 중…')
     try {
       const { data } = await api.post<Me>('/auth/login', { loginId, password: PASSWORD })
-      switchSession(data)
+      switchSession(queryClient, data)
       setMessage(`${data.nickname}(으)로 로그인함`)
     } catch (error) {
       setMessage(`실패: ${toApiError(error).code}`)
@@ -40,7 +34,7 @@ export default function DevPanel() {
     } catch {
       // 이미 로그아웃이어도 비회원으로 돌린다
     }
-    switchSession(null)
+    switchSession(queryClient, null)
     setMessage('비회원으로 바뀜')
   }
 

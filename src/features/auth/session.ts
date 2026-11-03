@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { api, ApiError } from '@/lib/api'
 
 export type Role = 'MEMBER' | 'STAFF' | 'DEV'
@@ -42,6 +42,15 @@ export function useMe() {
     staleTime: Infinity,
     refetchOnWindowFocus: 'always',
   })
+}
+
+/**
+ * 로그인 · 로그아웃 · 세션 만료 때 부른다. me만 새 값으로 바꾸고 나머지 데이터는 지운다
+ * (clear()를 쓰면 화면이 보고 있던 /auth/me까지 끊겨 화면이 갱신되지 않는다)
+ */
+export function switchSession(queryClient: QueryClient, me: Me | null) {
+  queryClient.setQueryData(meQueryKey, me)
+  queryClient.removeQueries({ predicate: (query) => query.queryKey[0] !== meQueryKey[0] })
 }
 
 // 지난번 접속이 회원이었는지 기억해 로딩 화면 · 첫 테마를 고른다 (깜빡임 방지용, 판단은 항상 /auth/me)
