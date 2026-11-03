@@ -1,9 +1,12 @@
 import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
+import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
 import { ErrorPage } from '@/pages/ErrorPage'
+import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
 import { LoginPage } from '@/pages/LoginPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
@@ -25,6 +28,10 @@ export const router = createBrowserRouter([
       },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      { path: 'find-login-id', element: <FindLoginIdPage /> },
+      { path: 'password-reset', element: <PasswordResetPage /> },
+      // 메일 링크 착지 (백엔드 StaffEmailChangeService가 만드는 주소)
+      { path: 'email-change/confirm', element: <EmailChangeConfirmPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

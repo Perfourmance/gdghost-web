@@ -1,18 +1,17 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, Circle } from 'lucide-react'
+import { NewPasswordFields } from '@/components/form/NewPasswordFields'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { switchSession } from '@/features/auth/session'
 import { completeSignup, type SignupRequest } from '@/features/signup/api'
 import { SIGNUP_STEP_LABELS, type SignupDraft, type SignupStep } from '@/features/signup/draft'
-import { hasWhitespace, isPasswordValid, PASSWORD_RULES } from '@/features/signup/passwordRules'
-import { StepFooter, StepHeader } from '@/features/signup/StepLayout'
+import { isPasswordValid } from '@/lib/passwordRules'
+import { StepFooter, StepHeader } from '@/components/form/StepLayout'
 import { useLoginIdCheck } from '@/features/signup/useLoginIdCheck'
 import { toApiError, type ApiError } from '@/lib/api'
 import { commonErrorMessage } from '@/lib/errorMessage'
-import { cn } from '@/lib/utils'
 
 interface Props {
   draft: SignupDraft
@@ -116,7 +115,6 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
   }
 
   const passwordValid = isPasswordValid(password)
-  const confirmMismatch = passwordConfirm !== '' && passwordConfirm !== password
   const canSubmit =
     loginIdCheck.state === 'available' && passwordValid && passwordConfirm === password && !signup.isPending
 
@@ -169,55 +167,12 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
           </p>
         </div>
 
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="password">
-            비밀번호
-          </Label>
-          <Input
-            id="password"
-            name="new-password"
-            type="password"
-            autoComplete="new-password"
-            maxLength={64}
-            className="h-12 bg-card"
-            aria-describedby="password-rules"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <ul id="password-rules" className="flex flex-wrap gap-x-4 gap-y-1 text-xs" aria-label="비밀번호 규칙">
-            {PASSWORD_RULES.map((rule) => {
-              const ok = rule.test(password)
-              return (
-                <li
-                  key={rule.label}
-                  className={cn('flex items-center gap-1', ok ? 'font-bold text-brand-text' : 'text-muted-foreground')}
-                >
-                  {ok ? <Check className="size-3.5" aria-hidden /> : <Circle className="size-3" aria-hidden />}
-                  {rule.label}
-                  <span className="sr-only">{ok ? ' 충족' : ' 미충족'}</span>
-                </li>
-              )
-            })}
-          </ul>
-          {hasWhitespace(password) && <p className="text-sm text-destructive">공백은 넣을 수 없어요.</p>}
-        </div>
-
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="passwordConfirm">
-            비밀번호 확인
-          </Label>
-          <Input
-            id="passwordConfirm"
-            type="password"
-            autoComplete="new-password"
-            maxLength={64}
-            className="h-12 bg-card"
-            aria-invalid={confirmMismatch}
-            value={passwordConfirm}
-            onChange={(e) => setPasswordConfirm(e.target.value)}
-          />
-          {confirmMismatch && <p className="text-sm text-destructive">비밀번호가 서로 달라요.</p>}
-        </div>
+        <NewPasswordFields
+          password={password}
+          confirm={passwordConfirm}
+          onPasswordChange={setPassword}
+          onConfirmChange={setPasswordConfirm}
+        />
 
         {errorMessage && (
           <p className="text-sm text-destructive" role="alert">

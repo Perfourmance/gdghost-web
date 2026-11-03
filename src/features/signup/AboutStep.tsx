@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { BIO_MAX, STATUS_NOTE_MAX } from '@/features/signup/answerableRules'
 import { EMPTY_ANSWERABLE, SIGNUP_STEP_LABELS, type AnswerableInfo, type SignupDraft } from '@/features/signup/draft'
-import { FieldLabel, StepFooter, StepHeader } from '@/features/signup/StepLayout'
+import { FieldLabel, StepFooter, StepHeader } from '@/components/form/StepLayout'
 
 // 노션 AI 매칭 설계 부록 C
 const STATUS_NOTE_PLACEHOLDERS = [

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { MEMBER_STATUSES, POSITIONS } from '@/features/member/labels'
 import { EMPTY_BASIC, SIGNUP_STEP_LABELS, type BasicInfo, type SignupDraft } from '@/features/signup/draft'
-import { StepFooter, StepHeader } from '@/features/signup/StepLayout'
+import { StepFooter, StepHeader } from '@/components/form/StepLayout'
 import { useNicknameCheck } from '@/features/signup/useNicknameCheck'
 
 interface Props {
