@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
+import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { confirmSignupEmail, sendSignupEmail } from '@/features/signup/api'
-import type { SignupDraft } from '@/features/signup/draft'
+import { SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
+import { StepFooter, StepHeader } from '@/features/signup/StepLayout'
 import { useSecondsUntil } from '@/hooks/useSecondsUntil'
 import { toApiError, type ApiError } from '@/lib/api'
 import { commonErrorMessage, formatWait } from '@/lib/errorMessage'
@@ -87,16 +89,21 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
   const confirmError = confirm.isError ? emailErrorMessage(toApiError(confirm.error)) : null
 
   return (
-    <form className="space-y-4" onSubmit={handleConfirm} noValidate>
-      <div>
-        <h2 className="text-xl font-bold text-title">이메일을 인증해 주세요</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {draft.generation}기로 가입해요. 아이디 · 비밀번호를 찾을 때 이 메일을 써요.
-        </p>
-      </div>
+    <form onSubmit={handleConfirm} noValidate>
+      {/* 기수는 초대 코드로 정해진다 (F1-01) — 앞 단계 결과를 확인시켜 준다 */}
+      <p className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1.5 text-xs font-bold text-brand-text">
+        <Check className="size-3.5" aria-hidden />
+        {draft.generation}기 초대 코드가 확인됐어요
+      </p>
+      <StepHeader
+        eyebrow={SIGNUP_STEP_LABELS.email}
+        title="이메일을 인증해 주세요"
+        description="아이디 · 비밀번호를 찾을 때 쓸 메일이에요."
+      />
+      <div className="space-y-6">
 
       <div className="space-y-2">
-        <Label htmlFor="email">이메일</Label>
+        <Label className="font-bold text-title" htmlFor="email">이메일</Label>
         <div className="flex gap-2">
           <Input
             id="email"
@@ -105,14 +112,14 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
             autoComplete="email"
             autoCapitalize="none"
             maxLength={254}
-            className="h-11 flex-1 bg-card"
+            className="h-12 flex-1 bg-card"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value)
               send.reset()
             }}
           />
-          <Button type="button" variant="secondary" className="h-11 shrink-0" disabled={!canSend} onClick={handleSend}>
+          <Button type="button" variant="secondary" className="h-12 shrink-0" disabled={!canSend} onClick={handleSend}>
             {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초` : sentToThisEmail ? '다시 받기' : '인증번호 받기'}
           </Button>
         </div>
@@ -122,7 +129,7 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
           </p>
         )}
         {sentToThisEmail && !sendError && (
-          <p className="text-sm text-muted-foreground">
+          <p className="rounded-lg bg-brand-soft px-3 py-2 text-xs leading-relaxed text-brand-text">
             인증번호를 보냈어요(10분 유효). 메일이 안 오면 스팸함을 확인해 주세요.
           </p>
         )}
@@ -130,13 +137,13 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
 
       {sentToThisEmail && (
         <div className="space-y-2">
-          <Label htmlFor="code">인증번호 6자리</Label>
+          <Label className="font-bold text-title" htmlFor="code">인증번호 6자리</Label>
           <Input
             id="code"
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
-            className="h-11 bg-card tracking-widest"
+            className="h-12 bg-card text-lg tracking-[0.4em]"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
           />
@@ -148,9 +155,13 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
         </div>
       )}
 
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={!canConfirm}>
-        {confirm.isPending ? '확인 중…' : '다음'}
-      </Button>
+      </div>
+
+      <StepFooter>
+        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canConfirm}>
+          {confirm.isPending ? '확인 중…' : '다음'}
+        </Button>
+      </StepFooter>
     </form>
   )
 }

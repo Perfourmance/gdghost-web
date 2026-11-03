@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { checkInviteCode } from '@/features/signup/api'
-import type { SignupDraft } from '@/features/signup/draft'
+import { SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
+import { StepFooter, StepHeader } from '@/features/signup/StepLayout'
 import { toApiError } from '@/lib/api'
 import { commonErrorMessage, formatWait } from '@/lib/errorMessage'
 
@@ -46,32 +47,35 @@ export function InviteCodeStep({ onDone }: { onDone: (patch: Partial<SignupDraft
   }
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-      <div>
-        <h2 className="text-xl font-bold text-title">초대 코드를 입력해 주세요</h2>
-        <p className="mt-1 text-sm text-muted-foreground">운영진에게 받은 코드예요. 기수는 코드로 정해져요.</p>
-      </div>
+    <form onSubmit={handleSubmit} noValidate>
+      <StepHeader
+        eyebrow={SIGNUP_STEP_LABELS.invite}
+        title="초대 코드를 입력해 주세요"
+        description="운영진에게 받은 코드예요. 기수는 코드로 정해져요."
+      />
       <div className="space-y-2">
-        <Label htmlFor="inviteCode">초대 코드</Label>
+        <Label className="font-bold text-title" htmlFor="inviteCode">초대 코드</Label>
         <Input
           id="inviteCode"
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
           maxLength={40}
-          className="h-11 bg-card uppercase"
+          className="h-12 bg-card text-base tracking-wider uppercase"
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
       </div>
       {check.isError && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="mt-3 text-sm text-destructive" role="alert">
           {inviteErrorMessage(check.error)}
         </p>
       )}
-      <Button type="submit" size="lg" className="h-11 w-full" disabled={code.trim() === '' || check.isPending}>
-        {check.isPending ? '확인 중…' : '다음'}
-      </Button>
+      <StepFooter>
+        <Button type="submit" size="lg" className="h-12 w-full" disabled={code.trim() === '' || check.isPending}>
+          {check.isPending ? '확인 중…' : '다음'}
+        </Button>
+      </StepFooter>
     </form>
   )
 }

@@ -3,15 +3,20 @@ import { ChevronLeft } from 'lucide-react'
 import { Navigate, useBlocker, useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { useMe } from '@/features/auth/session'
+import { AboutStep } from '@/features/signup/AboutStep'
+import { BasicInfoStep } from '@/features/signup/BasicInfoStep'
 import { EmailStep } from '@/features/signup/EmailStep'
+import { ExperienceStep } from '@/features/signup/ExperienceStep'
+import { InterestStep } from '@/features/signup/InterestStep'
 import { InviteCodeStep } from '@/features/signup/InviteCodeStep'
+import { StepHeader } from '@/features/signup/StepLayout'
 import {
   clearSignupDraft,
   isDraftExpired,
-  SIGNUP_STEP_TOTAL,
+  SIGNUP_STEP_LABELS,
   SIGNUP_STEPS,
   useSignupDraft,
-  type SignupStep,
+  type SignupDraft,
 } from '@/features/signup/draft'
 
 const EXPIRED_MESSAGE = '가입 시간(30분)이 지났어요. 초대 코드부터 다시 입력해 주세요.'
@@ -40,8 +45,13 @@ export function SignupPage() {
     }
   }, [blocker])
 
+  // 단계가 바뀌면 화면 맨 위부터 보여 준다
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [draft.step])
+
   // 단계를 넘길 때 30분이 지났으면 처음으로
-  function goTo(patch: Parameters<typeof update>[0]) {
+  function goTo(patch: Partial<SignupDraft>) {
     if (isDraftExpired(draft)) {
       restart(EXPIRED_MESSAGE)
       return
@@ -60,31 +70,45 @@ export function SignupPage() {
       navigate(-1)
       return
     }
-    update({ step: SIGNUP_STEPS[stepIndex - 1] as SignupStep })
+    update({ step: SIGNUP_STEPS[stepIndex - 1] })
   }
 
   // 가입이 끝나 로그인됐거나 이미 회원이면 홈으로
   if (me) return <Navigate to="/" replace />
 
+  const progress = ((stepIndex + 1) / SIGNUP_STEPS.length) * 100
+
   return (
     <div className="min-h-dvh bg-background">
-      <header className="mx-auto flex h-14 max-w-md items-center justify-between px-2">
-        <button
-          type="button"
-          className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
-          aria-label="뒤로"
-          onClick={handleBack}
+      <header className="sticky top-0 z-10 bg-background">
+        <div className="mx-auto flex h-14 max-w-md items-center justify-between px-2">
+          <button
+            type="button"
+            className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
+            aria-label="뒤로"
+            onClick={handleBack}
+          >
+            <ChevronLeft className="size-6" />
+          </button>
+          <span className="px-3 text-xs text-muted-foreground tabular-nums">
+            {stepIndex + 1} / {SIGNUP_STEPS.length}
+          </span>
+        </div>
+        <div
+          className="mx-auto h-1 max-w-md bg-muted"
+          role="progressbar"
+          aria-label="가입 진행"
+          aria-valuemin={1}
+          aria-valuemax={SIGNUP_STEPS.length}
+          aria-valuenow={stepIndex + 1}
         >
-          <ChevronLeft className="size-6" />
-        </button>
-        <span className="px-3 text-sm text-muted-foreground" aria-label="가입 단계">
-          {stepIndex + 1} / {SIGNUP_STEP_TOTAL}
-        </span>
+          <div className="h-full rounded-r-full bg-brand transition-[width] duration-300" style={{ width: `${progress}%` }} />
+        </div>
       </header>
 
-      <main className="mx-auto max-w-md px-4 pt-4 pb-10">
+      <main className="mx-auto max-w-md px-4 pt-8">
         {notice && (
-          <p className="mb-4 rounded-lg bg-muted px-3 py-2 text-sm text-foreground" role="status">
+          <p className="mb-6 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
             {notice}
           </p>
         )}
@@ -93,13 +117,18 @@ export function SignupPage() {
         {draft.step === 'email' && (
           <EmailStep draft={draft} onUpdate={goTo} onSessionExpired={() => restart(EXPIRED_MESSAGE)} />
         )}
-        {draft.step === 'profile' && (
-          // F2-b에서 기본 정보 단계로 바꾼다
-          <section className="space-y-4">
-            <h2 className="text-xl font-bold text-title">이메일 인증 완료</h2>
-            <p className="text-sm text-muted-foreground">
-              {draft.email} 인증을 마쳤어요. 다음 단계(기본 정보)는 준비 중이에요.
-            </p>
+        {draft.step === 'profile' && <BasicInfoStep draft={draft} onUpdate={goTo} />}
+        {draft.step === 'interests' && <InterestStep draft={draft} onUpdate={goTo} />}
+        {draft.step === 'experiences' && <ExperienceStep draft={draft} onUpdate={goTo} />}
+        {draft.step === 'about' && <AboutStep draft={draft} onUpdate={goTo} />}
+        {draft.step === 'account' && (
+          // F2-c에서 아이디 · 비밀번호 단계로 바꾼다
+          <section className="pb-10">
+            <StepHeader
+              eyebrow={SIGNUP_STEP_LABELS.account}
+              title="프로필 입력 완료"
+              description="다음 단계(아이디 · 비밀번호)는 준비 중이에요."
+            />
             <Button variant="secondary" className="w-full" onClick={() => restart('')}>
               처음부터 다시
             </Button>
