@@ -14,7 +14,7 @@ import {
   ScheduleCard,
   ShareCard,
   type CardTarget,
-} from '@/features/home/HomeCards'
+} from '@/features/content/Cards'
 import { useHome } from '@/features/home/useHome'
 import { useNowEveryMinute } from '@/lib/time'
 

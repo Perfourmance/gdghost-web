@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import type { Author } from '@/features/member/author'
+import type { QuestionCardData } from '@/features/content/Cards'
 import { api } from '@/lib/api'
 
 // GET /home — 비회원(GuestHomeResponse)과 부원(HomeResponse)의 모양이 다르다.
@@ -13,15 +13,7 @@ export interface HomePinnedNotice {
   read?: boolean
 }
 
-export interface HomeQuestion {
-  id: number
-  category: string
-  title: string
-  author: Author
-  createdAt: string
-  answerCount: number
-  state?: string
-}
+export type HomeQuestion = QuestionCardData
 
 export interface HomeSchedule {
   id: number
