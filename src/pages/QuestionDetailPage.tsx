@@ -7,7 +7,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { questionCategoryLabel, questionStateLabel } from '@/features/content/labels'
-import { AnswerList, AuthorLink } from '@/features/questions/AnswerList'
+import { AnswerList, AuthorLink, type AnswerActions } from '@/features/questions/AnswerList'
+import { AnswerSheet, type AnswerSheetTarget } from '@/features/questions/AnswerSheet'
+import { answerErrorMessage, useAdoption, useDeleteAnswer } from '@/features/questions/answers'
 import { useQuestionDetail, type QuestionDetail, type RoutingDelivery } from '@/features/questions/api'
 import { QuestionOwnerMenu } from '@/features/questions/QuestionOwnerMenu'
 import { toApiError } from '@/lib/api'
@@ -80,7 +82,7 @@ export function QuestionDetailPage() {
 
 function QuestionBody({ question, now }: { question: QuestionDetail; now: number }) {
   return (
-    <article className="pb-10">
+    <article className={question.canAnswer ? 'pb-28' : 'pb-10'}>
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold text-brand-text">{questionCategoryLabel(question.category)}</p>
         <span
@@ -112,18 +114,7 @@ function QuestionBody({ question, now }: { question: QuestionDetail; now: number
         <RoutingStatus deliveries={question.routing.deliveries} reasonsHidden={question.routing.reasonsHidden} />
       )}
 
-      <section className="mt-8">
-        <h2 className="mb-3 text-base font-bold text-title">
-          답변 <span className="text-brand-text">{countAnswers(question.answers)}</span>
-        </h2>
-        {question.answers.length === 0 ? (
-          <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
-            아직 답변이 없어요.
-          </p>
-        ) : (
-          <AnswerList answers={question.answers} now={now} />
-        )}
-      </section>
+      <QuestionAnswers question={question} now={now} />
     </article>
   )
 }
@@ -170,8 +161,95 @@ function RoutingStatus({ deliveries, reasonsHidden }: { deliveries: RoutingDeliv
   )
 }
 
+/** 답변 목록 + 답변 · 답글 시트 + 하단 답변 바 (F7) */
+function QuestionAnswers({ question, now }: { question: QuestionDetail; now: number }) {
+  const [sheet, setSheet] = useState<AnswerSheetTarget | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const remove = useDeleteAnswer(question.id)
+  const adoption = useAdoption(question.id)
+
+  const onError = (e: unknown) => setError(answerErrorMessage(toApiError(e)))
+
+  const actions: AnswerActions = {
+    questionMine: question.mine,
+    disabled: remove.isPending || adoption.isPending,
+    onReply: (parent) => setSheet({ kind: 'reply', parent }),
+    onEdit: (answer) => setSheet({ kind: 'edit', answer }),
+    onDelete: (answer) => {
+      const message = answer.adopted
+        ? '채택된 답변이에요. 삭제하면 채택도 풀려요. 삭제할까요?'
+        : '삭제할까요? 삭제하면 되돌릴 수 없어요.'
+      if (!window.confirm(message)) return
+      setError(null)
+      remove.mutate(answer.id, { onError })
+    },
+    onAdopt: (answer, adopt) => {
+      setError(null)
+      adoption.mutate(adopt ? answer.id : null, { onError })
+    },
+  }
+
+  const replyCount = countReplies(question.answers)
+
+  return (
+    <section className="mt-8">
+      <h2 className="mb-3 text-base font-bold text-title">
+        답변 <span className="text-brand-text">{countAnswers(question.answers)}</span>
+        {replyCount > 0 && <span className="ml-1.5 text-sm font-normal text-muted-foreground">· 답글 {replyCount}</span>}
+      </h2>
+      {error && (
+        <p className="mb-3 rounded-lg bg-muted px-3 py-2.5 text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+      {question.answers.length === 0 ? (
+        <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
+          {question.canAnswer ? '아직 답변이 없어요. 첫 답변을 남겨 주세요.' : '아직 답변이 없어요.'}
+        </p>
+      ) : (
+        <AnswerList answers={question.answers} now={now} actions={actions} />
+      )}
+
+      {/* 하단 고정 답변 바 — 내 질문에는 답글만 달 수 있어 없다 (F2-04) */}
+      {question.canAnswer && (
+        <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-card pb-[env(safe-area-inset-bottom)]">
+          <div className="mx-auto flex max-w-md items-center gap-2 px-4 py-3">
+            <button
+              type="button"
+              onClick={() => setSheet({ kind: 'answer' })}
+              className="h-11 flex-1 rounded-lg border border-input bg-background px-3 text-left text-sm text-muted-foreground"
+            >
+              선배의 경험을 나눠 주세요
+            </button>
+            <Button size="lg" className="h-11 px-4 font-bold" onClick={() => setSheet({ kind: 'answer' })}>
+              답변 달기
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <AnswerSheet
+        questionId={question.id}
+        target={sheet}
+        canPostAnonymously={question.canPostAnonymously}
+        // 익명 질문의 글쓴이가 답글을 달 때 실수로 닉네임이 드러나지 않게 기본 켬
+        defaultAnonymous={question.mine && question.anonymous}
+        onClose={() => setSheet(null)}
+      />
+    </section>
+  )
+}
+
 function countAnswers(answers: QuestionDetail['answers']): number {
   return answers.filter((a) => !a.deletedBy).length
+}
+
+/** 목록의 답변 수는 답글을 빼고 세므로, 상세에서만 답글 수를 옆에 작게 (지운 답글 제외) */
+function countReplies(answers: QuestionDetail['answers']): number {
+  return answers.reduce(
+    (sum, a) => sum + a.replies.reduce((n, r) => n + (r.deletedBy ? 0 : 1), 0) + countReplies(a.replies),
+    0,
+  )
 }
 
 /** 삭제 · 숨김 · 없는 글 — 안내 후 목록으로 (IA 2장) */
