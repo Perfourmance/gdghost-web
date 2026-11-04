@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
 import { PencilLine } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
 import { Chip } from '@/components/Chip'
+import { SegmentTabs } from '@/components/layout/SegmentTabs'
+import { QUESTION_SEGMENTS } from '@/components/layout/segments'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockSheet } from '@/features/auth/LockSheet'
@@ -11,7 +12,7 @@ import { EmptyCard, QuestionCard, type CardTarget } from '@/features/content/Car
 import { questionCategoryLabel } from '@/features/content/labels'
 import { useQuestionList, type QuestionFilters } from '@/features/questions/api'
 import { QUESTION_CATEGORIES as CATEGORIES } from '@/features/questions/write'
-import { useInView } from '@/hooks/useInView'
+import { useLoadMore } from '@/hooks/useLoadMore'
 import { useNowEveryMinute } from '@/lib/time'
 
 /** 질문 목록 (S20) — 분류 필터 · 내 질문 · 답변 기다리는 질문만 · 무한 스크롤. 필터는 주소에 둔다(뒤로 와도 유지) */
@@ -31,12 +32,9 @@ export function QuestionsPage() {
   }
 
   const list = useQuestionList(filters)
-  const { ref: bottomRef, inView } = useInView<HTMLDivElement>()
-  const { hasNextPage, isFetchingNextPage, fetchNextPage } = list
-
-  useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage()
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+  const { isFetchingNextPage, fetchNextPage } = list
+  // 처음 60개까지 저절로, 그다음은 더보기
+  const { bottomRef, showSentinel, showMoreButton } = useLoadMore(list, 3)
 
   function setFilter(key: string, value: string | null) {
     const next = new URLSearchParams(params)
@@ -50,7 +48,8 @@ export function QuestionsPage() {
 
   return (
     <div className="pb-4">
-      <h1 className="text-xl font-bold text-title">질문</h1>
+      <h1 className="sr-only">질문</h1>
+      <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
 
       {/* 분류 칩 — 가로로 밀어서 본다 */}
       <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
@@ -104,9 +103,14 @@ export function QuestionsPage() {
           <QuestionCard key={q.id} question={q} target={target} now={now} showDetails />
         ))}
 
-        {/* 바닥이 보이면 다음 20개. 첫 페이지를 받은 뒤에만 붙인다(스크롤 전에 둘째 페이지를 부르지 않게) */}
-        {list.isSuccess && hasNextPage && <div ref={bottomRef} aria-hidden className="h-1" />}
+        {/* 바닥이 보이면 다음 20개 (60개까지), 그다음은 더보기 */}
+        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
         {isFetchingNextPage && <Skeleton className="h-[88px] w-full rounded-xl" />}
+        {showMoreButton && (
+          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
+            더보기
+          </Button>
+        )}
         {list.isFetchNextPageError && (
           <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
             더 불러오지 못했어요. 다시 시도
