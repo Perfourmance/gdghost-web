@@ -6,6 +6,8 @@ import { ErrorPage } from '@/pages/ErrorPage'
 import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
+import { MemberProfilePage } from '@/pages/MemberProfilePage'
+import { MembersPage } from '@/pages/MembersPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
@@ -26,6 +28,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: 'questions', element: <QuestionsPage /> },
+          // 질문 탭의 `부원` 세그먼트 (IA S23)
+          { path: 'members', element: <MembersPage /> },
           { path: 'schedules', element: <TabPlaceholder title="일정" /> },
           { path: 'shares', element: <TabPlaceholder title="공유" /> },
           { path: 'feed', element: <TabPlaceholder title="피드" /> },
@@ -35,6 +39,7 @@ export const router = createBrowserRouter([
       { path: 'questions/new', element: <QuestionWritePage /> },
       { path: 'questions/:questionId', element: <QuestionDetailPage /> },
       { path: 'questions/:questionId/edit', element: <QuestionEditPage /> },
+      { path: 'members/:memberId', element: <MemberProfilePage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'find-login-id', element: <FindLoginIdPage /> },
