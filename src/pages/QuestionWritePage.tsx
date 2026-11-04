@@ -1,11 +1,11 @@
-import { useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { QuestionForm, type QuestionFormValues } from '@/features/questions/QuestionForm'
 import { questionSubmitError, useCreateQuestion, type QuestionCreateInput } from '@/features/questions/write'
-import { newIdempotencyKey, toApiError } from '@/lib/api'
+import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
+import { toApiError } from '@/lib/api'
 
 const EMPTY: QuestionFormValues = { category: null, title: '', body: '', anonymous: false }
 
@@ -15,8 +15,7 @@ export function QuestionWritePage() {
   const location = useLocation()
   const navigate = useNavigate()
   const create = useCreateQuestion()
-  // 한 번의 제출 = 한 키. 같은 내용으로 다시 누르면 같은 키, 내용을 고치면 새 키
-  const idempotency = useRef<{ key: string; payload: string } | null>(null)
+  const keyFor = useIdempotencyKey()
 
   if (!me) {
     return (
@@ -34,12 +33,8 @@ export function QuestionWritePage() {
       body: body === '' ? null : body,
       anonymous: values.anonymous,
     }
-    const payload = JSON.stringify(input)
-    if (idempotency.current?.payload !== payload) {
-      idempotency.current = { key: newIdempotencyKey(), payload }
-    }
     create.mutate(
-      { input, key: idempotency.current.key },
+      { input, key: keyFor(input) },
       {
         onSuccess: (created) => {
           allowLeave()
