@@ -145,7 +145,7 @@ export function ScheduleCard({ schedule, target }: { schedule: HomeSchedule; tar
               schedule.deadlineSoon ? 'text-brand-text' : 'text-muted-foreground',
             )}
           >
-            {schedule.dDay === 0 ? 'D-DAY' : `D-${schedule.dDay}`}
+            {schedule.dDay < 0 ? '지남' : schedule.dDay === 0 ? 'D-DAY' : `D-${schedule.dDay}`}
           </span>
         )}
       </div>

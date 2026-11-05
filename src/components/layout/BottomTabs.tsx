@@ -14,7 +14,7 @@ interface Tab {
 const TABS: Tab[] = [
   { to: '/', label: '홈', icon: House },
   { to: '/questions', label: '질문', icon: MessageCircle, also: ['/members'] },
-  { to: '/schedules', label: '일정', icon: CalendarDays },
+  { to: '/schedules', label: '일정', icon: CalendarDays, also: ['/recruits', '/events'] },
   { to: '/shares', label: '공유', icon: Bookmark },
   { to: '/feed', label: '피드', icon: MessagesSquare },
 ]

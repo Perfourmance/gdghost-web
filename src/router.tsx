@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
+import { EventsPage } from '@/pages/EventsPage'
 import { ErrorPage } from '@/pages/ErrorPage'
 import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
 import { HomePage } from '@/pages/HomePage'
@@ -18,6 +19,12 @@ import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
 import { QuestionEditPage } from '@/pages/QuestionEditPage'
 import { QuestionsPage } from '@/pages/QuestionsPage'
 import { QuestionWritePage } from '@/pages/QuestionWritePage'
+import { RecruitsPage } from '@/pages/RecruitsPage'
+import { RecruitWritePage } from '@/pages/RecruitWritePage'
+import { ScheduleDetailPage } from '@/pages/ScheduleDetailPage'
+import { ScheduleEditPage } from '@/pages/ScheduleEditPage'
+import { SchedulesPage } from '@/pages/SchedulesPage'
+import { ScheduleWritePage } from '@/pages/ScheduleWritePage'
 import { SeniorFindPage } from '@/pages/SeniorFindPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { SignupPage } from '@/pages/SignupPage'
@@ -36,7 +43,10 @@ export const router = createBrowserRouter([
           { path: 'questions', element: <QuestionsPage /> },
           // 질문 탭의 `부원` 세그먼트 (IA S23)
           { path: 'members', element: <MembersPage /> },
-          { path: 'schedules', element: <TabPlaceholder title="일정" /> },
+          { path: 'schedules', element: <SchedulesPage /> },
+          // 일정 탭의 `모집` · `이벤트` 세그먼트 (IA S33 · S35)
+          { path: 'recruits', element: <RecruitsPage /> },
+          { path: 'events', element: <EventsPage /> },
           { path: 'shares', element: <TabPlaceholder title="공유" /> },
           { path: 'feed', element: <TabPlaceholder title="피드" /> },
         ],
@@ -46,6 +56,11 @@ export const router = createBrowserRouter([
       { path: 'questions/:questionId', element: <QuestionDetailPage /> },
       { path: 'questions/:questionId/edit', element: <QuestionEditPage /> },
       { path: 'members/:memberId', element: <MemberProfilePage /> },
+      // 일정 · 모집 (IA S31 · S32 · S34)
+      { path: 'schedules/new', element: <ScheduleWritePage /> },
+      { path: 'schedules/:scheduleId', element: <ScheduleDetailPage /> },
+      { path: 'schedules/:scheduleId/edit', element: <ScheduleEditPage /> },
+      { path: 'recruits/new', element: <RecruitWritePage /> },
       // 홈 `운영진 공지` 더보기 (IA S11 · S12)
       { path: 'notices', element: <NoticesPage /> },
       { path: 'notices/:noticeId', element: <NoticeDetailPage /> },
