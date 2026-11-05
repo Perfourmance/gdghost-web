@@ -24,3 +24,15 @@ export function positionLabel(value: string): string {
 export function memberStatusLabel(value: string): string {
   return MEMBER_STATUSES.find((s) => s.value === value)?.label ?? '기타'
 }
+
+/** 연락 수단 4종 (백엔드 ContactType). 프로필 · 프로필 수정에서 같은 순서로 */
+export const CONTACT_TYPES = [
+  { value: 'KAKAO', label: '카카오톡' },
+  { value: 'INSTA', label: '인스타그램' },
+  { value: 'LINKEDIN', label: '링크드인' },
+  { value: 'PHONE', label: '전화' },
+] as const
+
+export function contactLabel(value: string): string {
+  return CONTACT_TYPES.find((c) => c.value === value)?.label ?? '기타'
+}

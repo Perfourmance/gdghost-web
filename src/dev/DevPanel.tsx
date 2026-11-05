@@ -7,7 +7,7 @@ import { switchSession, type Me } from '@/features/auth/session'
 // 로컬 DB 계정 (인계 문서 4장). 비밀번호가 바뀌면 여기도 고친다
 const ACCOUNTS = [
   { loginId: 'test01', password: 'test1234!', label: 'test01 (부원)' },
-  { loginId: 'asker01', password: 'test1234!', label: 'asker01 (운영진)' },
+  { loginId: 'asker01', password: 'qwer1234!', label: 'asker01 (운영진)' },
   { loginId: 'senior01', password: 'Test1234!', label: 'senior01 (개발자)' },
 ]
 

@@ -38,13 +38,13 @@ export function TopBar() {
                 </span>
               )}
             </Link>
-            {/* 로그아웃은 설정 화면(F10)이 생기면 그쪽으로 옮긴다 */}
             <DropdownMenu>
               <DropdownMenuTrigger className={iconLinkClass} aria-label="내 메뉴 열기">
                 <UserRound className="size-5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem onClick={() => navigate(`/members/${me.id}`)}>내 프로필</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/settings')}>설정</DropdownMenuItem>
                 <DropdownMenuItem disabled={logout.isPending} onClick={() => logout.mutate()}>
                   로그아웃
                 </DropdownMenuItem>

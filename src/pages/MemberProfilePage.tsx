@@ -16,7 +16,7 @@ import {
   type ContactType,
   type MemberProfile,
 } from '@/features/member/api'
-import { memberStatusLabel, positionLabel } from '@/features/member/labels'
+import { contactLabel, memberStatusLabel, positionLabel } from '@/features/member/labels'
 import { StaffBadge } from '@/features/member/StaffBadge'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { toApiError } from '@/lib/api'
@@ -107,6 +107,17 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
         <AcceptTag on={profile.acceptCoffee}>{profile.acceptCoffee ? '커피챗 받는 중' : '커피챗 안 받음'}</AcceptTag>
       </div>
 
+      {mine && (
+        <div className="mt-4 grid grid-cols-2 gap-2">
+          <Link to="/profile/edit" className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
+            프로필 수정
+          </Link>
+          <Link to="/settings" className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
+            설정
+          </Link>
+        </div>
+      )}
+
       {profile.statusNote && (
         <div className="mt-6 rounded-xl bg-card px-4 py-3.5">
           <p className="text-xs font-bold text-brand-text">근황</p>
@@ -147,7 +158,7 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
           <ul className="space-y-2 text-sm">
             {profile.contacts.map((c) => (
               <li key={c.type} className="flex gap-3">
-                <span className="w-16 shrink-0 text-muted-foreground">{CONTACT_LABELS[c.type] ?? '기타'}</span>
+                <span className="w-16 shrink-0 text-muted-foreground">{contactLabel(c.type)}</span>
                 <ContactValue type={c.type} value={c.value} />
               </li>
             ))}
@@ -157,13 +168,6 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
       )}
     </>
   )
-}
-
-const CONTACT_LABELS: Record<ContactType, string> = {
-  LINKEDIN: '링크드인',
-  INSTA: '인스타그램',
-  KAKAO: '카카오톡',
-  PHONE: '전화',
 }
 
 /** 주소면 링크, 전화번호면 걸기, 나머지(아이디)는 글자 그대로 */

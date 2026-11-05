@@ -10,11 +10,13 @@ import { MemberProfilePage } from '@/pages/MemberProfilePage'
 import { MembersPage } from '@/pages/MembersPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
+import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
 import { QuestionEditPage } from '@/pages/QuestionEditPage'
 import { QuestionsPage } from '@/pages/QuestionsPage'
 import { QuestionWritePage } from '@/pages/QuestionWritePage'
 import { SeniorFindPage } from '@/pages/SeniorFindPage'
+import { SettingsPage } from '@/pages/SettingsPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
@@ -43,6 +45,9 @@ export const router = createBrowserRouter([
       { path: 'members/:memberId', element: <MemberProfilePage /> },
       // 부원 목록 상단의 선배 찾기 (IA S25)
       { path: 'find-senior', element: <SeniorFindPage /> },
+      // 내 정보 (IA S62 · S26)
+      { path: 'settings', element: <SettingsPage /> },
+      { path: 'profile/edit', element: <ProfileEditPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'find-login-id', element: <FindLoginIdPage /> },
