@@ -18,6 +18,8 @@ export interface AnswerActions {
   onDelete: (answer: AnswerNode) => void
   /** adopt=false면 채택 취소 */
   onAdopt: (answer: AnswerNode, adopt: boolean) => void
+  /** 남의 답변 · 답글 신고 (F2-10) */
+  onReport: (answer: AnswerNode) => void
 }
 
 /** 답변 · 답글 트리 */
@@ -109,7 +111,7 @@ function ReplyTarget({ parent }: { parent: AnswerNode | undefined }) {
   )
 }
 
-/** 답글 · 수정 · 삭제 · 채택 — 시안 06의 작은 글씨 줄. 지운 자리에는 없다 */
+/** 답글 · 수정 · 삭제 · 신고 · 채택 — 시안 06의 작은 글씨 줄. 지운 자리에는 없다 */
 function ActionRow({ answer, actions }: { answer: AnswerNode; actions: AnswerActions }) {
   const canAdopt = actions.questionMine && answer.depth === 0
   const buttons: { label: string; onClick: () => void; strong?: boolean }[] = [
@@ -118,6 +120,9 @@ function ActionRow({ answer, actions }: { answer: AnswerNode; actions: AnswerAct
   if (answer.mine) {
     buttons.push({ label: '수정', onClick: () => actions.onEdit(answer) })
     buttons.push({ label: '삭제', onClick: () => actions.onDelete(answer) })
+  }
+  if (!answer.mine) {
+    buttons.push({ label: '신고', onClick: () => actions.onReport(answer) })
   }
   if (canAdopt) {
     buttons.push(
