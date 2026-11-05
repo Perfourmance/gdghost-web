@@ -48,3 +48,10 @@ export function formatDate(iso: string | null | undefined): string {
   const d = new Date(iso)
   return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
 }
+
+/** 시각(ISO) → "2026.11.5 14:03" (로그 화면) */
+export function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return '-'
+  const d = new Date(iso)
+  return `${formatDate(iso)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}

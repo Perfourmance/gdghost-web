@@ -7,12 +7,14 @@ import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { cn } from '@/lib/utils'
 
-/** 운영 페이지 탭 (IA S70–S76). 라우팅 · 신고는 F23에서 더한다 */
+/** 운영 페이지 탭 (IA S70–S76) */
 const OPS_TABS = [
   { to: '/ops', label: '홈', end: true },
   { to: '/ops/notices', label: '공지' },
   { to: '/ops/events', label: '이벤트' },
   { to: '/ops/certifications', label: '인증 확인' },
+  { to: '/ops/reports', label: '신고' },
+  { to: '/ops/routing', label: '라우팅' },
   { to: '/ops/members', label: '부원' },
   { to: '/ops/invite-codes', label: '초대 코드' },
 ]
