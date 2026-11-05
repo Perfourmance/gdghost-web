@@ -12,7 +12,7 @@ export function LockPanel({ next, title, buttonText = '로그인하고 보기' }
     <div className="flex flex-col items-center rounded-2xl bg-panel px-6 py-10 text-center">
       <img src={shh} alt="" className="w-28" />
       <p className="mt-5 text-lg font-bold text-title">{title}</p>
-      <p className="mt-1 text-sm text-muted-foreground">GDGoC SMU 부원으로 로그인하면 볼 수 있어요.</p>
+      <p className="mt-1 text-sm text-muted-foreground">GDGoC SMU 부원이라면 로그인해 주세요.</p>
       <Link to={loginPath(next)} className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
         {buttonText}
       </Link>

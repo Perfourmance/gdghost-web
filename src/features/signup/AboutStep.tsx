@@ -67,7 +67,7 @@ export function AboutStep({ draft, onUpdate }: Props) {
           </FieldLabel>
           <p className="mb-3 text-xs text-muted-foreground">
             <b className="font-bold text-brand-text">어떤 질문에 답할 수 있는지</b> 적어주세요. 후배들이 이걸 보고
-            찾아옵니다
+            찾아와요
           </p>
           <textarea
             id="bio"

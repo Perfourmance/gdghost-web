@@ -83,13 +83,13 @@ export function HomePage() {
   )
 }
 
-/** 비회원 — 문 여는 유령 + "둘러보는 중입니다 · 가입" 띠 (IA 2장 · 디자인 가이드 5장) */
+/** 비회원 — 문 여는 유령 + "둘러보는 중이에요 · 가입" 띠 (IA 2장 · 디자인 가이드 5장) */
 function GuestBanner() {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-card p-4">
       <img src={door} alt="" className="w-14 shrink-0" />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-title">둘러보는 중입니다</p>
+        <p className="text-sm font-bold text-title">둘러보는 중이에요</p>
         <p className="mt-0.5 text-xs text-muted-foreground">부원이 되면 질문 · 답변을 모두 볼 수 있어요.</p>
       </div>
       <Link

@@ -141,7 +141,7 @@ export function QuestionsPage() {
           description="GDGoC SMU 부원으로 로그인하면 선배에게 물어볼 수 있어요."
         />
       ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 회원에게 열려요" />
+        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 부원만 볼 수 있어요" />
       )}
     </div>
   )

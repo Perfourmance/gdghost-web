@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { Chip } from '@/components/Chip'
 import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
 import { Button } from '@/components/ui/button'
@@ -25,10 +25,12 @@ interface Props {
   formError: string | null
   /** 저장에 성공해 화면을 옮기기 전에 allowLeave()를 부른다 */
   onSubmit: (values: QuestionFormValues, allowLeave: () => void) => void
+  /** 제목 아래 안내 (선배 지목 등) */
+  notice?: ReactNode
 }
 
 /** 질문 작성 · 수정 공통 — 분류 → 제목 → 본문 → 익명 여부 (F2-02). 익명 여부는 수정에서 바꿀 수 없다 */
-export function QuestionForm({ mode, initial, pending, error, formError, onSubmit }: Props) {
+export function QuestionForm({ mode, initial, pending, error, formError, onSubmit, notice }: Props) {
   const [values, setValues] = useState(initial)
   const [triedSubmit, setTriedSubmit] = useState(false)
 
@@ -66,6 +68,7 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
       <h1 className="mb-8 text-[22px] leading-snug font-bold text-title">
         {mode === 'create' ? '선배에게 물어보기' : '질문 수정'}
       </h1>
+      {notice && <div className="-mt-4 mb-8">{notice}</div>}
 
       <div className="space-y-8">
         <section>
@@ -122,7 +125,7 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
               </label>
               {/* 기능명세 F2-05 고지 문구 */}
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                익명이어도 작성자 정보는 서버에 저장됩니다. 운영진을 포함해 누구도 화면에서 볼 수 없습니다.
+                운영진을 포함해 누구도 작성자를 볼 수 없어요. 기록은 서버에만 남아요.
                 <br />
                 익명 여부는 올린 뒤에 바꿀 수 없어요.
               </p>
