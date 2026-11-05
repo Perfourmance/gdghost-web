@@ -11,6 +11,7 @@ import { MembersPage } from '@/pages/MembersPage'
 import { NoticeDetailPage } from '@/pages/NoticeDetailPage'
 import { NoticesPage } from '@/pages/NoticesPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { NotificationsPage } from '@/pages/NotificationsPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
@@ -48,6 +49,8 @@ export const router = createBrowserRouter([
       // 홈 `운영진 공지` 더보기 (IA S11 · S12)
       { path: 'notices', element: <NoticesPage /> },
       { path: 'notices/:noticeId', element: <NoticeDetailPage /> },
+      // 상단 종 아이콘 (IA S61)
+      { path: 'notifications', element: <NotificationsPage /> },
       // 부원 목록 상단의 선배 찾기 (IA S25)
       { path: 'find-senior', element: <SeniorFindPage /> },
       // 내 정보 (IA S62 · S26)
