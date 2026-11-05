@@ -14,6 +14,7 @@ import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
 import { QuestionEditPage } from '@/pages/QuestionEditPage'
 import { QuestionsPage } from '@/pages/QuestionsPage'
 import { QuestionWritePage } from '@/pages/QuestionWritePage'
+import { SeniorFindPage } from '@/pages/SeniorFindPage'
 import { SignupPage } from '@/pages/SignupPage'
 import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
@@ -40,6 +41,8 @@ export const router = createBrowserRouter([
       { path: 'questions/:questionId', element: <QuestionDetailPage /> },
       { path: 'questions/:questionId/edit', element: <QuestionEditPage /> },
       { path: 'members/:memberId', element: <MemberProfilePage /> },
+      // 부원 목록 상단의 선배 찾기 (IA S25)
+      { path: 'find-senior', element: <SeniorFindPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'find-login-id', element: <FindLoginIdPage /> },

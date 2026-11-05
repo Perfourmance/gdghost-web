@@ -73,7 +73,8 @@ export interface RoutingDelivery {
   stage: string
   /** SENT · ANSWERED · PASSED */
   state: string
-  to: { nickname: string }
+  /** 익명 질문에서 내 줄이 아니면 null (운영진 줄은 그대로). reasons도 빈 배열 */
+  to: { nickname: string } | null
   reasons: string[]
   sentAt: string | null
 }

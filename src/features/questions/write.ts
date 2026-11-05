@@ -16,6 +16,24 @@ export interface QuestionCreateInput {
   /** 비면 보내지 않는다 */
   body: string | null
   anonymous: boolean
+  /** 선배 찾기의 `공개로 묻기` — 그 선배에게 바로 전달 */
+  targetMemberId?: number
+}
+
+/**
+ * 선배 찾기 → 질문 작성으로 넘기는 값(history state). target이 있으면 그 선배에게 바로 전달,
+ * 없으면(맞는 선배 없음) 주제 · 글만 채운다
+ */
+export interface DirectAskState {
+  target?: { id: number; nickname: string }
+  category: string
+  text: string
+}
+
+/** 질문 작성 → 상세로 넘기는 지목 결과 안내 */
+export interface DirectResultState {
+  directDelivery: string
+  targetNickname: string
 }
 
 /** 보낸 필드만 바뀐다. body ""는 본문을 지운다. 익명 여부는 보내면 400 */
@@ -26,6 +44,7 @@ export interface QuestionUpdateInput {
 }
 
 /** 질문 상세 + 선배 지목 결과(지목이 없으면 null) */
+/** directDelivery: SENT · SCHEDULED(22–08시라 08시에) · FALLBACK(받을 수 없게 됨 → 일반 라우팅) */
 export type QuestionCreated = QuestionDetail & { directDelivery: string | null }
 
 // 질문 목록 · 홈의 새 질문이 바뀐다

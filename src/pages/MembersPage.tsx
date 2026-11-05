@@ -1,8 +1,9 @@
+import { Search } from 'lucide-react'
 import { Link, useLocation, useSearchParams } from 'react-router'
 import { Chip } from '@/components/Chip'
 import { SegmentTabs } from '@/components/layout/SegmentTabs'
 import { QUESTION_SEGMENTS } from '@/components/layout/segments'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -28,7 +29,7 @@ export function MembersPage() {
         <MemberDirectory maxGeneration={Math.max(MIN_GENERATIONS, me.generation)} />
       ) : (
         <div className="mt-5">
-          <LockPanel next={location.pathname} title="부원 목록은 회원에게 열려요" />
+          <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요" />
         </div>
       )}
     </div>
@@ -61,7 +62,14 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
 
   return (
     <>
-      <p className="mt-1 text-sm text-muted-foreground">기수를 넘어 같은 동아리를 거쳐 간 사람들</p>
+      <div className="mt-1 flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">기수를 넘어 같은 동아리를 거쳐 간 사람들</p>
+        {/* 선배 찾기 (IA S25 — 부원 목록 상단) */}
+        <Link to="/find-senior" className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'shrink-0' })}>
+          <Search aria-hidden />
+          선배 찾기
+        </Link>
+      </div>
 
       {/* 기수 칩 — 가로로 밀어서 본다 */}
       <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
@@ -111,7 +119,7 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
 
         {list.isSuccess && members.length === 0 && (
           <EmptyCard>
-            {generation != null || status != null ? '조건에 맞는 부원이 없어요.' : '아직 목록에 보이는 부원이 없어요.'}
+            {generation != null || status != null ? '조건에 맞는 부원이 없어요.' : '아직 부원이 없어요.'}
           </EmptyCard>
         )}
 

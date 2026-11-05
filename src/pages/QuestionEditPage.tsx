@@ -31,7 +31,7 @@ export function QuestionEditPage() {
 
   return (
     <SubPageLayout fallback={back}>
-      {notFound && <Notice title="없는 글입니다" text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
+      {notFound && <Notice title="글을 찾을 수 없어요" text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
 
       {!notFound && detail.isPending && (
         <div className="space-y-4">

@@ -19,8 +19,8 @@ interface Props {
 export function LockSheet({
   next,
   onClose,
-  title = '부원에게 열려 있어요',
-  description = 'GDGoC SMU 부원으로 로그인하면 볼 수 있어요.',
+  title = '부원만 볼 수 있어요',
+  description = 'GDGoC SMU 부원이라면 로그인해 주세요.',
 }: Props) {
   return (
     <Sheet open={next != null} onOpenChange={(open) => !open && onClose()}>

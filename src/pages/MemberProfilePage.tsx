@@ -35,7 +35,7 @@ export function MemberProfilePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="부원 프로필은 회원에게 열려요" />
+        <LockPanel next={location.pathname} title="프로필은 부원만 볼 수 있어요" />
       </SubPageLayout>
     )
   }
@@ -143,7 +143,7 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
       )}
 
       {profile.contacts.length > 0 && (
-        <Section title={mine ? '연락 수단 (비공개 포함, 나에게만 전부 보임)' : '연락 수단'}>
+        <Section title="연락 수단">
           <ul className="space-y-2 text-sm">
             {profile.contacts.map((c) => (
               <li key={c.type} className="flex gap-3">
@@ -152,6 +152,7 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
               </li>
             ))}
           </ul>
+          {mine && <p className="mt-2 text-xs text-muted-foreground">비공개로 둔 연락 수단도 나에게는 보여요.</p>}
         </Section>
       )}
     </>
@@ -341,8 +342,8 @@ function ActivityCard({ item, now }: { item: ActivityItem; now: number }) {
 function GoneNotice() {
   return (
     <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">없는 부원입니다</p>
-      <p className="mt-1 text-sm text-muted-foreground">탈퇴했거나 찾을 수 없는 부원이에요.</p>
+      <p className="text-lg font-bold text-title">부원을 찾을 수 없어요</p>
+      <p className="mt-1 text-sm text-muted-foreground">탈퇴했거나 없는 부원이에요.</p>
       <Link to="/members" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
         부원 목록으로
       </Link>

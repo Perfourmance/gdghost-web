@@ -63,7 +63,7 @@ function AnswerItem({ answer, now, actions, byId }: ItemProps) {
       >
         {answer.deletedBy ? (
           <p className="text-sm text-muted-foreground">
-            {answer.deletedBy === 'STAFF' ? '운영진이 숨긴 답변입니다' : '삭제된 답변입니다'}
+            {answer.deletedBy === 'STAFF' ? '운영진이 숨긴 답변이에요' : '삭제된 답변이에요'}
           </p>
         ) : (
           <>
