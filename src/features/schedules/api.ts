@@ -55,10 +55,10 @@ export interface ScheduleDetail {
   author: ScheduleAuthor
   mine: boolean
   relatedRecruits: RelatedRecruit[]
-  /** 마지막으로 내용을 고친 시각. 고친 적 없으면 null (백엔드에 추가 요청함 — 오기 전에는 없음) */
-  updatedAt?: string | null
-  /** 마지막 수정을 등록한 사람이 아닌 운영진이 했는지 (백엔드에 추가 요청함) */
-  editedByStaff?: boolean
+  /** 마지막으로 내용을 고친 시각. 고친 적 없으면 null */
+  updatedAt: string | null
+  /** 마지막 수정을 등록한 사람이 아닌 운영진이 했는지 */
+  editedByStaff: boolean
 }
 
 export interface ScheduleInput {
