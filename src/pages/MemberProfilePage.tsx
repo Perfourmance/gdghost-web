@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router'
 import mascot from '@/assets/mascot/default.png'
 import { LinkifiedText } from '@/components/LinkifiedText'
@@ -7,6 +7,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
+import { CoffeeChatSheet, type CoffeeTarget } from '@/features/coffee/CoffeeChatSheet'
 import { EmptyCard } from '@/features/content/Cards'
 import {
   useMemberActivities,
@@ -20,7 +21,7 @@ import { contactLabel, memberStatusLabel, positionLabel } from '@/features/membe
 import { StaffBadge } from '@/features/member/StaffBadge'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { toApiError } from '@/lib/api'
-import { formatRelative, useNowEveryMinute } from '@/lib/time'
+import { formatMonthDay, formatRelative, useNowEveryMinute } from '@/lib/time'
 import { cn } from '@/lib/utils'
 
 /** 프로필 (S24) — 소개 · 관심 분야 · 경험 · 연락 수단, 아래 활동 기록 탭. 닉네임을 누르면 어디서든 여기로 */
@@ -107,15 +108,20 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
         <AcceptTag on={profile.acceptCoffee}>{profile.acceptCoffee ? '커피챗 받는 중' : '커피챗 안 받음'}</AcceptTag>
       </div>
 
-      {mine && (
-        <div className="mt-4 grid grid-cols-2 gap-2">
+      {mine ? (
+        <div className="mt-4 grid grid-cols-3 gap-2">
           <Link to="/profile/edit" className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
             프로필 수정
+          </Link>
+          <Link to="/coffee-chats" className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
+            내 커피챗
           </Link>
           <Link to="/settings" className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
             설정
           </Link>
         </div>
+      ) : (
+        <CoffeeAction profile={profile} />
       )}
 
       {profile.statusNote && (
@@ -167,6 +173,44 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
         </Section>
       )}
     </>
+  )
+}
+
+/** 커피챗 신청 — 받지 않음 · 응답 대기 · 다시 신청 대기 기간이면 버튼 대신 안내 (F3-06) */
+function CoffeeAction({ profile }: { profile: MemberProfile }) {
+  const [target, setTarget] = useState<CoffeeTarget | null>(null)
+  const { myRequestState, availableAt } = profile.coffeeChat
+  // 서버가 거절 · 만료 후 14일 안일 때만 준다
+  const waiting = availableAt != null
+
+  let notice: ReactNode = null
+  if (!profile.acceptCoffee) notice = '지금은 커피챗을 받지 않아요.'
+  else if (myRequestState === 'REQUESTED')
+    notice = (
+      <>
+        보낸 신청이 응답을 기다리고 있어요.{' '}
+        <Link to="/coffee-chats?tab=sent" className="font-bold text-brand-text underline-offset-2 hover:underline">
+          보낸 신청 보기
+        </Link>
+      </>
+    )
+  else if (waiting) notice = `${formatMonthDay(availableAt)}부터 다시 신청할 수 있어요.`
+
+  return (
+    <div className="mt-4">
+      {notice ? (
+        <p className="rounded-lg bg-muted px-3 py-2.5 text-center text-sm text-muted-foreground">{notice}</p>
+      ) : (
+        <Button
+          size="lg"
+          className="h-11 w-full"
+          onClick={() => setTarget({ id: profile.id, nickname: profile.nickname })}
+        >
+          커피챗 신청
+        </Button>
+      )}
+      <CoffeeChatSheet target={target} onClose={() => setTarget(null)} />
+    </div>
   )
 }
 
@@ -303,9 +347,11 @@ function Activities({ profile, mine }: { profile: MemberProfile; mine: boolean }
   )
 }
 
-/** 질문 · 답변은 그 질문으로. 공유 · 피드 화면은 F17 · F18에서 생기면 링크를 붙인다 */
+/** 질문 · 답변은 그 질문으로, 공유 · 피드는 그 글로 */
 function activityPath(item: ActivityItem): string | null {
   if (item.type === 'ANSWER' || item.type === 'QUESTION') return `/questions/${item.targetId}`
+  if (item.type === 'SHARE') return `/shares/${item.targetId}`
+  if (item.type === 'FEED') return `/feed/${item.targetId}`
   return null
 }
 

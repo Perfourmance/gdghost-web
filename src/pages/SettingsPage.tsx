@@ -25,7 +25,7 @@ type SheetName = 'password' | 'email' | 'withdrawal'
 
 /**
  * 설정 (S62). 받기 설정은 바꾸는 즉시 저장.
- * 웹 푸시 · 홈 화면 추가(F20), 내 커피챗(F19), 저장한 공유(F17), 운영 페이지(F21)는 그 단위에서 붙인다
+ * 웹 푸시 · 홈 화면 추가(F20), 운영 페이지(F21)는 그 단위에서 붙인다
  */
 export function SettingsPage() {
   const { data: me } = useMe()
@@ -87,6 +87,11 @@ function SettingsBody({ profile }: { profile: MyProfile }) {
       <Group title="프로필">
         <LinkRow to={`/members/${profile.id}`} label="내 프로필 보기" />
         <LinkRow to="/profile/edit" label="프로필 수정" />
+      </Group>
+
+      <Group title="내 활동">
+        <LinkRow to="/coffee-chats" label="내 커피챗" />
+        <LinkRow to="/saved-shares" label="저장한 공유" />
       </Group>
 
       <ReceiveSettings settings={profile.settings} />

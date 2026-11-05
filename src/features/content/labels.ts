@@ -38,6 +38,18 @@ const SHARE_CATEGORIES: Record<string, string> = {
   LECTURE: '강의',
 }
 
+// 노션 API 목록 '피드 목록'
+const FEED_CATEGORIES: Record<string, string> = {
+  DAILY: '일상',
+  ACTIVITY: '활동',
+  CERT: '인증',
+  BRAG: '자랑',
+}
+
+/** 고르는 칩 순서 */
+export const SHARE_CATEGORY_KEYS = Object.keys(SHARE_CATEGORIES)
+export const FEED_CATEGORY_KEYS = Object.keys(FEED_CATEGORIES)
+
 const label = (map: Record<string, string>) => (value: string) => map[value] ?? '기타'
 
 export const questionCategoryLabel = label(QUESTION_CATEGORIES)
@@ -45,3 +57,4 @@ export const questionStateLabel = label(QUESTION_STATES)
 export const scheduleKindLabel = label(SCHEDULE_KINDS)
 export const recruitKindLabel = label(RECRUIT_KINDS)
 export const shareCategoryLabel = label(SHARE_CATEGORIES)
+export const feedCategoryLabel = label(FEED_CATEGORIES)
