@@ -49,7 +49,7 @@ export function SearchPage() {
     const next = new URLSearchParams(params)
     if (debounced) next.set('q', debounced)
     else next.delete('q')
-    if (next.toString() !== params.toString()) setParams(next, { replace: true })
+    if (next.toString() !== params.toString()) setParams(next, { replace: true, preventScrollReset: true })
   }, [debounced, params, setParams])
 
   if (!me) {
@@ -66,7 +66,7 @@ export function SearchPage() {
     const p = new URLSearchParams(params)
     if (next) p.set('type', next)
     else p.delete('type')
-    setParams(p, { replace: true })
+    setParams(p, { replace: true, preventScrollReset: true })
   }
 
   return (
@@ -105,7 +105,7 @@ export function SearchPage() {
               role="tab"
               aria-selected={type === t.type}
               onClick={() => selectType(t.type)}
-              className={cn('py-1', type === t.type ? 'font-bold text-brand-text' : 'text-muted-foreground')}
+              className={cn('py-1.5', type === t.type ? 'font-bold text-brand-text' : 'text-muted-foreground')}
             >
               {t.label}
             </button>

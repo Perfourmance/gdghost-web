@@ -45,7 +45,7 @@ export function SharesPage() {
     const next = new URLSearchParams(params)
     if (value == null) next.delete(key)
     else next.set(key, value)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const target: CardTarget = { member, onLocked: lock.open }
@@ -53,7 +53,7 @@ export function SharesPage() {
   const tooShort = query.trim().length > 0 && query.trim().length < QUERY_MIN
 
   return (
-    <div className="pb-4">
+    <div className="pb-20">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-title">공유</h1>
         {member && (
@@ -103,7 +103,7 @@ export function SharesPage() {
         </div>
       </div>
 
-      <div className="mt-3 flex gap-4 text-sm" role="group" aria-label="정렬">
+      <div className="mt-2 flex gap-4 text-sm" role="group" aria-label="정렬">
         {(
           [
             ['SAVED', '저장 많은 순'],
@@ -115,7 +115,7 @@ export function SharesPage() {
             type="button"
             aria-pressed={sort === value}
             onClick={() => setFilter('sort', value === 'SAVED' ? null : value)}
-            className={cn(sort === value ? 'font-bold text-brand-text' : 'text-muted-foreground')}
+            className={cn('py-1.5', sort === value ? 'font-bold text-brand-text' : 'text-muted-foreground')}
           >
             {label}
           </button>

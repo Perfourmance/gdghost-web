@@ -34,7 +34,7 @@ export function RecruitsPage() {
     const next = new URLSearchParams(params)
     if (value == null) next.delete(key)
     else next.set(key, value)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   if (!member) {
@@ -54,7 +54,7 @@ export function RecruitsPage() {
   }
 
   return (
-    <div className="pb-4">
+    <div className="pb-20">
       <h1 className="sr-only">모집</h1>
       <SegmentTabs items={SCHEDULE_SEGMENTS} label="일정 탭" />
 

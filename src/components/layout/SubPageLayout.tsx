@@ -45,7 +45,7 @@ export function SubPageLayout({
           {actions}
         </div>
       </header>
-      <main className="mx-auto max-w-md px-4 pt-6">{children}</main>
+      <main className="mx-auto max-w-md px-4 pt-6 pb-[max(2rem,env(safe-area-inset-bottom))]">{children}</main>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useLayoutEffect } from 'react'
-import { Outlet } from 'react-router'
+import { Outlet, ScrollRestoration } from 'react-router'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { applyTheme, readLastSessionWasMember, rememberSession, useMe } from '@/features/auth/session'
 
@@ -16,5 +16,11 @@ export function RootLayout() {
   }, [isPending, isMember])
 
   if (isPending) return <LoadingScreen member={readLastSessionWasMember()} />
-  return <Outlet />
+  return (
+    <>
+      {/* 새 화면은 맨 위에서 시작하고, 뒤로 오면 보던 자리로 돌아간다 */}
+      <ScrollRestoration />
+      <Outlet />
+    </>
+  )
 }

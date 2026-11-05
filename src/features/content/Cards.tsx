@@ -13,7 +13,7 @@ export interface CardTarget {
   onLocked: (path: string) => void
 }
 
-const cardClass = 'block w-full rounded-xl bg-card px-4 py-3.5 text-left transition-colors hover:bg-accent'
+const cardClass = 'block w-full rounded-xl bg-card px-4 py-3.5 text-left transition-colors hover:bg-accent active:bg-accent'
 
 function CardLink({ to, target, children }: { to: string; target: CardTarget; children: ReactNode }) {
   if (target.member) {

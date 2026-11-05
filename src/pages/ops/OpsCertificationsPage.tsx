@@ -35,7 +35,7 @@ export function OpsCertificationsPage() {
     if (value == null) next.delete(key)
     else next.set(key, value)
     if (key !== 'page') next.delete('page')
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   return (
@@ -50,7 +50,7 @@ export function OpsCertificationsPage() {
           aria-label="이벤트"
           value={eventId ?? ''}
           onChange={(e) => set('eventId', e.target.value || null)}
-          className="h-9 max-w-full rounded-md border bg-card px-2 text-sm"
+          className="h-9 max-w-full rounded-md border bg-card px-2 text-base md:text-sm"
         >
           <option value="">모든 이벤트</option>
           {events.data?.map((e) => (
