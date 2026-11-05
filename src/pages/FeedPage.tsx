@@ -55,13 +55,13 @@ export function FeedPage() {
     const next = new URLSearchParams(params)
     if (value == null) next.delete('category')
     else next.set('category', value)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const posts = list.data?.pages.flatMap((p) => p.items) ?? []
 
   return (
-    <div className="pb-4">
+    <div className="pb-20">
       <h1 className="text-xl font-bold text-title">피드</h1>
 
       <div className="mt-4 flex flex-wrap gap-2">

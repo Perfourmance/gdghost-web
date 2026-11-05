@@ -61,7 +61,7 @@ export function OpsGraduationPage() {
           <select
             value={generation ?? ''}
             onChange={(e) => setGeneration(Number(e.target.value) || null)}
-            className="h-10 rounded-md border bg-card px-2 text-sm"
+            className="h-10 rounded-md border bg-card px-2 text-base md:text-sm"
           >
             <option value="">전체</option>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((g) => (

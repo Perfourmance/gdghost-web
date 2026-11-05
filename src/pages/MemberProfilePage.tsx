@@ -281,7 +281,7 @@ function Activities({ profile, mine }: { profile: MemberProfile; mine: boolean }
     const next = new URLSearchParams(params)
     if (type === TABS[0].type) next.delete('tab')
     else next.set('tab', type)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const items = list.data?.pages.flatMap((page) => page.items) ?? []

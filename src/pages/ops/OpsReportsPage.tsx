@@ -44,7 +44,7 @@ export function OpsReportsPage() {
     if (value == null) next.delete(key)
     else next.set(key, value)
     if (key !== 'page') next.delete('page')
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   return (

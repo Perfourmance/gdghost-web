@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import { Link, useLocation, useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
+import { Chip, FilterToggle } from '@/components/Chip'
 import { SegmentTabs } from '@/components/layout/SegmentTabs'
 import { QUESTION_SEGMENTS } from '@/components/layout/segments'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -55,7 +55,7 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
     const next = new URLSearchParams(params)
     if (value == null) next.delete(key)
     else next.set(key, value)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const members = list.data?.pages.flatMap((page) => page.items) ?? []
@@ -90,18 +90,15 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
       </div>
 
       {/* 상태는 글씨 토글 — 한 번 더 누르면 해제 */}
-      <div className="mt-3 flex gap-4 text-sm" role="group" aria-label="상태">
+      <div className="mt-2 flex gap-4" role="group" aria-label="상태">
         {MEMBER_STATUSES.map((s) => (
-          <button
+          <FilterToggle
             key={s.value}
-            type="button"
-            aria-pressed={status === s.value}
+            checked={status === s.value}
             onClick={() => setFilter('status', status === s.value ? null : s.value)}
-            className={status === s.value ? 'font-bold text-brand-text' : 'text-muted-foreground'}
           >
-            {status === s.value ? '✓ ' : ''}
             {s.label}
-          </button>
+          </FilterToggle>
         ))}
       </div>
 

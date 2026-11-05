@@ -1,6 +1,6 @@
 import { PencilLine } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
+import { Chip, FilterToggle } from '@/components/Chip'
 import { SegmentTabs } from '@/components/layout/SegmentTabs'
 import { QUESTION_SEGMENTS } from '@/components/layout/segments'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -40,14 +40,14 @@ export function QuestionsPage() {
     const next = new URLSearchParams(params)
     if (value == null) next.delete(key)
     else next.set(key, value)
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const target: CardTarget = { member, onLocked: lock.open }
   const questions = list.data?.pages.flatMap((page) => page.items) ?? []
 
   return (
-    <div className="pb-4">
+    <div className="pb-20">
       <h1 className="sr-only">질문</h1>
       <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
 
@@ -66,13 +66,13 @@ export function QuestionsPage() {
       </div>
 
       {member && (
-        <div className="mt-3 flex gap-4 text-sm">
-          <ToggleText checked={filters.mine} onChange={(on) => setFilter('mine', on ? '1' : null)}>
+        <div className="mt-2 flex gap-4">
+          <FilterToggle checked={filters.mine} onClick={() => setFilter('mine', filters.mine ? null : '1')}>
             내 질문
-          </ToggleText>
-          <ToggleText checked={filters.unanswered} onChange={(on) => setFilter('unanswered', on ? '1' : null)}>
+          </FilterToggle>
+          <FilterToggle checked={filters.unanswered} onClick={() => setFilter('unanswered', filters.unanswered ? null : '1')}>
             답변 기다리는 질문만
-          </ToggleText>
+          </FilterToggle>
         </div>
       )}
 
@@ -153,25 +153,3 @@ const writeButtonClass = buttonVariants({
   size: 'lg',
   className: 'pointer-events-auto h-12 rounded-full px-5 text-[15px] font-bold shadow-lg',
 })
-
-function ToggleText({
-  checked,
-  onChange,
-  children,
-}: {
-  checked: boolean
-  onChange: (on: boolean) => void
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={checked}
-      onClick={() => onChange(!checked)}
-      className={checked ? 'font-bold text-brand-text' : 'text-muted-foreground'}
-    >
-      {checked ? '✓ ' : ''}
-      {children}
-    </button>
-  )
-}

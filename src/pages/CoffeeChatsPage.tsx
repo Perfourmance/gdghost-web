@@ -52,7 +52,7 @@ export function CoffeeChatsPage() {
             type="button"
             role="tab"
             aria-selected={tab.key === t.key}
-            onClick={() => setParams({ tab: t.key }, { replace: true })}
+            onClick={() => setParams({ tab: t.key }, { replace: true, preventScrollReset: true })}
             className={cn(
               'rounded-md py-2 text-sm transition-colors',
               tab.key === t.key ? 'bg-brand-soft font-bold text-brand-text' : 'text-muted-foreground',

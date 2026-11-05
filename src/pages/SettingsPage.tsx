@@ -136,13 +136,9 @@ function SettingsBody({ profile, refetchProfile }: { profile: MyProfile; refetch
         <Button variant="secondary" className="h-12 w-full" disabled={logout.isPending} onClick={() => logout.mutate()}>
           {logout.isPending ? '로그아웃하는 중…' : '로그아웃'}
         </Button>
-        <button
-          type="button"
-          className="block w-full py-3 text-center text-sm text-muted-foreground underline-offset-2 hover:underline"
-          onClick={() => setSheet('withdrawal')}
-        >
+        <Button variant="destructive" className="h-12 w-full" onClick={() => setSheet('withdrawal')}>
           탈퇴하기
-        </button>
+        </Button>
       </div>
 
       <PasswordChangeSheet

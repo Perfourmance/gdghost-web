@@ -74,7 +74,7 @@ export function OpsMembersPage() {
     if (value == null) next.delete(key)
     else next.set(key, value)
     if (key !== 'page') next.delete('page')
-    setParams(next, { replace: true })
+    setParams(next, { replace: true, preventScrollReset: true })
   }
 
   const items = list.data?.items ?? []
@@ -124,7 +124,7 @@ export function OpsMembersPage() {
             aria-label="기수"
             value={generation ?? ''}
             onChange={(e) => set('generation', e.target.value || null)}
-            className="rounded-md border bg-card px-2 py-1.5 text-sm"
+            className="rounded-md border bg-card px-2 py-1.5 text-base md:text-sm"
           >
             <option value="">전체 기수</option>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((g) => (
