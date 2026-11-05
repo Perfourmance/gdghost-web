@@ -26,6 +26,12 @@ export function formatDayRange(start: string, end: string | null): string {
   return end && end !== start ? `${formatDay(start)} – ${formatDay(end)}` : formatDay(start)
 }
 
+/** 시각(ISO) → "12월 5일" (다음 변경 가능일 안내 등) */
+export function formatMonthDay(iso: string): string {
+  const d = new Date(iso)
+  return `${d.getMonth() + 1}월 ${d.getDate()}일`
+}
+
 /** 1분마다 바뀌는 현재 시각 — "N분 전" 표시가 저절로 갱신되게 */
 export function useNowEveryMinute(): number {
   const [now, setNow] = useState(() => Date.now())
