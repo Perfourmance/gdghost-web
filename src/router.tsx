@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
+import { EventDetailPage } from '@/pages/EventDetailPage'
 import { EventsPage } from '@/pages/EventsPage'
 import { ErrorPage } from '@/pages/ErrorPage'
 import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
@@ -61,6 +62,8 @@ export const router = createBrowserRouter([
       { path: 'schedules/:scheduleId', element: <ScheduleDetailPage /> },
       { path: 'schedules/:scheduleId/edit', element: <ScheduleEditPage /> },
       { path: 'recruits/new', element: <RecruitWritePage /> },
+      // 이벤트 상세 · 인증 (IA S36)
+      { path: 'events/:eventId', element: <EventDetailPage /> },
       // 홈 `운영진 공지` 더보기 (IA S11 · S12)
       { path: 'notices', element: <NoticesPage /> },
       { path: 'notices/:noticeId', element: <NoticeDetailPage /> },
