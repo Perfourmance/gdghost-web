@@ -101,6 +101,8 @@
 
 /* 다크 — 로그인한 회원. 검정 글씨 금지, 밝은 글씨 유지 */
 .dark {
+    /* 날짜 · 시간 칸의 달력 · 시계 아이콘, 스크롤바 같은 브라우저 기본 부품도 어둡게 */
+    color-scheme: dark;
     --brand: #2466DD;
     --brand-soft: #303742;     /* Dark button */
     --brand-text: #A9C7FF;     /* Sky blue */

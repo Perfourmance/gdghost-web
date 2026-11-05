@@ -21,6 +21,13 @@ const SCHEDULE_KINDS: Record<string, string> = {
   JOB: '채용',
 }
 
+const RECRUIT_KINDS: Record<string, string> = {
+  TAXI: '택시',
+  CONTEST: '공모전',
+  SUBSCRIPTION: '구독',
+  ETC: '기타',
+}
+
 // 노션 API 목록 '공유 목록'
 const SHARE_CATEGORIES: Record<string, string> = {
   CAREER_PREP: '취업 준비',
@@ -36,4 +43,5 @@ const label = (map: Record<string, string>) => (value: string) => map[value] ?? 
 export const questionCategoryLabel = label(QUESTION_CATEGORIES)
 export const questionStateLabel = label(QUESTION_STATES)
 export const scheduleKindLabel = label(SCHEDULE_KINDS)
+export const recruitKindLabel = label(RECRUIT_KINDS)
 export const shareCategoryLabel = label(SHARE_CATEGORIES)
