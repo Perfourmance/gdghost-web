@@ -2,6 +2,9 @@ import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
 import { OpsLayout } from '@/features/ops/OpsBits'
+import { AdminLayout } from '@/features/admin/AdminLayout'
+import { AdminAiPage, AdminBatchesPage, AdminErrorsPage } from '@/pages/admin/AdminLogPages'
+import { AdminToolsPage } from '@/pages/admin/AdminToolsPage'
 import { CoffeeChatsPage } from '@/pages/CoffeeChatsPage'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
 import { EventDetailPage } from '@/pages/EventDetailPage'
@@ -28,6 +31,8 @@ import { OpsInviteCodesPage } from '@/pages/ops/OpsInviteCodesPage'
 import { OpsMembersPage } from '@/pages/ops/OpsMembersPage'
 import { OpsNoticeEditPage, OpsNoticeWritePage } from '@/pages/ops/OpsNoticeWritePage'
 import { OpsNoticesPage } from '@/pages/ops/OpsNoticesPage'
+import { OpsReportsPage } from '@/pages/ops/OpsReportsPage'
+import { OpsRoutingPage } from '@/pages/ops/OpsRoutingPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
@@ -114,6 +119,8 @@ export const router = createBrowserRouter([
           { path: 'notices', element: <OpsNoticesPage /> },
           { path: 'events', element: <OpsEventsPage /> },
           { path: 'certifications', element: <OpsCertificationsPage /> },
+          { path: 'reports', element: <OpsReportsPage /> },
+          { path: 'routing', element: <OpsRoutingPage /> },
           { path: 'members', element: <OpsMembersPage /> },
           { path: 'members/graduation', element: <OpsGraduationPage /> },
           { path: 'invite-codes', element: <OpsInviteCodesPage /> },
@@ -123,6 +130,17 @@ export const router = createBrowserRouter([
       { path: 'ops/notices/:noticeId/edit', element: <OpsNoticeEditPage /> },
       { path: 'ops/events/new', element: <OpsEventWritePage /> },
       { path: 'ops/events/:eventId/edit', element: <OpsEventEditPage /> },
+      // 어드민 (IA S80, 개발자만 — 아니면 없는 주소)
+      {
+        path: 'smugoc_admin',
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminErrorsPage /> },
+          { path: 'batches', element: <AdminBatchesPage /> },
+          { path: 'ai', element: <AdminAiPage /> },
+          { path: 'tools', element: <AdminToolsPage /> },
+        ],
+      },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       // 가입 마지막 알림 준비 (S02)
