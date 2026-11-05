@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
+import { OpsLayout } from '@/features/ops/OpsBits'
 import { CoffeeChatsPage } from '@/pages/CoffeeChatsPage'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
 import { EventDetailPage } from '@/pages/EventDetailPage'
@@ -18,6 +19,15 @@ import { NoticeDetailPage } from '@/pages/NoticeDetailPage'
 import { NoticesPage } from '@/pages/NoticesPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { NotificationsPage } from '@/pages/NotificationsPage'
+import { OpsCertificationsPage } from '@/pages/ops/OpsCertificationsPage'
+import { OpsEventEditPage, OpsEventWritePage } from '@/pages/ops/OpsEventWritePage'
+import { OpsEventsPage } from '@/pages/ops/OpsEventsPage'
+import { OpsGraduationPage } from '@/pages/ops/OpsGraduationPage'
+import { OpsHomePage } from '@/pages/ops/OpsHomePage'
+import { OpsInviteCodesPage } from '@/pages/ops/OpsInviteCodesPage'
+import { OpsMembersPage } from '@/pages/ops/OpsMembersPage'
+import { OpsNoticeEditPage, OpsNoticeWritePage } from '@/pages/ops/OpsNoticeWritePage'
+import { OpsNoticesPage } from '@/pages/ops/OpsNoticesPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
 import { QuestionDetailPage } from '@/pages/QuestionDetailPage'
@@ -39,6 +49,7 @@ import { ShareEditPage } from '@/pages/ShareEditPage'
 import { SharesPage } from '@/pages/SharesPage'
 import { ShareWritePage } from '@/pages/ShareWritePage'
 import { SignupPage } from '@/pages/SignupPage'
+import { WelcomePage } from '@/pages/WelcomePage'
 
 export const router = createBrowserRouter([
   {
@@ -94,8 +105,28 @@ export const router = createBrowserRouter([
       // 내 정보 (IA S62 · S26)
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile/edit', element: <ProfileEditPage /> },
+      // 운영 페이지 (IA S70–S76, 운영진만). 작성 · 수정은 탭 없는 화면
+      {
+        path: 'ops',
+        element: <OpsLayout />,
+        children: [
+          { index: true, element: <OpsHomePage /> },
+          { path: 'notices', element: <OpsNoticesPage /> },
+          { path: 'events', element: <OpsEventsPage /> },
+          { path: 'certifications', element: <OpsCertificationsPage /> },
+          { path: 'members', element: <OpsMembersPage /> },
+          { path: 'members/graduation', element: <OpsGraduationPage /> },
+          { path: 'invite-codes', element: <OpsInviteCodesPage /> },
+        ],
+      },
+      { path: 'ops/notices/new', element: <OpsNoticeWritePage /> },
+      { path: 'ops/notices/:noticeId/edit', element: <OpsNoticeEditPage /> },
+      { path: 'ops/events/new', element: <OpsEventWritePage /> },
+      { path: 'ops/events/:eventId/edit', element: <OpsEventEditPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
+      // 가입 마지막 알림 준비 (S02)
+      { path: 'welcome', element: <WelcomePage /> },
       { path: 'find-login-id', element: <FindLoginIdPage /> },
       { path: 'password-reset', element: <PasswordResetPage /> },
       // 메일 링크 착지 (백엔드 StaffEmailChangeService가 만드는 주소)

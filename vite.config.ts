@@ -9,6 +9,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      // 웹 푸시를 받으려고 서비스 워커를 직접 쓴다 (src/sw.ts)
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
       manifest: {
         name: 'GDGhost',
@@ -18,10 +22,16 @@ export default defineConfig({
         display: 'standalone',
         background_color: '#F6F8FC',
         theme_color: '#F6F8FC',
+        // 임시 아이콘(마스코트 기본 자세 B). 디자이너 아이콘이 오면 public/의 파일만 바꾼다
+        icons: [
+          { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
       },
-      workbox: {
-        // API 응답은 서비스 워커가 캐시하지 않는다 (로그인 여부에 따라 응답이 다름)
-        navigateFallbackDenylist: [/^\/api\//],
+      injectManifest: {
+        // 앱 파일 · 그림을 미리 받아 둔다. 글꼴(조각 100여 개)은 쓸 때 받는다
+        globPatterns: ['**/*.{js,css,html,svg,png}'],
       },
     }),
   ],

@@ -26,6 +26,8 @@ export function SignupPage() {
   const navigate = useNavigate()
   const { draft, update, reset, loadedExpired } = useSignupDraft()
   const [notice, setNotice] = useState(loadedExpired ? EXPIRED_MESSAGE : '')
+  // 방금 가입을 마쳤으면 홈 대신 알림 준비로
+  const [finished, setFinished] = useState(false)
 
   const stepIndex = SIGNUP_STEPS.indexOf(draft.step)
   const inProgress = draft.signupToken != null
@@ -78,8 +80,8 @@ export function SignupPage() {
     update({ step: SIGNUP_STEPS[stepIndex - 1] })
   }
 
-  // 가입이 끝나 로그인됐거나 이미 회원이면 홈으로
-  if (me) return <Navigate to="/" replace />
+  // 가입이 끝나 로그인됐으면 알림 준비, 이미 회원이면 홈으로
+  if (me) return <Navigate to={finished ? '/welcome' : '/'} replace />
 
   const progress = ((stepIndex + 1) / SIGNUP_STEPS.length) * 100
 
@@ -132,6 +134,7 @@ export function SignupPage() {
             onRedirect={redirect}
             onRestart={restart}
             onFinished={() => {
+              setFinished(true)
               clearSignupDraft()
               reset()
             }}

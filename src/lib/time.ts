@@ -41,3 +41,10 @@ export function useNowEveryMinute(): number {
   }, [])
   return now
 }
+
+/** 시각(ISO) → "2026.11.5" (운영 화면). 없으면 "-" */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '-'
+  const d = new Date(iso)
+  return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
+}
