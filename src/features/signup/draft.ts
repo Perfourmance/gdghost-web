@@ -4,7 +4,7 @@ import type { MemberStatus, Position } from '@/features/member/labels'
 
 export type SignupStep = 'invite' | 'email' | 'profile' | 'interests' | 'experiences' | 'about' | 'account'
 
-/** 가입 단계 순서. ③-2 답할 수 있는 것은 관심 분야 · 경험 · 근황과 소개 세 화면으로 나눈다 (알림 준비 단계는 F20) */
+/** 가입 단계 순서. ③-2 답할 수 있는 것은 관심 분야 · 경험 · 근황과 소개 세 화면으로 나눈다 (알림 준비는 가입이 끝나 로그인된 뒤 /welcome) */
 export const SIGNUP_STEPS: SignupStep[] = ['invite', 'email', 'profile', 'interests', 'experiences', 'about', 'account']
 
 /** 단계마다 제목 위에 보이는 작은 이름 */

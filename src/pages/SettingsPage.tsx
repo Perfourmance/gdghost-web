@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { useLogout } from '@/features/auth/useAuthActions'
+import { PushPanel } from '@/features/push/PushPanel'
 import { EmailChangeSheet, PasswordChangeSheet, WithdrawalSheet } from '@/features/me/AccountSheets'
 import {
   COFFEE_MEMO_MAX,
@@ -25,7 +26,6 @@ type SheetName = 'password' | 'email' | 'withdrawal'
 
 /**
  * 설정 (S62). 받기 설정은 바꾸는 즉시 저장.
- * 웹 푸시 · 홈 화면 추가(F20), 운영 페이지(F21)는 그 단위에서 붙인다
  */
 export function SettingsPage() {
   const { data: me } = useMe()
@@ -58,12 +58,13 @@ export function SettingsPage() {
           </Button>
         </div>
       )}
-      {profile.data && <SettingsBody profile={profile.data} />}
+      {profile.data && <SettingsBody profile={profile.data} refetchProfile={() => profile.refetch()} />}
     </SubPageLayout>
   )
 }
 
-function SettingsBody({ profile }: { profile: MyProfile }) {
+function SettingsBody({ profile, refetchProfile }: { profile: MyProfile; refetchProfile: () => void }) {
+  const { data: me } = useMe()
   const navigate = useNavigate()
   const logout = useLogout()
   const [sheet, setSheet] = useState<SheetName | null>(null)
@@ -87,6 +88,19 @@ function SettingsBody({ profile }: { profile: MyProfile }) {
       <Group title="프로필">
         <LinkRow to={`/members/${profile.id}`} label="내 프로필 보기" />
         <LinkRow to="/profile/edit" label="프로필 수정" />
+      </Group>
+
+      {me?.role === 'STAFF' && (
+        <Group title="운영">
+          <LinkRow to="/ops" label="관리" />
+        </Group>
+      )}
+
+      <Group title="알림">
+        <PushPanel serverOn={profile.settings.pushOn} onChange={() => refetchProfile()} />
+        <p className="py-3 text-xs leading-relaxed text-muted-foreground">
+          디스코드 알림은 디스코드 앱에서 채널을 음소거해 주세요.
+        </p>
       </Group>
 
       <Group title="내 활동">

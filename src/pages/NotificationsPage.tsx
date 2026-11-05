@@ -57,10 +57,10 @@ export function NotificationsPage() {
       </SubPageLayout>
     )
   }
-  return <NotificationList myId={me.id} unreadCount={me.unreadNotificationCount} />
+  return <NotificationList myId={me.id} staff={me.role === 'STAFF'} unreadCount={me.unreadNotificationCount} />
 }
 
-function NotificationList({ myId, unreadCount }: { myId: number; unreadCount: number }) {
+function NotificationList({ myId, staff, unreadCount }: { myId: number; staff: boolean; unreadCount: number }) {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const list = useNotificationList(true)
@@ -79,7 +79,7 @@ function NotificationList({ myId, unreadCount }: { myId: number; unreadCount: nu
 
   function handleOpen(notification: AppNotification) {
     if (!notification.read) read.mutate({ ids: [notification.id] })
-    const path = notificationPath(notification, myId)
+    const path = notificationPath(notification, myId, staff)
     if (path) navigate(path)
   }
 
