@@ -19,6 +19,8 @@ import {
 } from '@/features/notices/api'
 import { MustReadBadge, PinnedBadge } from '@/features/notices/NoticeBits'
 import { dueText, isOverdue, noticeAuthorText } from '@/features/notices/format'
+import type { ReportTarget } from '@/features/reports/api'
+import { ReportSheet } from '@/features/reports/ReportSheet'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { toApiError } from '@/lib/api'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
@@ -161,6 +163,7 @@ function StatsSection({ stats }: { stats: NonNullable<NoticeDetail['stats']> }) 
 
 function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) {
   const [error, setError] = useState<string | null>(null)
+  const [report, setReport] = useState<ReportTarget | null>(null)
   const remove = useDeleteNoticeComment(notice.id)
 
   function handleDelete(comment: NoticeComment) {
@@ -201,7 +204,7 @@ function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) 
                   <span className="text-muted-foreground">{comment.author.generation}기</span>
                 )}
                 <span className="text-muted-foreground">{formatRelative(comment.createdAt, now)}</span>
-                {comment.mine && (
+                {comment.mine ? (
                   <button
                     type="button"
                     disabled={remove.isPending}
@@ -209,6 +212,14 @@ function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) 
                     className="ml-auto py-1 text-muted-foreground hover:underline disabled:opacity-50"
                   >
                     삭제
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setReport({ type: 'NOTICE_COMMENT', id: comment.id })}
+                    className="ml-auto py-1 text-muted-foreground hover:underline"
+                  >
+                    신고
                   </button>
                 )}
               </div>
@@ -219,6 +230,7 @@ function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) 
       )}
 
       <CommentForm noticeId={notice.id} />
+      <ReportSheet target={report} onClose={() => setReport(null)} />
     </section>
   )
 }

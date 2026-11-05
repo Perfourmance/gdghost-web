@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import { MoreVertical } from 'lucide-react'
 import { Link, useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -13,6 +15,8 @@ import { answerErrorMessage, useAdoption, useDeleteAnswer } from '@/features/que
 import { useQuestionDetail, type QuestionDetail, type RoutingDelivery } from '@/features/questions/api'
 import { QuestionOwnerMenu } from '@/features/questions/QuestionOwnerMenu'
 import type { DirectResultState } from '@/features/questions/write'
+import type { ReportTarget } from '@/features/reports/api'
+import { ReportSheet } from '@/features/reports/ReportSheet'
 import { passErrorMessage, usePassRouting, type PassResult } from '@/features/routing/api'
 import { toApiError } from '@/lib/api'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
@@ -28,6 +32,7 @@ export function QuestionDetailPage() {
   const detail = useQuestionDetail(id, validId && me != null)
   const now = useNowEveryMinute()
   const [actionError, setActionError] = useState<string | null>(null)
+  const [report, setReport] = useState<ReportTarget | null>(null)
 
   // #answer-{id}로 들어오면 그 답변으로 내려간다 (IA 5장 딥링크)
   useEffect(() => {
@@ -49,10 +54,15 @@ export function QuestionDetailPage() {
 
   const notFound = !validId || (detail.isError && toApiError(detail.error).code === 'NOT_FOUND')
 
-  const ownerMenu = detail.data?.mine ? <QuestionOwnerMenu questionId={detail.data.id} onError={setActionError} /> : null
+  // 내 질문은 수정 · 삭제, 남의 질문은 신고
+  const menu = !detail.data ? null : detail.data.mine ? (
+    <QuestionOwnerMenu questionId={detail.data.id} onError={setActionError} />
+  ) : (
+    <ReportMenu label="질문 메뉴 열기" onReport={() => setReport({ type: 'QUESTION', id: detail.data.id })} />
+  )
 
   return (
-    <SubPageLayout fallback="/questions" actions={ownerMenu}>
+    <SubPageLayout fallback="/questions" actions={menu}>
       {actionError && (
         <p className="mb-4 rounded-lg bg-muted px-3 py-2.5 text-sm text-destructive" role="alert">
           {actionError}
@@ -78,12 +88,21 @@ export function QuestionDetailPage() {
         </div>
       )}
 
-      {detail.data && <QuestionBody question={detail.data} now={now} />}
+      {detail.data && <QuestionBody question={detail.data} now={now} onReport={setReport} />}
+      <ReportSheet target={report} onClose={() => setReport(null)} />
     </SubPageLayout>
   )
 }
 
-function QuestionBody({ question, now }: { question: QuestionDetail; now: number }) {
+function QuestionBody({
+  question,
+  now,
+  onReport,
+}: {
+  question: QuestionDetail
+  now: number
+  onReport: (target: ReportTarget) => void
+}) {
   return (
     <article className={question.canAnswer ? 'pb-28' : 'pb-10'}>
       <div className="flex items-center justify-between">
@@ -119,7 +138,7 @@ function QuestionBody({ question, now }: { question: QuestionDetail; now: number
         <RoutingStatus deliveries={question.routing.deliveries} reasonsHidden={question.routing.reasonsHidden} />
       )}
 
-      <QuestionAnswers question={question} now={now} />
+      <QuestionAnswers question={question} now={now} onReport={onReport} />
     </article>
   )
 }
@@ -236,7 +255,15 @@ function RoutingStatus({ deliveries, reasonsHidden }: { deliveries: RoutingDeliv
 }
 
 /** 답변 목록 + 답변 · 답글 시트 + 하단 답변 바 (F7) */
-function QuestionAnswers({ question, now }: { question: QuestionDetail; now: number }) {
+function QuestionAnswers({
+  question,
+  now,
+  onReport,
+}: {
+  question: QuestionDetail
+  now: number
+  onReport: (target: ReportTarget) => void
+}) {
   const [sheet, setSheet] = useState<AnswerSheetTarget | null>(null)
   const [error, setError] = useState<string | null>(null)
   const remove = useDeleteAnswer(question.id)
@@ -257,6 +284,7 @@ function QuestionAnswers({ question, now }: { question: QuestionDetail; now: num
       setError(null)
       remove.mutate(answer.id, { onError })
     },
+    onReport: (answer) => onReport({ type: 'ANSWER', id: answer.id }),
     onAdopt: (answer, adopt) => {
       setError(null)
       adoption.mutate(adopt ? answer.id : null, { onError })
@@ -323,6 +351,20 @@ function countReplies(answers: QuestionDetail['answers']): number {
   return answers.reduce(
     (sum, a) => sum + a.replies.reduce((n, r) => n + (r.deletedBy ? 0 : 1), 0) + countReplies(a.replies),
     0,
+  )
+}
+
+/** 남의 글 상단의 ⋮ 메뉴 — 신고하기 */
+function ReportMenu({ label, onReport }: { label: string; onReport: () => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger className="flex size-10 items-center justify-center rounded-lg hover:bg-accent" aria-label={label}>
+        <MoreVertical className="size-5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-32">
+        <DropdownMenuItem onClick={onReport}>신고하기</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
