@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react'
 import { ChevronLeft } from 'lucide-react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { Logo } from '@/components/Logo'
 
-/** 하단 탭이 없는 화면의 틀 — 상단 뒤로 버튼(+ 오른쪽 actions) + 가운데 정렬 본문 */
+/** 하단 탭이 없는 화면의 틀 — 상단 뒤로 버튼 · 가운데 로고(누르면 홈) · 오른쪽 actions + 가운데 정렬 본문 */
 export function SubPageLayout({
   children,
   fallback = '/',
@@ -24,7 +25,7 @@ export function SubPageLayout({
   return (
     <div className="min-h-dvh bg-background">
       <header className="sticky top-0 z-10 bg-background">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-between px-2">
+        <div className="relative mx-auto flex h-14 max-w-md items-center justify-between px-2">
           <button
             type="button"
             className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
@@ -33,6 +34,14 @@ export function SubPageLayout({
           >
             <ChevronLeft className="size-6" />
           </button>
+          {/* 양옆 버튼 폭과 상관없이 가운데에 */}
+          <Link
+            to="/"
+            aria-label="홈으로"
+            className="absolute left-1/2 -translate-x-1/2 rounded-md px-2 py-1 hover:bg-accent"
+          >
+            <Logo className="text-lg" />
+          </Link>
           {actions}
         </div>
       </header>

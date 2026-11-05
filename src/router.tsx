@@ -1,10 +1,14 @@
 import { createBrowserRouter } from 'react-router'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { TabLayout } from '@/components/layout/TabLayout'
+import { CoffeeChatsPage } from '@/pages/CoffeeChatsPage'
 import { EmailChangeConfirmPage } from '@/pages/EmailChangeConfirmPage'
 import { EventDetailPage } from '@/pages/EventDetailPage'
 import { EventsPage } from '@/pages/EventsPage'
 import { ErrorPage } from '@/pages/ErrorPage'
+import { FeedDetailPage } from '@/pages/FeedDetailPage'
+import { FeedPage } from '@/pages/FeedPage'
+import { FeedWritePage } from '@/pages/FeedWritePage'
 import { FindLoginIdPage } from '@/pages/FindLoginIdPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
@@ -27,9 +31,14 @@ import { ScheduleEditPage } from '@/pages/ScheduleEditPage'
 import { SchedulesPage } from '@/pages/SchedulesPage'
 import { ScheduleWritePage } from '@/pages/ScheduleWritePage'
 import { SeniorFindPage } from '@/pages/SeniorFindPage'
+import { SavedSharesPage } from '@/pages/SavedSharesPage'
+import { SearchPage } from '@/pages/SearchPage'
 import { SettingsPage } from '@/pages/SettingsPage'
+import { ShareDetailPage } from '@/pages/ShareDetailPage'
+import { ShareEditPage } from '@/pages/ShareEditPage'
+import { SharesPage } from '@/pages/SharesPage'
+import { ShareWritePage } from '@/pages/ShareWritePage'
 import { SignupPage } from '@/pages/SignupPage'
-import { TabPlaceholder } from '@/pages/TabPlaceholder'
 
 export const router = createBrowserRouter([
   {
@@ -48,8 +57,8 @@ export const router = createBrowserRouter([
           // 일정 탭의 `모집` · `이벤트` 세그먼트 (IA S33 · S35)
           { path: 'recruits', element: <RecruitsPage /> },
           { path: 'events', element: <EventsPage /> },
-          { path: 'shares', element: <TabPlaceholder title="공유" /> },
-          { path: 'feed', element: <TabPlaceholder title="피드" /> },
+          { path: 'shares', element: <SharesPage /> },
+          { path: 'feed', element: <FeedPage /> },
         ],
       },
       // 상세 · 작성 화면은 하단 탭을 숨긴다 (IA 2장)
@@ -64,6 +73,14 @@ export const router = createBrowserRouter([
       { path: 'recruits/new', element: <RecruitWritePage /> },
       // 이벤트 상세 · 인증 (IA S36)
       { path: 'events/:eventId', element: <EventDetailPage /> },
+      // 공유 (IA S41 · S42)
+      { path: 'shares/new', element: <ShareWritePage /> },
+      { path: 'shares/:shareId', element: <ShareDetailPage /> },
+      { path: 'shares/:shareId/edit', element: <ShareEditPage /> },
+      { path: 'saved-shares', element: <SavedSharesPage /> },
+      // 피드 (IA S51 · S52)
+      { path: 'feed/new', element: <FeedWritePage /> },
+      { path: 'feed/:postId', element: <FeedDetailPage /> },
       // 홈 `운영진 공지` 더보기 (IA S11 · S12)
       { path: 'notices', element: <NoticesPage /> },
       { path: 'notices/:noticeId', element: <NoticeDetailPage /> },
@@ -71,6 +88,9 @@ export const router = createBrowserRouter([
       { path: 'notifications', element: <NotificationsPage /> },
       // 부원 목록 상단의 선배 찾기 (IA S25)
       { path: 'find-senior', element: <SeniorFindPage /> },
+      // 상단 돋보기 (IA S60) · 내 커피챗 (S63)
+      { path: 'search', element: <SearchPage /> },
+      { path: 'coffee-chats', element: <CoffeeChatsPage /> },
       // 내 정보 (IA S62 · S26)
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile/edit', element: <ProfileEditPage /> },

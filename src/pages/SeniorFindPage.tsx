@@ -8,6 +8,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
+import { CoffeeChatSheet, type CoffeeTarget } from '@/features/coffee/CoffeeChatSheet'
 import { questionCategoryLabel } from '@/features/content/labels'
 import { memberStatusLabel, positionLabel } from '@/features/member/labels'
 import { QUESTION_CATEGORIES, type DirectAskState } from '@/features/questions/write'
@@ -196,9 +197,10 @@ function Results({ input, result }: { input: SeniorMatchInput; result: SeniorMat
   )
 }
 
-/** 후보 카드 — 순위 · 기수 · 근황 · 추천 이유, 프로필 보기 · 공개로 묻기. 커피챗 신청은 F19 */
+/** 후보 카드 — 순위 · 기수 · 근황 · 추천 이유, 프로필 보기 · 질문하기 · 커피챗 신청 */
 function CandidateCard({ candidate, input }: { candidate: SeniorCandidate; input: SeniorMatchInput }) {
   const { member } = candidate
+  const [coffee, setCoffee] = useState<CoffeeTarget | null>(null)
   const ask: DirectAskState = {
     target: { id: member.id, nickname: member.nickname },
     category: input.category,
@@ -228,6 +230,16 @@ function CandidateCard({ candidate, input }: { candidate: SeniorCandidate; input
           질문하기
         </Link>
       </div>
+      {member.acceptCoffee && (
+        <Button
+          variant="secondary"
+          className="mt-2 h-10 w-full"
+          onClick={() => setCoffee({ id: member.id, nickname: member.nickname })}
+        >
+          커피챗 신청
+        </Button>
+      )}
+      <CoffeeChatSheet target={coffee} onClose={() => setCoffee(null)} />
     </li>
   )
 }
