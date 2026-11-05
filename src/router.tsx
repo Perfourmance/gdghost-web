@@ -8,6 +8,8 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { MemberProfilePage } from '@/pages/MemberProfilePage'
 import { MembersPage } from '@/pages/MembersPage'
+import { NoticeDetailPage } from '@/pages/NoticeDetailPage'
+import { NoticesPage } from '@/pages/NoticesPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { PasswordResetPage } from '@/pages/PasswordResetPage'
 import { ProfileEditPage } from '@/pages/ProfileEditPage'
@@ -43,6 +45,9 @@ export const router = createBrowserRouter([
       { path: 'questions/:questionId', element: <QuestionDetailPage /> },
       { path: 'questions/:questionId/edit', element: <QuestionEditPage /> },
       { path: 'members/:memberId', element: <MemberProfilePage /> },
+      // 홈 `운영진 공지` 더보기 (IA S11 · S12)
+      { path: 'notices', element: <NoticesPage /> },
+      { path: 'notices/:noticeId', element: <NoticeDetailPage /> },
       // 부원 목록 상단의 선배 찾기 (IA S25)
       { path: 'find-senior', element: <SeniorFindPage /> },
       // 내 정보 (IA S62 · S26)
