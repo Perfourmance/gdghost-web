@@ -15,13 +15,13 @@ function loginErrorMessage(error: unknown): string {
   const e = toApiError(error)
   switch (e.code) {
     case 'LOGIN_FAILED':
-      return '아이디나 비밀번호가 맞지 않아요.'
+      return '아이디 또는 비밀번호를 확인해 주세요.'
     case 'ACCOUNT_SUSPENDED':
       return '이용이 정지된 계정이에요. 운영진에게 문의해 주세요.'
     case 'LOGIN_LOCKED':
     case 'RATE_LIMITED': {
       const minutes = Math.max(1, Math.ceil((e.retryAfter ?? 60) / 60))
-      return `로그인 시도가 너무 많아요. ${minutes}분 뒤에 다시 시도해 주세요.`
+      return `로그인 시도 횟수를 넘었어요. ${minutes}분 뒤 다시 시도해 주세요.`
     }
     case 'VALIDATION_FAILED':
       return '아이디와 비밀번호를 입력해 주세요.'

@@ -9,14 +9,14 @@ function blockedText(state: PushState, ios: boolean, installed: boolean): string
   switch (state) {
     case 'unsupported':
       return ios && !installed
-        ? '아이폰은 홈 화면에 추가한 앱에서 알림을 받을 수 있어요. 아래에서 먼저 추가해 주세요.'
-        : '이 브라우저는 알림을 받을 수 없어요.'
+        ? '아이폰에서 알림을 받으려면 먼저 홈 화면에 추가해 주세요.'
+        : '이 브라우저에서는 알림을 받을 수 없어요.'
     case 'no-worker':
-      return '지금 화면에서는 알림을 켤 수 없어요. 배포된 주소에서 다시 시도해 주세요.'
+      return '이 주소에서는 알림을 켤 수 없어요. 배포 주소에서 다시 시도해 주세요.'
     case 'no-key':
-      return '서버에 알림 설정이 아직 없어요. (로컬 서버)'
+      return '로컬 서버에서 알림을 설정하지 않았어요.'
     case 'denied':
-      return '브라우저에서 알림을 막아 두었어요. 브라우저 설정 → 사이트 설정에서 알림을 허용해 주세요.'
+      return '브라우저가 알림을 차단했어요. 사이트 설정에서 알림을 허용해 주세요.'
     default:
       return null
   }
@@ -47,7 +47,7 @@ export function PushPanel({ serverOn = true, onChange }: { serverOn?: boolean; o
             <label htmlFor="push-on" className="text-sm text-foreground">
               이 기기에서 알림 받기
             </label>
-            <p className="mt-0.5 text-xs text-muted-foreground">답변 · 댓글 · 커피챗 · 공지 알림이 와요.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">답변·댓글·커피챗·공지 알림</p>
           </div>
           <Switch
             id="push-on"
@@ -68,11 +68,11 @@ export function PushPanel({ serverOn = true, onChange }: { serverOn?: boolean; o
         <p className="text-sm text-foreground">홈 화면에 추가</p>
         {install.installed || installResult === 'accepted' ? (
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {installResult === 'accepted' ? '설치했어요. 홈 화면(또는 앱 목록)에서 GDGhost를 열어 보세요.' : '앱으로 열려 있어요.'}
+            {installResult === 'accepted' ? '설치했어요. 홈 화면이나 앱 목록에서 GDGhost를 열어 주세요.' : '앱으로 열려 있어요.'}
           </p>
         ) : install.canPrompt ? (
           <>
-            <p className="mt-0.5 text-xs text-muted-foreground">앱처럼 바로 열 수 있어요.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">홈 화면에서 바로 열기</p>
             <Button variant="secondary" size="sm" className="mt-2" onClick={async () => setInstallResult(await install.prompt())}>
               <SquarePlus aria-hidden />
               홈 화면에 추가
@@ -86,9 +86,9 @@ export function PushPanel({ serverOn = true, onChange }: { serverOn?: boolean; o
         ) : (
           <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
             {installResult === 'dismissed' && '설치를 취소했어요. '}
-            {installResult === 'failed' && '설치 창을 띄우지 못했어요. '}
+            {installResult === 'failed' && '설치 창을 열 수가 없어요. '}
             브라우저 메뉴(⋮)에서 <b className="text-foreground">홈 화면에 추가</b> 또는{' '}
-            <b className="text-foreground">앱 설치</b>를 눌러 주세요. 컴퓨터 크롬은 주소창 오른쪽 설치 아이콘으로도 할 수 있어요.
+            <b className="text-foreground">앱 설치</b>를 눌러 주세요. PC 크롬에서는 주소창 오른쪽 설치 아이콘도 사용할 수 있어요.
           </p>
         )}
       </div>

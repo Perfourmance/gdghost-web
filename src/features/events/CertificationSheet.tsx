@@ -124,7 +124,7 @@ function CertificationForm({
         ) : requirement ? (
           <>필요한 것: {requirement}</>
         ) : (
-          '운영진이 확인하면 인증 횟수에 들어가요.'
+          '운영진이 확인하면 인증 횟수에 반영돼요.'
         )}
       </SheetDescription>
 
@@ -153,7 +153,7 @@ function CertificationForm({
           <input
             id="cert-body"
             maxLength={BODY_MAX}
-            placeholder="예) 오늘은 DP 문제를 풀었어요"
+            placeholder="예: 오늘은 DP 문제를 풀었어요"
             className="h-12 w-full rounded-lg border border-input bg-background px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
             value={body}
             onChange={(e) => setBody(e.target.value)}

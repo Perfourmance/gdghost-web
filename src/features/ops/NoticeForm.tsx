@@ -28,7 +28,7 @@ export function NoticeForm({
   const titleInvalid = title.length < NOTICE_TITLE_MIN
   const bodyInvalid = body.length === 0
   const changed = JSON.stringify({ ...values, title, body }) !== JSON.stringify({ ...initial, title: initial.title.trim(), body: initial.body.trim() })
-  const allowLeave = useLeaveGuard(changed && !pending, '작성을 그만둘까요? 입력한 내용은 사라져요.')
+  const allowLeave = useLeaveGuard(changed && !pending, '작성을 그만둘까요? 입력한 내용은 저장되지 않아요.')
 
   function set(patch: Partial<NoticeInput>) {
     setValues((v) => ({ ...v, ...patch }))
@@ -53,7 +53,7 @@ export function NoticeForm({
             id="notice-title"
             maxLength={NOTICE_TITLE_MAX}
             className="h-12 bg-card"
-            placeholder="예) 11월 정기 세션 안내"
+            placeholder="예: 11월 정기 세션 안내"
             value={values.title}
             onChange={(e) => set({ title: e.target.value })}
           />
@@ -79,14 +79,14 @@ export function NoticeForm({
             <Checkbox checked={values.isPinned} onCheckedChange={(on) => set({ isPinned: on === true })} className="mt-0.5" />
             <span>
               <b className="text-title">홈 위에 고정</b>
-              <span className="block text-xs text-muted-foreground">홈 맨 위 `운영진 공지`에 보여요.</span>
+              <span className="block text-xs text-muted-foreground">홈 맨 위 ‘운영진 공지’에 표시돼요.</span>
             </span>
           </label>
           <label className="flex items-start gap-2.5 text-sm">
             <Checkbox checked={values.isMustRead} onCheckedChange={(on) => set({ isMustRead: on === true })} className="mt-0.5" />
             <span>
               <b className="text-title">필독</b>
-              <span className="block text-xs text-muted-foreground">부원이 `확인했어요`를 누르게 하고, 누가 확인했는지 세요.</span>
+              <span className="block text-xs text-muted-foreground">‘확인했어요’ 버튼을 표시하고 확인한 부원 수를 집계해요.</span>
             </span>
           </label>
         </section>
@@ -109,7 +109,7 @@ export function NoticeForm({
               </Button>
             )}
           </div>
-          <p className="mt-1.5 text-xs text-muted-foreground">없으면 상시 공지예요.</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">마감일을 비워 두면 상시 공지로 올라가요.</p>
         </section>
       </div>
       <StepFooter>
@@ -122,7 +122,7 @@ export function NoticeForm({
           {pending ? '저장하는 중…' : mode === 'create' ? '공지 올리기' : '수정 완료'}
         </Button>
         {mode === 'create' && (
-          <p className="mt-2 text-center text-xs text-muted-foreground">올리면 부원 디스코드 채널에도 올라가요.</p>
+          <p className="mt-2 text-center text-xs text-muted-foreground">공지로 올리면 부원 디스코드 채널에도 올라가요.</p>
         )}
       </StepFooter>
     </form>

@@ -97,7 +97,7 @@ export function questionSubmitError(error: ApiError | null): string | null {
     const shownInField = error.fieldErrors.length > 0 && error.fieldErrors.every((e) => FORM_FIELDS.includes(e.field))
     return shownInField ? null : error.message
   }
-  if (error.code === 'NOT_AUTHOR') return '본인 질문만 고치거나 지울 수 있어요.'
+  if (error.code === 'NOT_AUTHOR') return '내 질문만 수정하거나 삭제할 수 있어요.'
   if (error.code === 'NOT_FOUND') return '삭제됐거나 운영진이 숨긴 질문이에요.'
   return commonErrorMessage(error)
 }

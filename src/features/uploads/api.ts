@@ -48,15 +48,15 @@ export function uploadErrorMessage(error: ApiErrorType): string {
     case UPLOAD_PUT_FAILED:
       return '사진을 올리지 못했어요. 잠시 뒤 다시 시도해 주세요.'
     case 'UPLOAD_TYPE_NOT_ALLOWED':
-      return 'JPEG · PNG · WebP 사진만 올릴 수 있어요.'
+      return 'JPEG, PNG, WebP 사진만 올릴 수 있어요.'
     case 'UPLOAD_TOO_LARGE':
       return '사진은 한 장에 1MB까지 올릴 수 있어요.'
     case 'UPLOAD_NOT_FOUND':
-      return '사진 올리기가 끝나지 않았어요. 사진을 다시 골라 주세요.'
+      return '사진이 아직 올라가지 않았어요. 사진을 다시 골라 주세요.'
     default:
       // 분당 20장 · 하루 30장. 기다릴 시간이 길면 하루 한도
       if (error.status === 429 && (error.retryAfter ?? 0) > 600) {
-        return '오늘 올릴 수 있는 사진 수(30장)를 넘었어요. 내일 다시 시도해 주세요.'
+        return '오늘 사진 한도인 30장에 도달했어요. 내일 다시 올려 주세요.'
       }
       return commonErrorMessage(error)
   }

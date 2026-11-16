@@ -145,11 +145,11 @@ export function SchedulesPage() {
         <LockSheet
           next={lock.next}
           onClose={lock.close}
-          title="일정은 부원만 등록할 수 있어요"
-          description="GDGoC SMU 부원으로 로그인하면 공모전 · 채용 일정을 함께 모을 수 있어요."
+          title="일정은 부원만 등록할 수 있어요."
+          description="부원으로 로그인하면 공모전·채용 일정을 공유할 수 있어요."
         />
       ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원만 볼 수 있어요" />
+        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원만 볼 수 있어요." />
       )}
     </div>
   )

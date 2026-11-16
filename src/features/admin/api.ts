@@ -159,17 +159,17 @@ export function useAdminEmailChange() {
 export function adminErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'CURRENT_PASSWORD_WRONG':
-      return '내 비밀번호가 맞지 않아요.'
+      return '두 비밀번호가 달라요. 같은 비밀번호를 입력해 주세요.'
     case 'EMAIL_ALREADY_USED':
-      return '이미 다른 계정이 쓰는 이메일이에요.'
+      return '다른 계정에서 사용 중인 이메일'
     case 'EMAIL_CHANGE_TOO_SOON':
-      return '이 부원은 최근에 이메일을 바꿔서 30일이 지나야 다시 바꿀 수 있어요.'
+      return '이 부원은 이메일 변경 후 30일이 지나야 다시 변경할 수 있어요.'
     case 'FORBIDDEN':
-      return error.message.includes('본인') ? '내 이메일은 설정에서 바꿔 주세요.' : '할 수 없는 요청이에요.'
+      return error.message.includes('본인') ? '내 이메일은 설정에서 바꿀 수 있어요.' : '할 수 없는 요청이에요.'
     case 'NOT_FOUND':
-      return '부원을 찾을 수 없어요.'
+      return '부원을 찾을 수가 없어요.'
     case 'RATE_LIMITED':
-      return `요청이 많아 잠시 막혔어요. ${formatWait(error.retryAfter ?? 600)} 뒤에 다시 해 주세요.`
+      return `요청이 너무 많아요. ${formatWait(error.retryAfter ?? 600)} 뒤 다시 시도해 주세요.`
     case 'VALIDATION_FAILED':
       return error.fieldErrors[0]?.message ?? error.message
     default:

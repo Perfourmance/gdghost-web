@@ -53,7 +53,7 @@ export function NotificationsPage() {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname} title="알림은 부원만 볼 수 있어요" />
+        <LockPanel next={location.pathname} title="알림은 부원만 볼 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -90,7 +90,7 @@ function NotificationList({ myId, staff, unreadCount }: { myId: number; staff: b
       onClick={() => read.mutate({ all: true })}
       className="px-2 py-1 text-sm font-bold text-brand-text disabled:opacity-50"
     >
-      모두 읽음
+      모두 읽은 상태로 표시
     </button>
   ) : null
 
@@ -111,7 +111,7 @@ function NotificationList({ myId, staff, unreadCount }: { myId: number; staff: b
         )}
 
         {list.isSuccess && notifications.length === 0 && (
-          <EmptyCard>아직 알림이 없어요. 내 질문에 답변이 달리면 여기서 알려 드릴게요.</EmptyCard>
+          <EmptyCard>아직 알림이 없어요.</EmptyCard>
         )}
 
         {notifications.map((n) => (
@@ -132,7 +132,7 @@ function NotificationList({ myId, staff, unreadCount }: { myId: number; staff: b
         )}
 
         {list.isSuccess && notifications.length > 0 && !list.hasNextPage && (
-          <p className="pt-2 text-center text-xs text-muted-foreground">알림은 90일 동안 보관돼요.</p>
+          <p className="pt-2 text-center text-xs text-muted-foreground">알림 보관 기간 90일</p>
         )}
       </div>
     </SubPageLayout>
@@ -178,7 +178,7 @@ function NotificationRow({
         )}
         <span className="mt-1 block text-xs text-muted-foreground">{formatRelative(notification.createdAt, now)}</span>
       </span>
-      {unread && <span className="mt-2 size-2 shrink-0 rounded-full bg-brand" aria-label="안 읽음" />}
+      {unread && <span className="mt-2 size-2 shrink-0 rounded-full bg-brand" aria-label="읽지 않은 알림" />}
     </button>
   )
 }

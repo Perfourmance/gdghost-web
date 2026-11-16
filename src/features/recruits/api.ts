@@ -125,19 +125,19 @@ export function recruitErrorMessage(error: ApiError | null): string | null {
   if (!error) return null
   switch (error.code) {
     case 'RECRUIT_FULL':
-      return '아쉽게도 정원이 다 찼어요.'
+      return '정원이 다 찼어요.'
     case 'RECRUIT_CLOSED':
-      return '마감된 모집이에요.'
+      return '모집이 마감됐어요.'
     case 'ALREADY_JOINED':
       return '이미 참여한 모집이에요.'
     case 'RECRUIT_OWNER_CANNOT_LEAVE':
-      return '모집을 연 사람은 참여를 취소할 수 없어요. 대신 모집을 닫아 주세요.'
+      return '모집을 연 사람은 참여 취소 대신 모집을 닫아 주세요.'
     case 'RECRUIT_TIME_PAST':
-      return '지난 시각은 고를 수 없어요.'
+      return '지금보다 늦은 시간을 골라 주세요.'
     case 'NOT_AUTHOR':
       return '모집을 연 사람만 닫을 수 있어요.'
     case 'NOT_FOUND':
-      return '모집이나 연결한 일정을 찾을 수 없어요.'
+      return '모집이나 연결된 일정을 찾지 못했어요.'
     case 'VALIDATION_FAILED':
       return '입력한 내용을 다시 확인해 주세요.'
     default:

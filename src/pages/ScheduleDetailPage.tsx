@@ -34,7 +34,7 @@ export function ScheduleDetailPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname} title="일정 내용은 부원만 볼 수 있어요" buttonText="로그인하고 일정 보기" />
+        <LockPanel next={location.pathname} title="일정 내용은 부원만 볼 수 있어요." buttonText="로그인하고 일정 보기" />
       </SubPageLayout>
     )
   }
@@ -49,7 +49,7 @@ export function ScheduleDetailPage() {
     >
       {notFound && (
         <div className="rounded-2xl bg-card px-6 py-10 text-center">
-          <p className="text-lg font-bold text-title">일정을 찾을 수 없어요</p>
+          <p className="text-lg font-bold text-title">일정을 찾을 수가 없어요.</p>
           <p className="mt-1 text-sm text-muted-foreground">삭제됐거나 없는 일정이에요.</p>
           <Link to="/schedules" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
             캘린더로
@@ -115,7 +115,7 @@ function ScheduleBody({ schedule }: { schedule: ScheduleDetail }) {
             <PersonName person={schedule.author} />
             {schedule.updatedAt && (
               <span className="ml-1.5 text-xs text-muted-foreground">
-                {schedule.editedByStaff ? '· 운영진이 수정했어요' : '· 수정됨'}
+                {schedule.editedByStaff ? '· 운영진이 수정했어요' : '· 수정'}
               </span>
             )}
           </dd>
@@ -127,7 +127,7 @@ function ScheduleBody({ schedule }: { schedule: ScheduleDetail }) {
       <section className="mt-8">
         <h2 className="text-base font-bold text-title">이 일정의 모집</h2>
         {schedule.relatedRecruits.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">아직 연결된 모집이 없어요. 함께 갈 사람을 모아 보세요.</p>
+          <p className="mt-2 text-sm text-muted-foreground">아직 연결된 모집이 없어요.</p>
         ) : (
           <ul className="mt-3 space-y-2">
             {schedule.relatedRecruits.map((r) => (
@@ -173,7 +173,7 @@ function ScheduleOwnerMenu({ scheduleId, onError }: { scheduleId: number; onErro
   }
 
   function handleDelete() {
-    if (!window.confirm('일정을 삭제할까요? 연결된 모집은 그대로 남아요.')) return
+    if (!window.confirm('일정을 삭제할까요? 연결된 모집은 남아요.')) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,

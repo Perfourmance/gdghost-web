@@ -14,9 +14,9 @@ function inviteErrorMessage(error: unknown): string {
   switch (e.code) {
     case 'INVITE_CODE_INVALID':
     case 'VALIDATION_FAILED':
-      return '쓸 수 없는 초대 코드예요. 운영진에게 받은 코드를 다시 확인해 주세요.'
+      return '사용할 수 없는 초대 코드. 운영진에게 받은 코드를 확인해 주세요.'
     case 'INVITE_CODE_LOCKED':
-      return `여러 번 틀려서 잠시 막혔어요. ${formatWait(e.retryAfter ?? 600)} 뒤에 다시 시도해 주세요.`
+      return `시도 횟수를 넘었어요. ${formatWait(e.retryAfter ?? 600)} 뒤 다시 시도해 주세요.`
     default:
       return commonErrorMessage(e)
   }
@@ -50,8 +50,8 @@ export function InviteCodeStep({ onDone }: { onDone: (patch: Partial<SignupDraft
     <form onSubmit={handleSubmit} noValidate>
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.invite}
-        title="초대 코드를 입력해 주세요"
-        description="운영진에게 받은 코드예요. 기수는 코드로 정해져요."
+        title="초대 코드 입력"
+        description="운영진에게 받은 코드를 입력해 주세요. 기수는 코드로 정해져요."
       />
       <div className="space-y-2">
         <Label className="font-bold text-title" htmlFor="inviteCode">초대 코드</Label>
@@ -73,7 +73,7 @@ export function InviteCodeStep({ onDone }: { onDone: (patch: Partial<SignupDraft
       )}
       <StepFooter>
         <Button type="submit" size="lg" className="h-12 w-full" disabled={code.trim() === '' || check.isPending}>
-          {check.isPending ? '확인 중…' : '다음'}
+          {check.isPending ? '확인 중…' : '초대 코드 확인'}
         </Button>
       </StepFooter>
     </form>

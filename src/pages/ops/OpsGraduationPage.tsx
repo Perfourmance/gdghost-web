@@ -35,13 +35,13 @@ export function OpsGraduationPage() {
   function submit() {
     const ids = items.filter((m) => picked.has(m.id)).map((m) => m.id)
     if (ids.length === 0) return
-    if (!window.confirm(`${ids.length}명을 졸업으로 바꿀까요? 바뀐 부원에게 알림이 가요.`)) return
+    if (!window.confirm(`${ids.length}명을 졸업 상태로 변경할까요? 해당 부원에게 알림이 가요.`)) return
     setResult(null)
     graduate.mutate(ids.slice(0, 200), {
       onSuccess: (r) => {
         setPicked(new Set())
         setResult(
-          `${r.updatedCount}명을 졸업으로 바꿨어요.${r.skippedIds.length ? ` ${r.skippedIds.length}명은 이미 졸업했거나 처리할 수 없어 건너뛰었어요.` : ''}`,
+          `${r.updatedCount}명을 졸업으로 바꿨어요.${r.skippedIds.length ? `이미 졸업했거나 처리할 수 없는 부원 ${r.skippedIds.length}명은 제외했어요.` : ''}`,
         )
       },
     })
@@ -53,7 +53,7 @@ export function OpsGraduationPage() {
         ← 부원 목록
       </Link>
       <h2 className="mt-3 text-lg font-bold text-title">졸업 일괄 처리</h2>
-      <p className="mt-1 text-sm text-muted-foreground">활동 중인 재학 · 휴학 부원이 대상이에요. 3월 · 9월에 처리해요.</p>
+      <p className="mt-1 text-sm text-muted-foreground">대상: 활동 중인 재학·휴학 부원 · 3월, 9월 처리</p>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <label className="text-sm">
@@ -83,7 +83,7 @@ export function OpsGraduationPage() {
           />
         </label>
       </div>
-      {validNo && <p className="mt-1 text-xs text-muted-foreground">학번을 적지 않은 부원은 빠져요.</p>}
+      {validNo && <p className="mt-1 text-xs text-muted-foreground">학번을 입력하지 않은 부원은 대상에서 제외돼요.</p>}
 
       {result && (
         <p className="mt-4 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
@@ -116,7 +116,7 @@ export function OpsGraduationPage() {
               <span className="font-bold text-title">{m.nickname}</span>
               <span className="ml-1.5 text-xs text-muted-foreground">{m.name}</span>
               <span className="block text-xs text-muted-foreground">
-                {m.generation}기 · {m.studentNo ? `${m.studentNo}학번` : '학번 없음'} · {memberStatusLabel(m.status)} · 접속 {formatDate(m.lastSeenAt)}
+                {m.generation}기 · {m.studentNo ? `${m.studentNo}학번` : '학번이 없어요.'} · {memberStatusLabel(m.status)} · 접속 {formatDate(m.lastSeenAt)}
               </span>
             </span>
           </label>

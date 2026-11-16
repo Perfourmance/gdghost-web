@@ -43,7 +43,7 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
     values.anonymous !== initial.anonymous
   const allowLeave = useLeaveGuard(
     changed && !pending,
-    mode === 'create' ? '질문 작성을 그만둘까요? 입력한 내용은 사라져요.' : '수정을 그만둘까요? 바꾼 내용은 사라져요.',
+    mode === 'create' ? '질문 작성을 그만둘까요? 입력한 내용은 저장되지 않아요.' : '수정을 그만둘까요? 변경 사항은 저장되지 않아요.',
   )
 
   function set(patch: Partial<QuestionFormValues>) {
@@ -90,7 +90,7 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
           <Input
             id="title"
             maxLength={TITLE_MAX}
-            placeholder="예) 신입 이력서에 학점 쓰는 게 맞나요?"
+            placeholder="예: 신입 이력서에 학점을 꼭 써야 하나요?"
             className="h-12 bg-card"
             aria-invalid={titleError ? true : undefined}
             value={values.title}
@@ -107,7 +107,7 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
             id="body"
             maxLength={BODY_MAX}
             rows={8}
-            placeholder="상황을 자세히 적을수록 맞는 선배가 답하기 쉬워요."
+            placeholder="어떤 상황인지 구체적으로 적어 주세요."
             aria-invalid={bodyError ? true : undefined}
             className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm"
             value={values.body}
@@ -125,14 +125,14 @@ export function QuestionForm({ mode, initial, pending, error, formError, onSubmi
               </label>
               {/* 기능명세 F2-05 고지 문구 */}
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                운영진을 포함해 누구도 작성자를 볼 수 없어요. 기록은 서버에만 남아요.
+                작성자는 운영진에게도 표시되지 않아요. 기록은 서버에만 남아요.
                 <br />
-                익명 여부는 올린 뒤에 바꿀 수 없어요.
+                글을 올린 뒤에는 익명 여부를 바꿀 수 없어요.
               </p>
             </>
           ) : (
             <p className="text-xs text-muted-foreground">
-              {values.anonymous ? '익명 질문이에요.' : '닉네임으로 올린 질문이에요.'} 익명 여부는 바꿀 수 없어요.
+              {values.anonymous ? '익명 질문이에요.' : '닉네임 공개 질문'} 익명 여부는 바꿀 수 없어요.
             </p>
           )}
         </section>

@@ -14,10 +14,10 @@ export interface Author {
 
 /** 작성자 자리에 보일 이름. 실명은 쓰지 않는다 */
 export function authorName(author: Author | null | undefined): string {
-  if (!author) return '알 수 없음'
+  if (!author) return '정보 미확인'
   if (author.label) return author.label
   if (author.withdrawn) return '탈퇴한 부원'
-  return author.nickname ?? '알 수 없음'
+  return author.nickname ?? '정보 미확인'
 }
 
 /** 프로필로 갈 수 있는 작성자인지 — 익명 · 탈퇴자는 링크 없음 (IA 2장) */

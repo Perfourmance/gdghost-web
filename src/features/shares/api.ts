@@ -249,7 +249,7 @@ export function shareSubmitError(error: ApiError | null): string | null {
   switch (error.code) {
     case 'VALIDATION_FAILED': {
       if (error.fieldErrors.some((e) => e.field.startsWith('tags'))) {
-        return `태그는 ${TAGS_MAX}개까지, 한 개에 1–${TAG_MAX}자로 써 주세요.`
+        return `태그는 ${TAGS_MAX}개까지 붙일 수 있어요. 태그마다 1~${TAG_MAX}자로 써 주세요.`
       }
       const shownInField = error.fieldErrors.length > 0 && error.fieldErrors.every((e) => FORM_FIELDS.includes(e.field))
       return shownInField ? null : error.message
@@ -257,7 +257,7 @@ export function shareSubmitError(error: ApiError | null): string | null {
     case 'NOT_AUTHOR':
       return '내가 쓴 공유만 고치거나 지울 수 있어요.'
     case 'NOT_FOUND':
-      return '삭제됐거나 운영진이 숨긴 공유예요.'
+      return '삭제됐거나 운영진이 숨긴 글이에요.'
     case 'UPLOAD_NOT_FOUND':
     case 'UPLOAD_TOO_LARGE':
     case 'UPLOAD_TYPE_NOT_ALLOWED':
@@ -266,7 +266,7 @@ export function shareSubmitError(error: ApiError | null): string | null {
     default:
       // 분당 3회 · 하루 30회(수정은 하루 20회). 기다릴 시간이 길면 하루 한도
       if (error.status === 429 && (error.retryAfter ?? 0) > 600) {
-        return '오늘 쓸 수 있는 횟수를 넘었어요. 내일 다시 시도해 주세요.'
+        return '오늘 이용 횟수를 다 썼어요. 내일 다시 시도해 주세요.'
       }
       return commonErrorMessage(error)
   }
@@ -275,12 +275,12 @@ export function shareSubmitError(error: ApiError | null): string | null {
 export function noteErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'VALIDATION_FAILED':
-      return `한 줄은 1–${NOTE_MAX}자로 남겨 주세요.`
+      return `한 줄은 1~${NOTE_MAX}자로 남겨 주세요.`
     case 'NOT_AUTHOR':
     case 'FORBIDDEN':
-      return '내가 남긴 한 줄만 지울 수 있어요.'
+      return '내가 남긴 한 줄만 삭제할 수 있어요.'
     case 'NOT_FOUND':
-      return '글이나 한 줄이 삭제됐어요. 화면을 새로 불러왔어요.'
+      return '공유글이나 한 줄을 찾을 수 없어요.'
     default:
       return commonErrorMessage(error)
   }

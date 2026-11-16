@@ -34,7 +34,7 @@ export function EventDetailPage() {
       <SubPageLayout fallback="/events">
         <LockPanel
           next={location.pathname + location.hash}
-          title="이벤트는 부원만 볼 수 있어요"
+          title="이벤트는 부원만 볼 수 있어요."
           buttonText="로그인하고 이벤트 보기"
         />
       </SubPageLayout>
@@ -47,7 +47,7 @@ export function EventDetailPage() {
     <SubPageLayout fallback="/events">
       {notFound && (
         <div className="rounded-2xl bg-card px-6 py-10 text-center">
-          <p className="text-lg font-bold text-title">이벤트를 찾을 수 없어요</p>
+          <p className="text-lg font-bold text-title">이벤트를 찾을 수가 없어요.</p>
           <p className="mt-1 text-sm text-muted-foreground">없는 이벤트예요.</p>
           <Link to="/events" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
             이벤트 목록으로
@@ -143,7 +143,7 @@ function EventBody({ event }: { event: EventDetail }) {
 
       {event.pendingCount != null && (
         <p className="mt-3 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-          확인을 기다리는 인증이 <b className="font-bold">{event.pendingCount}건</b> 있어요. 운영 페이지에서 확인해요.
+          확인을 기다리는 인증이 <b className="font-bold">{event.pendingCount}건</b> 있어요. 운영 페이지에서 확인할 수 있어요.
         </p>
       )}
 
@@ -175,7 +175,7 @@ function EventBody({ event }: { event: EventDetail }) {
       <section className="mt-8">
         <h2 className="text-base font-bold text-title">참여 순위</h2>
         {event.ranking.length === 0 ? (
-          <p className="mt-2 text-sm text-muted-foreground">아직 인증된 사람이 없어요. 첫 번째로 인증해 보세요.</p>
+          <p className="mt-2 text-sm text-muted-foreground">아직 인증한 부원이 없어요.</p>
         ) : (
           <ol className="mt-2 divide-y rounded-xl bg-card">
             {event.ranking.map((r) => (

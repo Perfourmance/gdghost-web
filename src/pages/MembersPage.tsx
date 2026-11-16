@@ -29,7 +29,7 @@ export function MembersPage() {
         <MemberDirectory maxGeneration={Math.max(MIN_GENERATIONS, me.generation)} />
       ) : (
         <div className="mt-5">
-          <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요" />
+          <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요." />
         </div>
       )}
     </div>
@@ -63,7 +63,7 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
   return (
     <>
       <div className="mt-1 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">기수를 넘어 같은 동아리를 거쳐 간 사람들</p>
+        <p className="text-sm text-muted-foreground">GDGhost 부원 둘러보기</p>
         {/* 선배 찾기 (IA S25 — 부원 목록 상단) */}
         <Link to="/find-senior" className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'shrink-0' })}>
           <Search aria-hidden />
@@ -116,7 +116,7 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
 
         {list.isSuccess && members.length === 0 && (
           <EmptyCard>
-            {generation != null || status != null ? '조건에 맞는 부원이 없어요.' : '아직 부원이 없어요.'}
+            {generation != null || status != null ? '조건에 맞는 부원이 없어요.' : '부원이 없어요.'}
           </EmptyCard>
         )}
 

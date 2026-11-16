@@ -12,7 +12,7 @@ export function QuestionOwnerMenu({ questionId, onError }: { questionId: number;
   const remove = useDeleteQuestion(questionId)
 
   function handleDelete() {
-    if (!window.confirm('질문을 삭제할까요? 삭제하면 되돌릴 수 없고, 달린 답변도 함께 안 보여요.')) return
+    if (!window.confirm('질문을 삭제할까요? 답변도 함께 숨겨지며 삭제는 되돌릴 수 없어요.')) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,

@@ -54,7 +54,7 @@ export function ScheduleEditPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname} title="일정은 부원만 고칠 수 있어요" buttonText="로그인하기" />
+        <LockPanel next={location.pathname} title="일정은 부원만 고칠 수 있어요." buttonText="로그인하기" />
       </SubPageLayout>
     )
   }
@@ -66,9 +66,9 @@ export function ScheduleEditPage() {
     return (
       <SubPageLayout fallback="/schedules">
         <div className="rounded-2xl bg-card px-6 py-10 text-center">
-          <p className="text-lg font-bold text-title">{notFound ? '일정을 찾을 수 없어요' : '고칠 수 없는 일정이에요'}</p>
+          <p className="text-lg font-bold text-title">{notFound ? '일정을 찾을 수가 없어요.' : '고칠 수 없는 일정이에요'}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {notFound ? '삭제됐거나 없는 일정이에요.' : '등록한 사람과 운영진만 고칠 수 있어요.'}
+            {notFound ? '삭제됐거나 없는 일정이에요.' : '일정을 등록한 부원이나 운영진만 수정할 수 있어요.'}
           </p>
           <Link to="/schedules" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
             캘린더로

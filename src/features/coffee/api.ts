@@ -82,18 +82,18 @@ function cooldownDate(message: string): string | null {
 export function requestErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'COFFEE_DISABLED':
-      return '지금은 커피챗을 받지 않는 부원이에요.'
+      return '지금은 이 부원에게 커피챗을 신청할 수 없어요.'
     case 'COFFEE_PENDING_EXISTS':
-      return '이미 보낸 신청이 응답을 기다리고 있어요.'
+      return '이미 신청했어요. 상대의 응답을 기다리고 있어요.'
     case 'COFFEE_COOLDOWN': {
       const date = cooldownDate(error.message)
-      return date ? `${date}부터 다시 신청할 수 있어요.` : '거절되거나 만료된 뒤 14일 동안은 다시 신청할 수 없어요.'
+      return date ? `${date}부터 다시 신청할 수 있어요.` : '거절·만료 후 14일이 지나면 다시 신청할 수 있어요.'
     }
     case 'NOT_FOUND':
-      return '탈퇴했거나 지금은 신청할 수 없는 부원이에요.'
+      return '이 부원에게는 지금 커피챗을 신청할 수 없어요.'
     case 'VALIDATION_FAILED':
       if (error.fieldMessage('receiverId')) return '나에게는 신청할 수 없어요.'
-      return `궁금한 점을 ${PURPOSE_MIN}–${PURPOSE_MAX}자로 적어 주세요.`
+      return `궁금한 점을 ${PURPOSE_MIN}~${PURPOSE_MAX}자로 적어 주세요.`
     default:
       return commonErrorMessage(error)
   }
@@ -105,14 +105,14 @@ export function isMissingMemo(error: ApiError): boolean {
 }
 
 export function respondErrorMessage(error: ApiError): string {
-  if (isMissingMemo(error)) return '수락하기 전에 설정에서 상대에게 보일 한 줄(연락 방법)을 적어 주세요.'
+  if (isMissingMemo(error)) return '수락 전 설정에서 상대에게 보일 연락 방법을 적어 주세요.'
   switch (error.code) {
     case 'COFFEE_ALREADY_RESPONDED':
       return '이미 응답했거나 7일이 지나 만료된 신청이에요.'
     case 'FORBIDDEN':
       return '받은 신청에만 응답할 수 있어요.'
     case 'NOT_FOUND':
-      return '신청을 찾을 수 없어요.'
+      return '신청을 찾을 수가 없어요.'
     default:
       return commonErrorMessage(error)
   }

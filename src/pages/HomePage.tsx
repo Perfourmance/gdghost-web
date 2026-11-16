@@ -54,7 +54,7 @@ export function HomePage() {
 
           <HomeSection title="새 질문" moreTo="/questions">
             {home.data.recentQuestions.length === 0 ? (
-              <EmptyCard>아직 질문이 없어요. 첫 질문을 남겨 보세요.</EmptyCard>
+              <EmptyCard>아직 질문이 없어요.</EmptyCard>
             ) : (
               home.data.recentQuestions.map((q) => <QuestionCard key={q.id} question={q} target={target} now={now} />)
             )}
@@ -62,7 +62,7 @@ export function HomePage() {
 
           <HomeSection title="다가오는 일정" moreTo="/schedules">
             {home.data.upcomingSchedules.length === 0 ? (
-              <EmptyCard>다가오는 일정이 없어요. 공모전 · 채용 일정을 올려 보세요.</EmptyCard>
+              <EmptyCard>다가오는 일정이 없어요.</EmptyCard>
             ) : (
               home.data.upcomingSchedules.map((s) => <ScheduleCard key={s.id} schedule={s} target={target} />)
             )}
@@ -70,7 +70,7 @@ export function HomePage() {
 
           <HomeSection title="많이 저장된 공유" moreTo="/shares">
             {home.data.popularShares.length === 0 ? (
-              <EmptyCard>이번 주에 저장된 공유가 없어요. 알고 있는 꿀팁을 공유해 보세요.</EmptyCard>
+              <EmptyCard>이번 주에 저장된 글이 없어요.</EmptyCard>
             ) : (
               home.data.popularShares.map((s) => <ShareCard key={s.id} share={s} target={target} />)
             )}
@@ -89,8 +89,8 @@ function GuestBanner() {
     <div className="flex items-center gap-3 rounded-xl bg-card p-4">
       <img src={door} alt="" className="w-14 shrink-0" />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-title">둘러보는 중이에요</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">부원이 되면 질문 · 답변을 모두 볼 수 있어요.</p>
+        <p className="text-sm font-bold text-title">GDGhost 둘러보기</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">부원 로그인 후 질문과 답변을 볼 수 있어요.</p>
       </div>
       <Link
         to="/signup"
@@ -107,7 +107,7 @@ function MustReadBanner({ count }: { count: number }) {
   if (count <= 0) return null
   return (
     <Link to="/notices" className="flex items-center justify-between rounded-xl bg-brand px-4 py-3 text-white">
-      <span className="text-sm font-bold">확인하지 않은 필독 공지가 {count}개 있어요</span>
+      <span className="text-sm font-bold">미확인 필독 공지 {count}개</span>
       <ChevronRight className="size-5 shrink-0" aria-hidden />
     </Link>
   )

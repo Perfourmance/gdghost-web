@@ -23,7 +23,7 @@ export function FeedWritePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/feed">
-        <LockPanel next={location.pathname} title="피드는 부원만 쓸 수 있어요" buttonText="로그인하고 글쓰기" />
+        <LockPanel next={location.pathname} title="피드는 부원만 쓸 수 있어요." buttonText="로그인하고 글쓰기" />
       </SubPageLayout>
     )
   }
@@ -49,7 +49,7 @@ function FeedForm() {
   const busy = uploading || create.isPending
   const allowLeave = useLeaveGuard(
     (category != null || body !== '' || uploads.photos.length > 0) && !busy,
-    '글쓰기를 그만둘까요? 입력한 내용은 사라져요.',
+    '글쓰기를 그만둘까요? 입력한 내용은 저장되지 않아요.',
   )
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -104,7 +104,7 @@ function FeedForm() {
             id="feed-body"
             maxLength={BODY_MAX}
             rows={6}
-            placeholder="오늘 있었던 일, 자랑하고 싶은 일을 나눠 주세요."
+            placeholder="오늘 있었던 일이나 자랑하고 싶은 것"
             className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -129,7 +129,7 @@ function FeedForm() {
         <Button type="submit" size="lg" className="h-12 w-full" disabled={busy || uploads.preparing}>
           {uploading ? '사진 올리는 중…' : create.isPending ? '올리는 중…' : uploads.preparing ? '사진 준비 중…' : '올리기'}
         </Button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">피드 글은 올린 뒤에 고칠 수 없어요. 지우고 다시 쓸 수 있어요.</p>
+        <p className="mt-2 text-center text-xs text-muted-foreground">올린 뒤에는 수정할 수 없어요. 삭제하고 다시 쓸 수는 있어요.</p>
       </StepFooter>
     </form>
   )

@@ -74,7 +74,7 @@ export function usePhotoUploads(purpose: UploadPurpose, initial: ExistingPhoto[]
           )
         })
         .catch((e: unknown) =>
-          update(id, { error: e instanceof ImageError ? e.message : '사진을 처리하지 못했어요.' }),
+          update(id, { error: e instanceof ImageError ? e.message : '이 사진을 열지 못했어요.' }),
         )
     }
     return Array.from(files).length > picked.length

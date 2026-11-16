@@ -30,11 +30,11 @@ export function useCreateReport() {
 export function reportErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'ALREADY_REPORTED':
-      return '이미 신고했어요. 운영진이 확인하고 있어요.'
+      return '이미 신고한 글이에요. 운영진이 확인하고 있어요.'
     case 'NOT_FOUND':
       return '이미 삭제됐거나 숨겨진 글이에요.'
     case 'VALIDATION_FAILED':
-      return error.fieldMessage('reason') ?? '신고 이유를 1–200자로 적어 주세요.'
+      return error.fieldMessage('reason') ?? '신고 이유를 1~200자로 적어 주세요.'
     default:
       return commonErrorMessage(error)
   }

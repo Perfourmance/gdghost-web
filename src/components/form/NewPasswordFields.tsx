@@ -65,7 +65,7 @@ export function NewPasswordFields({ password, confirm, onPasswordChange, onConfi
           value={confirm}
           onChange={(e) => onConfirmChange(e.target.value)}
         />
-        {confirmMismatch && <p className="text-sm text-destructive">비밀번호가 서로 달라요.</p>}
+        {confirmMismatch && <p className="text-sm text-destructive">두 비밀번호가 달라요. 같은 비밀번호를 입력해 주세요.</p>}
       </div>
     </>
   )

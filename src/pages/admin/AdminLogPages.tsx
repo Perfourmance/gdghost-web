@@ -98,7 +98,7 @@ export function AdminErrorsPage() {
               </span>
             </div>
             <p className="mt-1 text-xs break-all text-muted-foreground">
-              {e.path ?? '경로 없음'} · 마지막 {formatDateTime(e.lastAt)}
+              {e.path ?? '경로가 없어요.'} · 마지막 {formatDateTime(e.lastAt)}
             </p>
           </button>
         ))}
@@ -119,7 +119,7 @@ function ErrorSheet({ id, onClose }: { id: number | null; onClose: () => void })
       >
         <SheetTitle className="pr-8 text-base font-bold break-all text-title">{d?.message ?? '에러'}</SheetTitle>
         <SheetDescription className="mt-1 text-xs break-all text-muted-foreground">
-          {d ? `${d.path ?? '경로 없음'} · ${d.count}회 · 처음 ${formatDateTime(d.firstAt)} · 마지막 ${formatDateTime(d.lastAt)}` : ' '}
+          {d ? `${d.path ?? '경로가 없어요.'} · ${d.count}회 · 최초 ${formatDateTime(d.firstAt)} · 최근 ${formatDateTime(d.lastAt)}` : ' '}
         </SheetDescription>
         {detail.isPending && <Skeleton className="mt-4 h-40 w-full" />}
         {detail.isError && <p className="mt-4 text-sm text-destructive">불러오지 못했어요.</p>}
@@ -127,7 +127,7 @@ function ErrorSheet({ id, onClose }: { id: number | null; onClose: () => void })
           <>
             <p className="mt-3 text-xs text-muted-foreground">fingerprint {d.fingerprint}</p>
             <pre className="mt-2 max-h-[55dvh] overflow-auto rounded-lg bg-background p-3 text-[11px] leading-relaxed">
-              {d.stack ?? '스택 없음'}
+              {d.stack ?? '스택이 없어요.'}
             </pre>
           </>
         )}
@@ -151,7 +151,7 @@ export function AdminBatchesPage() {
       <input
         aria-label="작업 이름"
         maxLength={50}
-        placeholder="작업 이름 (예: upload_cleanup_nightly)"
+        placeholder="작업명 (예: upload_cleanup_nightly)"
         value={text}
         onChange={(e) => setText(e.target.value)}
         className="mt-3 h-10 w-full rounded-lg border border-input bg-card px-3 text-base outline-none placeholder:text-muted-foreground md:text-sm"
@@ -177,7 +177,7 @@ export function AdminBatchesPage() {
             <p className="mt-1 text-xs text-muted-foreground">
               {formatDateTime(b.startedAt)}
               {b.durationMs != null && ` · ${b.durationMs < 1000 ? `${b.durationMs}ms` : `${(b.durationMs / 1000).toFixed(1)}초`}`}
-              {b.endedAt == null && ' · 끝나지 않음'}
+              {b.endedAt == null && ' · 진행 중'}
             </p>
             {b.message && <p className="mt-1 text-xs break-all text-foreground">{b.message}</p>}
           </div>

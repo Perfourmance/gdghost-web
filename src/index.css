@@ -142,6 +142,25 @@
     --sidebar-ring: #A9C7FF;
 }
 
+@keyframes loading-dot {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.55;
+    animation-timing-function: ease-out;
+  }
+  25% {
+    transform: translateY(-4px);
+    opacity: 1;
+    animation-timing-function: ease-in;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .loading-dot {
+    animation: loading-dot 1.2s infinite both;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

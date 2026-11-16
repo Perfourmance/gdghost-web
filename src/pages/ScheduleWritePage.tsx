@@ -33,7 +33,7 @@ export function ScheduleWritePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname + location.search} title="일정은 부원만 등록할 수 있어요" buttonText="로그인하고 등록하기" />
+        <LockPanel next={location.pathname + location.search} title="일정은 부원만 등록할 수 있어요." buttonText="로그인하고 등록하기" />
       </SubPageLayout>
     )
   }

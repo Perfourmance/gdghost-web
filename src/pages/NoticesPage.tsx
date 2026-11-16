@@ -23,7 +23,7 @@ export function NoticesPage() {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname} title="공지는 부원만 볼 수 있어요" buttonText="로그인하고 공지 보기" />
+        <LockPanel next={location.pathname} title="공지는 부원만 볼 수 있어요." buttonText="로그인하고 공지 보기" />
       </SubPageLayout>
     )
   }
@@ -47,7 +47,7 @@ export function NoticesPage() {
         )}
 
         {list.isSuccess && notices.length === 0 && (
-          <EmptyCard>아직 올라온 공지가 없어요. 새 공지가 올라오면 알려 드릴게요.</EmptyCard>
+          <EmptyCard>아직 공지가 없어요.</EmptyCard>
         )}
 
         {notices.map((notice) => (
@@ -83,7 +83,7 @@ function NoticeRow({ notice, now }: { notice: NoticeSummary; now: number }) {
         {notice.isPinned && <PinnedBadge />}
         {notice.isMustRead && <MustReadBadge />}
         <p className="line-clamp-1 flex-1 text-[15px] font-bold text-title">{notice.title}</p>
-        {!notice.read && <span className="size-2 shrink-0 rounded-full bg-brand" aria-label="안 읽음" />}
+        {!notice.read && <span className="size-2 shrink-0 rounded-full bg-brand" aria-label="읽지 않은 알림" />}
       </div>
       <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
         <span>{noticeAuthorText(notice.author)}</span>
@@ -103,7 +103,7 @@ function NoticeRow({ notice, now }: { notice: NoticeSummary; now: number }) {
         )}
       </p>
       {needsConfirm && <p className="mt-1 text-xs font-bold text-brand-text">아직 확인하지 않았어요</p>}
-      {notice.confirmed && <p className="mt-1 text-xs text-brand-text">✓ 확인함</p>}
+      {notice.confirmed && <p className="mt-1 text-xs text-brand-text">✓ 확인 완료</p>}
     </Link>
   )
 }

@@ -46,7 +46,7 @@ const ACTIONS: Record<string, string> = {
   INVITE_CODE_REVOKE: '초대 코드 폐기',
   REPORT_HIDE: '신고 · 숨김',
   REPORT_RESTORE: '숨김 되돌림',
-  REPORT_DISMISS: '신고 · 괜찮음',
+  REPORT_DISMISS: '신고 · 기각',
   CERT_REVIEW: '인증 검토',
   GRADUATE: '졸업 처리',
   ROUTING_EXPORT: '라우팅 내보내기',
@@ -108,7 +108,7 @@ export function OpsMembersPage() {
       <div className="-mx-4 mt-3 overflow-x-auto px-4 [scrollbar-width:none]">
         <div className="flex w-max gap-2">
           <Chip selected={suspended === true} onClick={() => set('suspended', suspended ? null : '1')}>
-            정지됨
+            이용 정지
           </Chip>
           {ROLES.map((r) => (
             <Chip key={r.value} selected={role === r.value} onClick={() => set('role', role === r.value ? null : r.value)}>
@@ -137,7 +137,7 @@ export function OpsMembersPage() {
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        {list.data ? `${list.data.total}명` : ' '} · 최근 가입순 · 목록에서 숨긴 부원도 보여요
+        {list.data ? `${list.data.total}명` : ' '} · 최근 가입순 · 숨김 부원 포함
       </p>
       <div className={cn('mt-2 space-y-2', list.isPlaceholderData && 'opacity-60')}>
         {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
@@ -230,7 +230,7 @@ function MemberDetail({ member }: { member: OpsMember }) {
   function submitSuspend(e: FormEvent) {
     e.preventDefault()
     if (reason.trim().length < 2) return
-    suspend.mutate(reason.trim(), { onSuccess: ok('정지했어요. 바로 로그아웃돼요.'), onError })
+    suspend.mutate(reason.trim(), { onSuccess: ok('계정을 정지했어요. 해당 부원은 바로 로그아웃돼요.'), onError })
   }
 
   function submitStaff(e: FormEvent) {
@@ -241,14 +241,14 @@ function MemberDetail({ member }: { member: OpsMember }) {
   }
 
   function handleRevoke() {
-    const message = self ? '나를 운영진에서 해제할까요? 바로 운영 페이지를 쓸 수 없게 돼요.' : `${member.nickname}님을 운영진에서 해제할까요?`
+    const message = self ? '내 운영진 권한을 해제할까요? 운영 페이지 접근이 즉시 막혀요.' : `${member.nickname}님의 운영진 권한을 해제할까요?`
     if (!window.confirm(message)) return
     revoke.mutate(undefined, { onSuccess: ok('운영진에서 해제했어요.'), onError })
   }
 
   function handleUnsuspend() {
     if (!window.confirm(`${member.nickname}님의 정지를 풀까요?`)) return
-    unsuspend.mutate(undefined, { onSuccess: ok('정지를 풀었어요. 다시 로그인할 수 있어요.'), onError })
+    unsuspend.mutate(undefined, { onSuccess: ok('정지를 해제했어요. 다시 로그인할 수 있어요.'), onError })
   }
 
   return (
@@ -322,7 +322,7 @@ function MemberDetail({ member }: { member: OpsMember }) {
               autoFocus
               minLength={2}
               maxLength={10}
-              placeholder="예) 회장, 운영진"
+              placeholder="예: 회장, 운영진"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="h-10 bg-background"
@@ -377,7 +377,7 @@ function MemberDetail({ member }: { member: OpsMember }) {
                   취소
                 </Button>
               </div>
-              <p className="mt-1.5 text-xs text-muted-foreground">바로 로그아웃되고 다시 로그인할 수 없어요. 쓴 글은 그대로 남아요.</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">이 부원은 즉시 로그아웃되고 다시 로그인할 수 없어요. 작성한 글은 남아요.</p>
             </form>
           ) : (
             <Button variant="secondary" size="sm" className="mt-2" disabled={busy} onClick={() => setPanel('suspend')}>
@@ -400,7 +400,7 @@ function AuditSection({ memberId }: { memberId: number }) {
       <h3 className="text-sm font-bold text-title">운영 기록</h3>
       {logs.isPending && <Skeleton className="mt-2 h-12 w-full" />}
       {logs.isError && <p className="mt-2 text-sm text-destructive">운영 기록을 불러오지 못했어요.</p>}
-      {logs.data && logs.data.items.length === 0 && <p className="mt-1 text-xs text-muted-foreground">아직 기록이 없어요.</p>}
+      {logs.data && logs.data.items.length === 0 && <p className="mt-1 text-xs text-muted-foreground">기록이 없어요.</p>}
       <ul className="mt-2 space-y-1.5">
         {logs.data?.items.map((log) => (
           <li key={log.id} className="text-sm">

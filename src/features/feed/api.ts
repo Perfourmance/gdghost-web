@@ -198,12 +198,12 @@ export function feedErrorMessage(error: ApiError): string {
       return '입력한 내용을 다시 확인해 주세요.'
     case 'NOT_AUTHOR':
     case 'FORBIDDEN':
-      return '내가 쓴 글만 지울 수 있어요.'
+      return '내 글만 삭제할 수 있어요.'
     case 'NOT_FOUND':
-      return '글이나 댓글이 삭제됐어요. 화면을 새로 불러왔어요.'
+      return '글이나 댓글을 찾을 수 없어요.'
     default:
       if (error.status === 429 && (error.retryAfter ?? 0) > 600) {
-        return '오늘 쓸 수 있는 횟수를 넘었어요. 내일 다시 시도해 주세요.'
+        return '오늘 이용 횟수를 다 썼어요. 내일 다시 시도해 주세요.'
       }
       return commonErrorMessage(error)
   }

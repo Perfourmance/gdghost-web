@@ -49,10 +49,10 @@ function StatsSection() {
         <span className="text-muted-foreground">–</span>
         <Input type="date" aria-label="끝나는 날" min={from} max={today} className="h-10 bg-card" value={to} onChange={(e) => e.target.value && setTo(e.target.value)} />
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">보낸 시각 기준, 최대 1년. 운영진 알림은 따로 세요.</p>
+      <p className="mt-1 text-xs text-muted-foreground">발송 시각 기준 최대 1년 · 운영진 알림 별도 집계</p>
       {stats.isError && (
         <p className="mt-2 text-sm text-destructive">
-          {toApiError(stats.error).code === 'VALIDATION_FAILED' ? '기간은 최대 1년까지 볼 수 있어요.' : '집계를 불러오지 못했어요.'}
+          {toApiError(stats.error).code === 'VALIDATION_FAILED' ? '조회 기간 최대 1년' : '집계를 불러오지 못했어요.'}
         </p>
       )}
       {stats.isPending && <Skeleton className="mt-3 h-32 w-full rounded-xl" />}
@@ -60,7 +60,7 @@ function StatsSection() {
         <div className={cn('mt-3', stats.isPlaceholderData && 'opacity-60')}>
           <div className="grid grid-cols-3 gap-2">
             <StatTile label="보냄" value={s.sentCount} />
-            <StatTile label="답변함" value={s.answeredCount} />
+            <StatTile label="답변 완료" value={s.answeredCount} />
             <StatTile label="넘김" value={s.passedCount} />
             <StatTile label="답변율" value={pct(s.conversionRate)} strong />
             <StatTile label="넘김 비율" value={pct(s.passRate)} />
@@ -102,7 +102,7 @@ function StaleSection() {
     <Block title="3일 넘게 답 없는 질문" count={list.data?.total}>
       {list.isPending && <Skeleton className="h-24 w-full rounded-xl" />}
       {list.isError && <LoadError text="질문을 불러오지 못했어요." onRetry={() => list.refetch()} />}
-      {list.isSuccess && list.data.items.length === 0 && <EmptyCard>모든 질문에 3일 안에 답이 달렸어요.</EmptyCard>}
+      {list.isSuccess && list.data.items.length === 0 && <EmptyCard>모든 질문에 3일 안에 답변이 달렸어요.</EmptyCard>}
       {list.data?.items.map((q) => (
         <Link key={q.id} to={`/questions/${q.id}`} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">
           <p className="text-xs font-bold text-brand-text">
@@ -120,8 +120,8 @@ function StaleSection() {
 }
 
 const LOG_STATES: { value: RoutingLogState; label: string }[] = [
-  { value: 'SENT', label: '전달됨' },
-  { value: 'ANSWERED', label: '답변함' },
+  { value: 'SENT', label: '전달 완료' },
+  { value: 'ANSWERED', label: '답변 완료' },
   { value: 'PASSED', label: '넘김' },
   { value: 'CANCELED', label: '취소' },
 ]

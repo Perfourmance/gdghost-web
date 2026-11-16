@@ -39,7 +39,7 @@ export function QuestionWritePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/questions">
-        <LockPanel next={location.pathname} title="질문은 부원만 남길 수 있어요" buttonText="로그인하고 질문하기" />
+        <LockPanel next={location.pathname} title="질문은 부원만 남길 수 있어요." buttonText="로그인하고 질문하기" />
       </SubPageLayout>
     )
   }
@@ -83,9 +83,9 @@ export function QuestionWritePage() {
         notice={
           target && (
             <p className="rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-              <b className="font-bold">{target.nickname}</b> 선배에게 바로 알림이 가요.
+              <b className="font-bold">{target.nickname}</b> 선배에게 알림
               <span className="mt-0.5 block text-xs text-brand-text/80">
-                질문 목록에도 올라가요. 밤 10시–아침 8시에 올리면 알림은 아침 8시에 가요.
+                밤 10시~오전 8시에 올리면 오전 8시에 알림이 가요.
               </span>
             </p>
           )

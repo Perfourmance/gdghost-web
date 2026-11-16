@@ -17,7 +17,7 @@ export function WelcomePage() {
         <p className="mt-6 text-xs font-bold text-brand-text">알림 준비</p>
         <h1 className="mt-2 text-[22px] leading-snug font-bold text-title">{me.nickname}님, 가입을 마쳤어요</h1>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          내 질문에 답변이 달리거나 선배에게 질문이 오면 바로 알려 드릴게요. 지금 하지 않아도 설정에서 언제든 켤 수 있어요.
+          답변이나 질문이 오면 바로 알려요. 설정에서 나중에 켤 수도 있어요.
         </p>
 
         <div className="mt-8 rounded-xl bg-card px-4">
@@ -33,7 +33,7 @@ export function WelcomePage() {
             replace
             className="mt-2 block py-2 text-center text-sm text-muted-foreground hover:text-foreground"
           >
-            나중에 할게요
+            나중에
           </Link>
         </StepFooter>
       </main>

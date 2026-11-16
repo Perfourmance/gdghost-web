@@ -136,16 +136,16 @@ export function useResubmitCertification(eventId: number) {
 export function certificationErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'EVENT_CLOSED':
-      return '이벤트 기간이 아니라서 올릴 수 없어요.'
+      return '이벤트 기간에만 인증을 올릴 수 있어요.'
     case 'CERT_NOT_REJECTED':
-      return '반려된 인증만 다시 올릴 수 있어요. 화면을 새로 불러왔어요.'
+      return '반려된 인증만 다시 올릴 수 있어요.'
     case 'NOT_AUTHOR':
       return '내 인증만 다시 올릴 수 있어요.'
     case 'NOT_FOUND':
-      return '이벤트나 인증을 찾을 수 없어요.'
+      return '이벤트나 인증을 찾을 수가 없어요.'
     case 'VALIDATION_FAILED':
-      if (error.fieldMessage('photoKeys')) return '이 이벤트는 사진이 있어야 인증할 수 있어요.'
-      return error.fieldMessage('body') ? '한 줄은 1–100자로 써 주세요.' : '입력한 내용을 다시 확인해 주세요.'
+      if (error.fieldMessage('photoKeys')) return '이벤트를 인증하려면 사진을 첨부해 주세요.'
+      return error.fieldMessage('body') ? '내용은 1~100자로 써 주세요.' : '입력한 내용을 다시 확인해 주세요.'
     case 'UPLOAD_NOT_FOUND':
     case 'UPLOAD_TOO_LARGE':
     case 'UPLOAD_TYPE_NOT_ALLOWED':

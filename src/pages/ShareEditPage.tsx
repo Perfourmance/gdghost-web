@@ -20,7 +20,7 @@ export function ShareEditPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="공유는 부원만 고칠 수 있어요" buttonText="로그인하고 계속하기" />
+        <LockPanel next={location.pathname} title="공유는 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
       </SubPageLayout>
     )
   }
@@ -41,7 +41,7 @@ export function ShareEditPage() {
       )}
       {!notFound && detail.isError && <LoadError text="공유를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
       {detail.data && !detail.data.mine && (
-        <GoneNotice title="내가 쓴 공유만 고칠 수 있어요" text="다른 부원의 글은 수정할 수 없어요." to={back} link="글로 돌아가기" />
+        <GoneNotice title="내 공유글만 수정할 수 있어요." text="내 글만 수정할 수 있어요." to={back} link="글로 돌아가기" />
       )}
       {detail.data?.mine && <EditForm key={detail.data.id} share={detail.data} />}
     </SubPageLayout>

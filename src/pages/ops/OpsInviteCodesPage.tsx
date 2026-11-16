@@ -35,7 +35,7 @@ export function OpsInviteCodesPage() {
   const [copied, setCopied] = useState<number | null>(null)
 
   function handleRevoke(code: InviteCode) {
-    if (!window.confirm(`${code.generation}기 코드 ${code.code}를 폐기할까요? 이미 가입한 부원에게는 영향이 없어요.`)) return
+    if (!window.confirm(`${code.generation}기 코드 ${code.code} 폐기? 기존 가입 부원에게는 영향 없어요.`)) return
     revoke.mutate(code.id)
   }
 
@@ -57,7 +57,7 @@ export function OpsInviteCodesPage() {
       <div className="space-y-2">
         {list.isPending && <Skeleton className="h-24 w-full rounded-xl" />}
         {list.isError && <LoadError text="초대 코드를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-        {list.isSuccess && list.data.items.length === 0 && <EmptyCard>아직 발급한 코드가 없어요.</EmptyCard>}
+        {list.isSuccess && list.data.items.length === 0 && <EmptyCard>발급한 코드가 없어요.</EmptyCard>}
         {list.data?.items.map((c) => (
           <article key={c.id} className="rounded-xl bg-card px-4 py-3">
             <div className="flex items-center gap-2">
@@ -113,7 +113,7 @@ function IssueForm() {
   function submit(e: FormEvent) {
     e.preventDefault()
     if (!valid || issue.isPending) return
-    if (!window.confirm(`${g}기 코드를 새로 발급할까요? 지금 쓰고 있는 ${g}기 코드는 폐기돼요.`)) return
+    if (!window.confirm(`${g}기 코드 재발급? 기존 ${g}기 코드는 폐기돼요.`)) return
     issue.mutate({ generation: g, maxUses: m, expiresInDays: d }, { onSuccess: setIssued })
   }
 
@@ -121,11 +121,11 @@ function IssueForm() {
   return (
     <section>
       <h2 className="text-base font-bold text-title">새 코드 발급</h2>
-      <p className="mt-1 text-xs text-muted-foreground">기수당 쓸 수 있는 코드는 하나예요. 새로 발급하면 같은 기수의 이전 코드는 폐기돼요.</p>
+      <p className="mt-1 text-xs text-muted-foreground">기수당 초대 코드는 하나예요. 다시 발급하면 기존 코드는 사용할 수 없어요.</p>
       <form onSubmit={submit} className="mt-3 grid grid-cols-3 gap-2">
         <label className="text-xs text-muted-foreground">
           기수
-          <input inputMode="numeric" className={cn(field, 'mt-1')} value={generation} onChange={(e) => setGeneration(e.target.value.replace(/\D/g, ''))} placeholder="예) 5" />
+          <input inputMode="numeric" className={cn(field, 'mt-1')} value={generation} onChange={(e) => setGeneration(e.target.value.replace(/\D/g, ''))} placeholder="예: 5" />
         </label>
         <label className="text-xs text-muted-foreground">
           최대 인원 (1–200)
@@ -158,11 +158,11 @@ function MembersSheet({ code, onClose }: { code: InviteCode | null; onClose: () 
         className="mx-auto max-h-[80dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
       >
         <SheetTitle className="text-lg font-bold text-title">{code?.code} 가입자</SheetTitle>
-        <SheetDescription className="mt-1 text-xs text-muted-foreground">유출이 의심되면 누가 가입했는지 확인해요.</SheetDescription>
+        <SheetDescription className="mt-1 text-xs text-muted-foreground">코드가 유출된 것 같다면 이 코드로 가입한 부원을 확인해 주세요.</SheetDescription>
         <div className="mt-4">
           {members.isPending && <Skeleton className="h-20 w-full" />}
           {members.isError && <p className="text-sm text-destructive">가입자를 불러오지 못했어요.</p>}
-          {members.data?.length === 0 && <p className="text-sm text-muted-foreground">아직 이 코드로 가입한 사람이 없어요.</p>}
+          {members.data?.length === 0 && <p className="text-sm text-muted-foreground">이 코드로 가입한 부원이 없어요.</p>}
           <ul className="divide-y">
             {members.data?.map((m) => (
               <li key={m.id} className="py-2.5 text-sm">

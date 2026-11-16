@@ -17,9 +17,9 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 function emailErrorMessage(e: ApiError): string {
   switch (e.code) {
     case 'EMAIL_ALREADY_USED':
-      return '이미 가입된 이메일이에요. 로그인하거나 다른 이메일을 써 주세요.'
+      return '이미 가입된 이메일이에요. 로그인하거나 다른 이메일을 사용해 주세요.'
     case 'EMAIL_RESEND_TOO_SOON':
-      return `${formatWait(e.retryAfter ?? 60)} 뒤에 다시 보낼 수 있어요.`
+      return `${formatWait(e.retryAfter ?? 60)} 뒤 다시 보낼 수 있어요.`
     case 'EMAIL_DAILY_LIMIT':
     case 'VERIFICATION_CODE_INVALID':
     case 'VERIFICATION_CODE_EXPIRED':
@@ -28,7 +28,7 @@ function emailErrorMessage(e: ApiError): string {
       // 가입 한 번에 5통을 넘긴 경우는 retryAfter 없이 서버 문구로 안내
       return e.retryAfter ? commonErrorMessage(e) : e.message
     case 'VALIDATION_FAILED':
-      return e.fieldMessage('code') ? '인증번호는 숫자 6자리예요.' : '이메일 형식을 확인해 주세요.'
+      return e.fieldMessage('code') ? '인증번호 숫자 6자리' : '이메일 주소를 확인해 주세요.'
     default:
       return commonErrorMessage(e)
   }
@@ -93,12 +93,12 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
       {/* 기수는 초대 코드로 정해진다 (F1-01) — 앞 단계 결과를 확인시켜 준다 */}
       <p className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1.5 text-xs font-bold text-brand-text">
         <Check className="size-3.5" aria-hidden />
-        {draft.generation}기 초대 코드가 확인됐어요
+        {draft.generation}기 초대 코드 확인
       </p>
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.email}
         title="이메일을 인증해 주세요"
-        description="아이디 · 비밀번호를 찾을 때 쓸 메일이에요."
+        description="아이디·비밀번호 찾기에 쓸 이메일"
       />
       <div className="space-y-6">
 
@@ -130,7 +130,7 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
         )}
         {sentToThisEmail && !sendError && (
           <p className="rounded-lg bg-brand-soft px-3 py-2 text-xs leading-relaxed text-brand-text">
-            인증번호를 보냈어요(10분 유효). 메일이 안 오면 스팸함을 확인해 주세요.
+            인증번호를 보냈어요. 10분 안에 입력해 주세요.
           </p>
         )}
       </div>
@@ -159,7 +159,7 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
 
       <StepFooter>
         <Button type="submit" size="lg" className="h-12 w-full" disabled={!canConfirm}>
-          {confirm.isPending ? '확인 중…' : '다음'}
+          {confirm.isPending ? '확인 중…' : '이메일 인증하기'}
         </Button>
       </StepFooter>
     </form>

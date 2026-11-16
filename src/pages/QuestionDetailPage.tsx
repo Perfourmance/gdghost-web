@@ -45,7 +45,7 @@ export function QuestionDetailPage() {
       <SubPageLayout fallback="/questions">
         <LockPanel
           next={location.pathname + location.hash}
-          title="선배의 답변은 부원만 볼 수 있어요"
+          title="선배의 답변은 부원만 볼 수 있어요."
           buttonText="로그인하고 답변 보기"
         />
       </SubPageLayout>
@@ -123,7 +123,7 @@ function QuestionBody({
         {question.editedAfterAnswer && (
           <>
             <span aria-hidden>·</span>
-            <span>답변이 달린 뒤 수정됨</span>
+            <span>답변이 달린 뒤에 수정한 글이에요.</span>
           </>
         )}
       </p>
@@ -151,8 +151,8 @@ function DirectResultNotice({ state }: { state: DirectResultState | null }) {
     state.directDelivery === 'SENT'
       ? `${name} 선배에게 질문을 보냈어요.`
       : state.directDelivery === 'SCHEDULED'
-        ? `밤 시간이라 아침 8시에 ${name} 선배에게 알림이 가요.`
-        : `${name} 선배가 지금은 질문을 받지 않아서, 분야가 맞는 다른 선배에게 대신 보낼게요.`
+        ? `오전 8시에 ${name} 선배에게 알림이 가요.`
+        : `${name} 선배는 지금 질문을 받지 않아요. 같은 분야의 다른 선배에게 보낼게요.`
   return (
     <p className="mb-5 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
       {text}
@@ -166,7 +166,7 @@ function MyRouting({ questionId, mine }: { questionId: number; mine: { state: st
   const [result, setResult] = useState<PassResult | null>(null)
 
   function handlePass() {
-    if (!window.confirm('다른 선배에게 이 질문을 넘길까요? 넘긴 뒤에도 답변은 남길 수 있어요.')) return
+    if (!window.confirm('다른 선배에게 넘길까요? 넘긴 뒤에도 답변할 수 있어요.')) return
     pass.mutate(undefined, { onSuccess: setResult })
   }
 
@@ -174,18 +174,18 @@ function MyRouting({ questionId, mine }: { questionId: number; mine: { state: st
   return (
     <section className="mt-8 rounded-xl bg-brand-soft p-4">
       {mine.state === 'ANSWERED' ? (
-        <p className="text-sm text-brand-text">나에게 온 질문에 답해 주셔서 고마워요.</p>
+        <p className="text-sm text-brand-text">답변 완료</p>
       ) : passed ? (
         <p className="text-sm text-brand-text">
           {result && !result.nextCandidateNotified
-            ? '다른 선배에게 넘겼어요. 밤 시간이면 아침 8시에 전달돼요.'
+            ? '다른 선배에게 넘겼어요. 야간에는 오전 8시에 전달돼요.'
             : '다른 선배에게 넘긴 질문이에요.'}{' '}
           생각이 바뀌면 지금도 답변할 수 있어요.
         </p>
       ) : (
         <>
           <p className="text-sm font-bold text-brand-text">나에게 온 질문이에요</p>
-          <p className="mt-1 text-xs text-brand-text/80">답하기 어려우면 분야가 맞는 다른 선배에게 넘겨 주세요.</p>
+          <p className="mt-1 text-xs text-brand-text/80">답하기 어렵다면 같은 분야의 다른 선배에게 넘겨주세요.</p>
           {mine.canPass && (
             <Button variant="secondary" className="mt-3 w-full" disabled={pass.isPending} onClick={handlePass}>
               {pass.isPending ? '넘기는 중…' : '다른 선배에게 넘기기'}
@@ -204,7 +204,7 @@ function MyRouting({ questionId, mine }: { questionId: number; mine: { state: st
 
 // 전달 현황 — 누구에게 왜 갔는지 (F9-04)
 const STAGE_TAGS: Record<string, string> = { MEMBER: 'AI 추천', DIRECT: '지목' }
-const DELIVERY_STATES: Record<string, string> = { SENT: '전달됨', ANSWERED: '답변함', PASSED: '넘김' }
+const DELIVERY_STATES: Record<string, string> = { SENT: '전달 완료', ANSWERED: '답변 완료', PASSED: '넘김' }
 /** 익명 질문에서 이름이 가려진 줄(to = null)에 대신 쓰는 이름 */
 const HIDDEN_NAMES: Record<string, string> = { MEMBER: '추천받은 선배', DIRECT: '지목받은 선배' }
 
@@ -244,7 +244,7 @@ function RoutingStatus({ deliveries, reasonsHidden }: { deliveries: RoutingDeliv
                 </p>
               ) : (
                 reasonsHidden &&
-                hidden && <p className="mt-1 text-xs text-muted-foreground">익명 질문이라 이름을 가렸어요</p>
+                hidden && <p className="mt-1 text-xs text-muted-foreground">익명 질문 · 이름 비공개</p>
               )}
             </li>
           )
@@ -278,8 +278,8 @@ function QuestionAnswers({
     onEdit: (answer) => setSheet({ kind: 'edit', answer }),
     onDelete: (answer) => {
       const message = answer.adopted
-        ? '채택된 답변이에요. 삭제하면 채택도 함께 풀려요. 삭제할까요?'
-        : '삭제할까요? 삭제하면 되돌릴 수 없어요.'
+        ? '채택된 답변을 삭제할까요? 채택도 함께 취소돼요.'
+        : '삭제할까요? 삭제는 되돌릴 수 없어요.'
       if (!window.confirm(message)) return
       setError(null)
       remove.mutate(answer.id, { onError })
@@ -306,7 +306,7 @@ function QuestionAnswers({
       )}
       {question.answers.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
-          {question.canAnswer ? '아직 답변이 없어요. 첫 답변을 남겨 주세요.' : '아직 답변이 없어요.'}
+          {question.canAnswer ? '아직 답변이 없어요.' : '아직 답변이 없어요.'}
         </p>
       ) : (
         <AnswerList answers={question.answers} now={now} actions={actions} />
@@ -372,7 +372,7 @@ function ReportMenu({ label, onReport }: { label: string; onReport: () => void }
 function GoneNotice() {
   return (
     <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">글을 찾을 수 없어요</p>
+      <p className="text-lg font-bold text-title">글을 찾을 수가 없어요.</p>
       <p className="mt-1 text-sm text-muted-foreground">삭제됐거나 운영진이 숨긴 글이에요.</p>
       <Link to="/questions" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
         질문 목록으로

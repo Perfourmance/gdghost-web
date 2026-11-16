@@ -76,29 +76,29 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
   function handleError(e: ApiError) {
     switch (e.code) {
       case 'LOGIN_ID_TAKEN':
-        setErrorMessage('그사이 다른 사람이 이 아이디로 가입했어요. 다른 아이디를 써 주세요.')
+        setErrorMessage('이미 사용 중인 아이디')
         return
       case 'PASSWORD_POLICY':
-        setErrorMessage('비밀번호는 8자 이상, 영문 · 숫자 · 특수문자를 모두 넣어 주세요.')
+        setErrorMessage('8자 이상 · 영문, 숫자, 특수문자 포함')
         return
       case 'NICKNAME_TAKEN':
-        onRedirect('profile', '그사이 다른 사람이 이 닉네임을 쓰기 시작했어요. 다른 닉네임을 정해 주세요.')
+        onRedirect('profile', '이미 사용 중인 닉네임')
         return
       case 'NICKNAME_RESERVED':
-        onRedirect('profile', "'익명'으로 시작하는 닉네임은 쓸 수 없어요. 닉네임을 바꿔 주세요.")
+        onRedirect('profile', "‘익명’으로 시작하는 닉네임은 쓸 수 없어요.")
         return
       case 'EMAIL_ALREADY_USED':
-        onRedirect('email', '이미 가입된 이메일이에요. 다른 이메일로 다시 인증해 주세요.', {
+        onRedirect('email', '이미 가입된 이메일이에요. 다른 이메일로 인증해 주세요.', {
           emailVerified: false,
           codeSentTo: undefined,
           resendAvailableAt: undefined,
         })
         return
       case 'SIGNUP_SESSION_EXPIRED':
-        onRestart('가입 시간(30분)이 지났어요. 초대 코드부터 다시 입력해 주세요.')
+        onRestart('가입 시간 30분이 지났어요. 초대 코드부터 다시 입력해 주세요.')
         return
       case 'INVITE_CODE_INVALID':
-        onRestart('초대 코드를 더 쓸 수 없어요. 운영진에게 새 코드를 받아 처음부터 다시 해 주세요.')
+        onRestart('운영진에게 새 초대 코드를 받아 주세요.')
         return
       case 'VALIDATION_FAILED': {
         const field = e.fieldErrors.find((f) => stepOfField(f.field) != null)
@@ -123,7 +123,7 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
     if (!canSubmit) return
     const request = buildRequest(draft, loginId.trim(), password)
     if (!request) {
-      onRedirect('profile', '프로필 입력이 빠졌어요. 다시 확인해 주세요.')
+      onRedirect('profile', '빠진 프로필 항목을 확인해 주세요.')
       return
     }
     setErrorMessage('')
@@ -134,8 +134,8 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
     <form onSubmit={handleSubmit} noValidate>
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.account}
-        title="아이디와 비밀번호를 정해 주세요"
-        description="마지막 단계예요. 로그인은 이메일이 아니라 아이디로 해요."
+        title="아이디와 비밀번호 설정"
+        description="로그인에 쓸 아이디를 정해 주세요."
       />
 
       <div className="space-y-6">
@@ -162,7 +162,7 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
             {loginIdCheck.state === 'available' && <span className="text-brand-text">사용할 수 있어요.</span>}
             {loginIdCheck.state === 'invalid' && <span className="text-destructive">{loginIdCheck.message}</span>}
             {loginIdCheck.state === 'error' && (
-              <span className="text-destructive">확인하지 못했어요. 잠시 뒤 다시 입력해 주세요.</span>
+              <span className="text-destructive">확인 실패. 잠시 뒤 다시 입력해 주세요.</span>
             )}
           </p>
         </div>

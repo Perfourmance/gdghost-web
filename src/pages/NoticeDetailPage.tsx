@@ -46,7 +46,7 @@ export function NoticeDetailPage() {
       <SubPageLayout fallback="/notices">
         <LockPanel
           next={location.pathname + location.hash}
-          title="공지는 부원만 볼 수 있어요"
+          title="공지는 부원만 볼 수 있어요."
           buttonText="로그인하고 공지 보기"
         />
       </SubPageLayout>
@@ -134,7 +134,7 @@ function ConfirmSection({ notice }: { notice: NoticeDetail }) {
             {confirm.isPending ? '보내는 중…' : '확인했어요'}
           </Button>
           <p className="mt-1.5 text-center text-xs text-muted-foreground">
-            누르면 확인한 사람 수에 들어가요. 한 번 누르면 되돌릴 수 없어요.
+            확인 인원에 집계돼요. 확인 후 취소할 수 없어요.
           </p>
         </>
       )}
@@ -156,7 +156,7 @@ function StatsSection({ stats }: { stats: NonNullable<NoticeDetail['stats']> }) 
         <b className="text-brand-text">{stats.memberCount}명</b> 중 <b className="text-brand-text">{stats.confirmedCount}명</b>이
         확인했어요
       </p>
-      <p className="mt-0.5 text-xs text-muted-foreground">열어 본 사람 {stats.readCount}명 · 부원에게는 보이지 않아요</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">열람 {stats.readCount}명 · 운영 화면에서만 표시</p>
     </section>
   )
 }
@@ -167,7 +167,7 @@ function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) 
   const remove = useDeleteNoticeComment(notice.id)
 
   function handleDelete(comment: NoticeComment) {
-    if (!window.confirm('댓글을 삭제할까요? 삭제하면 되돌릴 수 없어요.')) return
+    if (!window.confirm('댓글을 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
     setError(null)
     remove.mutate(comment.id, { onError: (e) => setError(noticeErrorMessage(toApiError(e))) })
   }
@@ -185,7 +185,7 @@ function CommentSection({ notice, now }: { notice: NoticeDetail; now: number }) 
 
       {notice.comments.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
-          참석이 어렵거나 궁금한 점이 있으면 댓글로 남겨 주세요.
+          참석이 어렵거나 궁금한 점이 있다면 댓글로 알려 주세요.
         </p>
       ) : (
         <ul className="space-y-2">
@@ -288,7 +288,7 @@ function CommentForm({ noticeId }: { noticeId: number }) {
 function GoneNotice() {
   return (
     <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">공지를 찾을 수 없어요</p>
+      <p className="text-lg font-bold text-title">공지를 찾지 못했어요.</p>
       <p className="mt-1 text-sm text-muted-foreground">삭제됐거나 없는 공지예요.</p>
       <Link to="/notices" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
         공지 목록으로

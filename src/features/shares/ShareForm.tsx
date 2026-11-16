@@ -61,7 +61,7 @@ export function ShareForm({ mode, initial, initialPhotos = [], pending, error, f
   const busy = pending || uploading
   const allowLeave = useLeaveGuard(
     changed && !busy,
-    mode === 'create' ? '공유 작성을 그만둘까요? 입력한 내용은 사라져요.' : '수정을 그만둘까요? 바꾼 내용은 사라져요.',
+    mode === 'create' ? '공유 작성을 그만둘까요? 입력한 내용은 저장되지 않아요.' : '수정을 그만둘까요? 변경 사항은 저장되지 않아요.',
   )
 
   function set(patch: Partial<ShareFormValues>) {
@@ -120,7 +120,7 @@ export function ShareForm({ mode, initial, initialPhotos = [], pending, error, f
           <Input
             id="share-title"
             maxLength={TITLE_MAX}
-            placeholder="예) 학교 앞 혼밥하기 좋은 곳"
+            placeholder="예: 학교 앞 혼밥하기 좋은 곳"
             className="h-12 bg-card"
             aria-invalid={titleError ? true : undefined}
             value={values.title}
@@ -235,7 +235,7 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
           id="share-tag"
           maxLength={TAG_MAX}
           disabled={full}
-          placeholder={full ? `태그는 ${TAGS_MAX}개까지예요` : '예) 혼밥'}
+          placeholder={full ? `태그는 ${TAGS_MAX}개까지예요` : '예: 혼밥'}
           className="h-11 bg-card"
           value={text}
           onChange={(e) => setText(e.target.value.replace(',', ''))}
@@ -247,7 +247,7 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
           추가
         </Button>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">검색에 쓰여요. 쓰고 Enter를 누르면 들어가요.</p>
+      <p className="mt-1.5 text-xs text-muted-foreground">태그를 입력하고 Enter를 누르면 검색에 쓰여요.</p>
     </div>
   )
 }

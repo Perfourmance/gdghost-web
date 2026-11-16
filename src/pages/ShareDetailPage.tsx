@@ -52,7 +52,7 @@ export function ShareDetailPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname + location.hash} title="공유 글은 부원만 볼 수 있어요" buttonText="로그인하고 글 보기" />
+        <LockPanel next={location.pathname + location.hash} title="공유 글은 부원만 볼 수 있어요." buttonText="로그인하고 글 보기" />
       </SubPageLayout>
     )
   }
@@ -100,7 +100,7 @@ function OwnerMenu({ shareId, onError }: { shareId: number; onError: (message: s
   }
 
   function handleDelete() {
-    if (!window.confirm('공유를 삭제할까요? 삭제하면 되돌릴 수 없어요.')) return
+    if (!window.confirm('공유를 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,
@@ -139,7 +139,7 @@ function ShareBody({ share, onReport }: { share: ShareDetail; onReport: (target:
         {share.updatedAt && (
           <>
             <span aria-hidden>·</span>
-            <span>수정됨</span>
+            <span>수정</span>
           </>
         )}
       </p>
@@ -166,11 +166,11 @@ function ShareBody({ share, onReport }: { share: ShareDetail; onReport: (target:
           onClick={() => save.mutate(!share.saved)}
         >
           <Bookmark className={cn(share.saved && 'fill-current')} aria-hidden />
-          {share.saved ? '저장함' : '저장하기'} <span className="tabular-nums">{share.saveCount}</span>
+          {share.saved ? '저장 취소' : '저장하기'} <span className="tabular-nums">{share.saveCount}</span>
         </Button>
         {save.isError && (
           <p className="mt-2 text-center text-sm text-destructive" role="alert">
-            {toApiError(save.error).code === 'NOT_FOUND' ? '삭제된 글이라 저장할 수 없어요.' : commonErrorMessage(toApiError(save.error))}
+            {toApiError(save.error).code === 'NOT_FOUND' ? '삭제된 글은 저장할 수 없어요.' : commonErrorMessage(toApiError(save.error))}
           </p>
         )}
       </div>
@@ -211,7 +211,7 @@ function NoteSection({
       )}
       {share.notes.length === 0 ? (
         <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
-          더 알고 있는 게 있으면 한 줄로 보태 주세요.
+          아는 팁이 있다면 한 줄 보태 주세요.
         </p>
       ) : (
         <ul className="space-y-2">
@@ -264,7 +264,7 @@ function NoteForm({ shareId }: { shareId: number }) {
         <input
           aria-label="덧붙일 한 줄"
           maxLength={NOTE_MAX}
-          placeholder="예) 주말엔 웨이팅 30분 있어요"
+          placeholder="예: 주말엔 웨이팅 30분 있어요"
           value={body}
           onChange={(e) => setBody(e.target.value)}
           className="h-11 min-w-0 flex-1 rounded-lg border border-input bg-background px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"

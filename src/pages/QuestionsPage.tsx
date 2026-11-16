@@ -92,7 +92,7 @@ export function QuestionsPage() {
         {list.isSuccess && questions.length === 0 && (
           <EmptyCard>
             {filters.mine
-              ? '아직 남긴 질문이 없어요. 궁금한 걸 선배에게 물어보세요.'
+              ? '아직 남긴 질문이 없어요.'
               : filters.unanswered
                 ? '답변을 기다리는 질문이 없어요.'
                 : '아직 질문이 없어요. 첫 질문을 남겨 보세요.'}
@@ -137,11 +137,11 @@ export function QuestionsPage() {
         <LockSheet
           next={lock.next}
           onClose={lock.close}
-          title="질문은 부원만 남길 수 있어요"
-          description="GDGoC SMU 부원으로 로그인하면 선배에게 물어볼 수 있어요."
+          title="질문은 부원만 남길 수 있어요."
+          description="부원으로 로그인하면 선배에게 질문할 수 있어요."
         />
       ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 부원만 볼 수 있어요" />
+        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 부원만 볼 수 있어요." />
       )}
     </div>
   )

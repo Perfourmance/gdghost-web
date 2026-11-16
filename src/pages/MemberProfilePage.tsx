@@ -36,7 +36,7 @@ export function MemberProfilePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="프로필은 부원만 볼 수 있어요" />
+        <LockPanel next={location.pathname} title="프로필은 부원만 볼 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -104,8 +104,8 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
       {realInfo.length > 0 && <p className="mt-1 text-xs text-muted-foreground">{realInfo.join(' · ')}</p>}
 
       <div className="mt-3 flex flex-wrap gap-1.5">
-        <AcceptTag on={profile.acceptQuestion}>{profile.acceptQuestion ? '질문 받는 중' : '질문 안 받음'}</AcceptTag>
-        <AcceptTag on={profile.acceptCoffee}>{profile.acceptCoffee ? '커피챗 받는 중' : '커피챗 안 받음'}</AcceptTag>
+        <AcceptTag on={profile.acceptQuestion}>{profile.acceptQuestion ? '질문 받는 중' : '질문을 받지 않아요'}</AcceptTag>
+        <AcceptTag on={profile.acceptCoffee}>{profile.acceptCoffee ? '커피챗 받는 중' : '커피챗을 받지 않아요'}</AcceptTag>
       </div>
 
       {mine ? (
@@ -169,7 +169,7 @@ function ProfileHeader({ profile, mine }: { profile: MemberProfile; mine: boolea
               </li>
             ))}
           </ul>
-          {mine && <p className="mt-2 text-xs text-muted-foreground">비공개로 둔 연락 수단도 나에게는 보여요.</p>}
+          {mine && <p className="mt-2 text-xs text-muted-foreground">비공개 연락 수단은 나만 볼 수 있어요.</p>}
         </Section>
       )}
     </>
@@ -184,11 +184,11 @@ function CoffeeAction({ profile }: { profile: MemberProfile }) {
   const waiting = availableAt != null
 
   let notice: ReactNode = null
-  if (!profile.acceptCoffee) notice = '지금은 커피챗을 받지 않아요.'
+  if (!profile.acceptCoffee) notice = '현재 커피챗 신청을 받지 않아요.'
   else if (myRequestState === 'REQUESTED')
     notice = (
       <>
-        보낸 신청이 응답을 기다리고 있어요.{' '}
+        상대가 수락하면 연락 방법을 볼 수 있어요.
         <Link to="/coffee-chats?tab=sent" className="font-bold text-brand-text underline-offset-2 hover:underline">
           보낸 신청 보기
         </Link>
@@ -263,8 +263,8 @@ function Tags({ items, className }: { items: string[]; className?: string }) {
 const TABS: { type: ActivityType; label: string; count: (p: MemberProfile) => number; empty: string }[] = [
   { type: 'ANSWER', label: '답변', count: (p) => p.stats.answerCount, empty: '아직 남긴 답변이 없어요.' },
   { type: 'QUESTION', label: '질문', count: (p) => p.stats.questionCount, empty: '아직 남긴 질문이 없어요.' },
-  { type: 'SHARE', label: '공유', count: (p) => p.stats.shareCount, empty: '아직 올린 공유가 없어요.' },
-  { type: 'FEED', label: '피드', count: (p) => p.stats.feedCount, empty: '아직 올린 피드가 없어요.' },
+  { type: 'SHARE', label: '공유', count: (p) => p.stats.shareCount, empty: '아직 공유한 글이 없어요.' },
+  { type: 'FEED', label: '피드', count: (p) => p.stats.feedCount, empty: '아직 올린 글이 없어요.' },
 ]
 
 /** 활동 기록 — `답변 / 질문 / 공유 / 피드` 탭(옆에 개수), 고른 탭만 불러오고 탭마다 무한 스크롤 (IA S24) */
@@ -309,7 +309,7 @@ function Activities({ profile, mine }: { profile: MemberProfile; mine: boolean }
 
       {/* 본인 조회에만 익명 글이 섞여 온다. 개수는 익명을 빼고 센다 */}
       {mine && (tab.type === 'ANSWER' || tab.type === 'QUESTION') && (
-        <p className="mt-3 text-xs text-muted-foreground">익명으로 쓴 글은 나에게만 보이고, 개수에는 들어가지 않아요.</p>
+        <p className="mt-3 text-xs text-muted-foreground">이 프로필에서 익명 글은 나만 볼 수 있고, 글 수에서는 제외돼요.</p>
       )}
 
       <div role="tabpanel" className="mt-4 space-y-2">
@@ -392,7 +392,7 @@ function ActivityCard({ item, now }: { item: ActivityItem; now: number }) {
 function GoneNotice() {
   return (
     <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">부원을 찾을 수 없어요</p>
+      <p className="text-lg font-bold text-title">부원을 찾을 수가 없어요.</p>
       <p className="mt-1 text-sm text-muted-foreground">탈퇴했거나 없는 부원이에요.</p>
       <Link to="/members" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
         부원 목록으로

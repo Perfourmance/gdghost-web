@@ -45,7 +45,7 @@ export function RecruitsPage() {
         <div className="mt-6">
           <LockPanel
             next={`/recruits${params.toString() ? `?${params}` : ''}`}
-            title="모집은 부원만 볼 수 있어요"
+            title="모집은 부원만 볼 수 있어요."
             buttonText="로그인하고 모집 보기"
           />
         </div>
@@ -85,7 +85,7 @@ export function RecruitsPage() {
 
         {list.isSuccess && recruits.length === 0 && (
           <EmptyCard>
-            {kind ? `${recruitKindLabel(kind)} 모집이 없어요.` : '열린 모집이 없어요.'} 택시나 팀원이 필요하면 모집을 열어 보세요.
+            {kind ? `${recruitKindLabel(kind)} 모집이 없어요.` : '아직 진행 중인 모집이 없어요.'} 택시를 같이 타거나 팀원을 구하고 있다면 모집을 열어 보세요.
           </EmptyCard>
         )}
 

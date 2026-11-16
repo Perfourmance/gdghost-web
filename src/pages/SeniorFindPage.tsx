@@ -38,7 +38,7 @@ export function SeniorFindPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요" buttonText="로그인하고 선배 찾기" />
+        <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요." buttonText="로그인하고 선배 찾기" />
       </SubPageLayout>
     )
   }
@@ -82,7 +82,7 @@ function SeniorFinder({ saved }: { saved: SavedSearch | null }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-[22px] leading-snug font-bold text-title">선배 찾기</h1>
-          <p className="mt-1 text-sm text-muted-foreground">궁금한 걸 적으면 답해 줄 선배를 찾아 드려요</p>
+          <p className="mt-1 text-sm text-muted-foreground">궁금한 점을 적으면 답해 줄 선배를 찾아요.</p>
         </div>
         <img src={searchMascot} alt="" className="w-16 shrink-0" />
       </div>
@@ -142,7 +142,7 @@ function SeniorFinder({ saved }: { saved: SavedSearch | null }) {
           <Button type="submit" size="lg" className="h-12 w-full" disabled={match.isPending}>
             {match.isPending ? '선배를 찾는 중…' : '선배 찾기'}
           </Button>
-          <p className="mt-2 text-xs text-muted-foreground">잘 맞는 선배를 3명까지 추천해요.</p>
+          <p className="mt-2 text-xs text-muted-foreground">질문에 맞는 선배를 최대 3명까지 추천해요.</p>
           {match.isError && (
             <p className="mt-2 text-sm text-destructive" role="alert">
               {seniorMatchErrorMessage(toApiError(match.error))}
@@ -169,14 +169,14 @@ function Results({ input, result }: { input: SeniorMatchInput; result: SeniorMat
     <section className="mt-10 border-t pt-6" aria-live="polite">
       <h2 className="text-base font-bold text-title">추천 선배</h2>
       {result.fallback && result.items.length > 0 && (
-        <p className="mt-1 text-xs text-muted-foreground">지금은 AI 추천이 잠시 멈춰서, 분야와 경험만 보고 골랐어요.</p>
+        <p className="mt-1 text-xs text-muted-foreground">지금은 AI 추천을 사용할 수 없어요. 분야와 경험을 기준으로 선배를 골랐어요.</p>
       )}
 
       {result.items.length === 0 ? (
         <div className="mt-4 rounded-xl bg-card px-4 py-6 text-center">
-          <p className="text-sm text-foreground">맞는 선배를 찾지 못했어요.</p>
+          <p className="text-sm text-foreground">조건에 맞는 선배가 없어요.</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            질문을 올려 두면 운영진과 분야가 맞는 선배에게 차례로 알려 드려요.
+            질문을 올리면 운영진과 해당 분야 선배에게 차례로 알려요.
           </p>
           <Link
             to="/questions/new"

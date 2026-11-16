@@ -152,7 +152,7 @@ export function scheduleErrorMessage(error: ApiError | null): string | null {
     case 'FORBIDDEN':
       return '동아리 · 학사 일정은 운영진만 등록할 수 있어요.'
     case 'NOT_AUTHOR':
-      return '내가 등록한 일정만 고칠 수 있어요.'
+      return '내 일정만 수정할 수 있어요.'
     case 'NOT_FOUND':
       return '일정이 삭제됐어요.'
     default:

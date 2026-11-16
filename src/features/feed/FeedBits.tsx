@@ -58,7 +58,7 @@ export function FeedPostView({ post, now, detail = false }: { post: FeedPost; no
       </div>
       {like.isError && (
         <p className="mt-1 text-xs text-destructive" role="alert">
-          좋아요를 반영하지 못했어요. 다시 눌러 주세요.
+          좋아요를 저장하지 못했어요. 다시 눌러 주세요.
         </p>
       )}
     </article>

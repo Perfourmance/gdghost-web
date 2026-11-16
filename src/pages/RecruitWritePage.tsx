@@ -42,7 +42,7 @@ export function RecruitWritePage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/recruits">
-        <LockPanel next={location.pathname + location.search} title="모집은 부원만 열 수 있어요" buttonText="로그인하고 모집 열기" />
+        <LockPanel next={location.pathname + location.search} title="모집은 부원만 열 수 있어요." buttonText="로그인하고 모집 열기" />
       </SubPageLayout>
     )
   }
@@ -71,7 +71,7 @@ function RecruitForm() {
 
   const pending = create.isPending
   const dirty = kind != null || title.trim() !== '' || date !== '' || time !== '' || memo.trim() !== ''
-  const allowLeave = useLeaveGuard(dirty && !pending, '모집 열기를 그만둘까요? 입력한 내용은 사라져요.')
+  const allowLeave = useLeaveGuard(dirty && !pending, '모집 열기를 그만둘까요? 입력한 내용은 저장되지 않아요.')
 
   const today = todayKst()
   const lastDay = kstDatePlus(MAX_AHEAD_DAYS)
@@ -87,8 +87,8 @@ function RecruitForm() {
     (triedSubmit && title.trim().length < TITLE_MIN ? `제목을 ${TITLE_MIN}자 이상 써 주세요.` : null) ??
     error?.fieldMessage('title')
   const timeError =
-    (triedSubmit && (!date || !time) ? '만나는 날짜와 시간을 골라 주세요.' : null) ??
-    (past ? '지난 시각은 고를 수 없어요.' : null) ??
+    (triedSubmit && (!date || !time) ? '만날 날짜와 시간을 골라 주세요.' : null) ??
+    (past ? '지금보다 늦은 시간을 골라 주세요.' : null) ??
     (tooFar ? `${MAX_AHEAD_DAYS}일 안으로 골라 주세요.` : null) ??
     error?.fieldMessage('meetAt')
 
@@ -128,11 +128,11 @@ function RecruitForm() {
                   <b className="font-bold">{schedule.data.title}</b> 일정에 연결돼요.
                 </>
               ) : schedule.isError ? (
-                '연결할 일정을 찾을 수 없어요.'
+                '연결할 일정을 찾을 수가 없어요.'
               ) : (
                 '연결할 일정을 불러오는 중…'
               )}
-              <span className="mt-0.5 block text-xs text-brand-text/80">일정 상세에서 이 모집이 보여요.</span>
+              <span className="mt-0.5 block text-xs text-brand-text/80">모집을 열면 일정 상세 화면에서도 볼 수 있어요.</span>
             </p>
             <button
               type="button"
@@ -165,7 +165,7 @@ function RecruitForm() {
             <Input
               id="title"
               maxLength={TITLE_MAX}
-              placeholder="예) 금요일 저녁 홍대입구역까지 택시 같이 타요"
+              placeholder="예: 금요일 저녁 홍대입구역행 택시 동승"
               className="h-12 bg-card"
               aria-invalid={titleError ? true : undefined}
               value={title}
@@ -198,7 +198,7 @@ function RecruitForm() {
               />
             </div>
             {timeError && <FieldError>{timeError}</FieldError>}
-            <p className="mt-2 text-xs text-muted-foreground">이 시각이 지나면 모집이 저절로 마감돼요.</p>
+            <p className="mt-2 text-xs text-muted-foreground">이 시간이 지나면 모집이 자동으로 마감돼요.</p>
           </section>
 
           <section>
@@ -229,7 +229,7 @@ function RecruitForm() {
               </Button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              {CAPACITY_MIN}–{CAPACITY_MAX}명. 정원이 차면 저절로 마감돼요.
+              {CAPACITY_MIN}~{CAPACITY_MAX}명까지 모집할 수 있어요. 정원이 차면 자동으로 마감돼요.
             </p>
             {error?.fieldMessage('capacity') && <FieldError>{error.fieldMessage('capacity')}</FieldError>}
           </section>
@@ -242,12 +242,12 @@ function RecruitForm() {
               id="memo"
               maxLength={MEMO_MAX}
               rows={4}
-              placeholder="만날 장소나 연락 방법(오픈채팅 링크 등)을 적어 주세요."
+              placeholder="만날 장소나 연락 방법을 적어 주세요."
               className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
             />
-            <p className="mt-2 text-xs text-muted-foreground">참여해도 알림이 가지 않아서, 참여한 사람이 메모를 보고 연락해요.</p>
+            <p className="mt-2 text-xs text-muted-foreground">참여 알림은 따로 가지 않아요. 참여자가 메모에 적힌 방법으로 연락해요.</p>
           </section>
         </div>
 
