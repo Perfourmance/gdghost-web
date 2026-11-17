@@ -3,6 +3,8 @@ import { Chip } from '@/components/Chip'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { DepartmentSelect } from '@/features/departments/DepartmentSelect'
+import { isDepartment, useDepartments } from '@/features/departments/useDepartments'
 import { MEMBER_STATUSES, POSITIONS } from '@/features/member/labels'
 import { EMPTY_BASIC, SIGNUP_STEP_LABELS, type BasicInfo, type SignupDraft } from '@/features/signup/draft'
 import { StepFooter, StepHeader } from '@/components/form/StepLayout'
@@ -17,6 +19,7 @@ interface Props {
 export function BasicInfoStep({ draft, onUpdate }: Props) {
   const basic = draft.basic ?? EMPTY_BASIC
   const nicknameCheck = useNicknameCheck(basic.nickname)
+  const departments = useDepartments()
 
   function set<K extends keyof BasicInfo>(key: K, value: BasicInfo[K]) {
     onUpdate({ basic: { ...basic, [key]: value } })
@@ -28,7 +31,7 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
     nicknameCheck.state === 'available' &&
     basic.position != null &&
     studentNoValid &&
-    basic.department.trim() !== '' &&
+    isDepartment(departments.data, basic.department) &&
     basic.status != null
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -107,13 +110,7 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
         </div>
         <div className="space-y-2">
           <Label className="font-bold text-title" htmlFor="department">학과</Label>
-          <Input
-            id="department"
-            maxLength={30}
-            className="h-12 bg-card"
-            value={basic.department}
-            onChange={(e) => set('department', e.target.value)}
-          />
+          <DepartmentSelect id="department" value={basic.department} onChange={(name) => set('department', name)} />
         </div>
       </div>
       <p id="studentNo-help" className="-mt-4 text-xs text-muted-foreground">

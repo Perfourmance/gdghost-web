@@ -8,6 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockPanel } from '@/features/auth/LockPanel'
+import { DepartmentSelect } from '@/features/departments/DepartmentSelect'
+import { isDepartment, useDepartments } from '@/features/departments/useDepartments'
 import { useMe } from '@/features/auth/session'
 import {
   CONTACT_VALUE_MAX,
@@ -156,6 +158,7 @@ export function ProfileEditPage() {
 function ProfileForm({ profile }: { profile: MyProfile }) {
   const navigate = useNavigate()
   const tags = useTags()
+  const departments = useDepartments()
   const save = useSaveProfile()
   const [initial] = useState(() => initialValues(profile))
   const [values, setValues] = useState(initial)
@@ -181,7 +184,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
   const phone = values.contacts.PHONE.value.trim()
   const errors = {
     nickname: nicknameChanged && nicknameCheck.state === 'invalid' ? nicknameCheck.message : null,
-    department: values.department.trim() === '' ? '학과를 적어 주세요.' : null,
+    department: isDepartment(departments.data, values.department) ? null : '학과를 골라 주세요.',
     interests: values.interestTagIds.length === 0 ? '관심 분야를 하나 이상 골라 주세요.' : null,
     phone: phone !== '' && !/^[0-9-]+$/.test(phone) ? '숫자와 하이픈(-)만 입력해 주세요.' : null,
   }
@@ -259,13 +262,11 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
 
         <section>
           <FieldLabel htmlFor="department">학과</FieldLabel>
-          <Input
+          <DepartmentSelect
             id="department"
-            maxLength={30}
-            className="h-12 bg-card"
-            aria-invalid={triedSubmit && errors.department != null}
             value={values.department}
-            onChange={(e) => set('department', e.target.value)}
+            invalid={triedSubmit && errors.department != null}
+            onChange={(name) => set('department', name)}
           />
           {triedSubmit && errors.department && <FieldError>{errors.department}</FieldError>}
         </section>
