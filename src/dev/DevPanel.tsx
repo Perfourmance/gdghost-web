@@ -21,7 +21,7 @@ export default function DevPanel() {
     try {
       const { data } = await api.post<Me>('/auth/login', { loginId, password })
       switchSession(queryClient, data)
-      setMessage(`${data.nickname}(으)로 로그인함`)
+      setMessage(`${data.nickname}(으)로 로그인했어요.`)
     } catch (error) {
       setMessage(`실패: ${toApiError(error).code}`)
     }

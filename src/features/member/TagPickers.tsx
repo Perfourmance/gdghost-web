@@ -63,7 +63,7 @@ export function InterestPicker({
         <section className="space-y-3">
           <div>
             <p className="text-sm font-bold text-title">세부 기술 (선택)</p>
-            <p className="mt-1 text-xs text-muted-foreground">다뤄본 것만 골라 주세요. 고른 만큼 맞는 질문이 와요</p>
+            <p className="mt-1 text-xs text-muted-foreground">써 본 기술만 골라 주세요. 고른 기술에 맞는 질문을 받아요.</p>
           </div>
           {selectedInterests.map((interest) => {
             const picked = interest.skills.filter((s) => value.skillTagIds.includes(s.id)).length

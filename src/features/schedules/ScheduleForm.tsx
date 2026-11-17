@@ -55,7 +55,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
     values.memo.trim() !== initial.memo.trim()
   const allowLeave = useLeaveGuard(
     changed && !pending,
-    mode === 'create' ? '일정 등록을 그만둘까요? 입력한 내용은 사라져요.' : '수정을 그만둘까요? 바꾼 내용은 사라져요.',
+    mode === 'create' ? '일정 등록을 그만둘까요? 입력한 내용은 저장되지 않아요.' : '수정을 그만둘까요? 변경 사항은 저장되지 않아요.',
   )
 
   function set(patch: Partial<ScheduleFormValues>) {
@@ -70,7 +70,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
   const endError =
     (triedSubmit && period && !values.endDate ? '끝나는 날을 골라 주세요.' : null) ??
     (period && values.endDate && values.startDate && values.endDate < values.startDate
-      ? '끝나는 날은 시작하는 날과 같거나 뒤여야 해요.'
+      ? '종료일은 시작일과 같거나 늦어야 해요.'
       : null) ??
     error?.fieldMessage('endDate') ??
     error?.fieldMessage('periodValid')
@@ -105,8 +105,8 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             {staff
-              ? '동아리 · 학사 일정은 공식 일정으로 표시돼요.'
-              : '동아리 · 학사 일정은 운영진이 등록해요.'}
+              ? '동아리와 학사 일정은 공식 일정으로 표시돼요.'
+              : '동아리와 학사 일정은 운영진이 등록해요.'}
           </p>
           {kindError && <FieldError>{kindError}</FieldError>}
         </section>
@@ -118,7 +118,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
           <Input
             id="title"
             maxLength={TITLE_MAX}
-            placeholder="예) 교내 해커톤 참가 신청 마감"
+            placeholder="예: 교내 해커톤 참가 신청 마감"
             className="h-12 bg-card"
             aria-invalid={titleError ? true : undefined}
             value={values.title}
@@ -159,7 +159,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
             </div>
           )}
           {endError && <FieldError>{endError}</FieldError>}
-          <p className="mt-2 text-xs text-muted-foreground">마감 3일 전부터 캘린더에서 강조돼요.</p>
+          <p className="mt-2 text-xs text-muted-foreground">마감 3일 전부터 캘린더에서 강조해요.</p>
         </section>
 
         <section>
@@ -169,7 +169,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
           <Input
             id="place"
             maxLength={PLACE_MAX}
-            placeholder="예) 학생회관 301호"
+            placeholder="예: 학생회관 301호"
             className="h-12 bg-card"
             value={values.place}
             onChange={(e) => set({ place: e.target.value })}
@@ -185,7 +185,7 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
             id="memo"
             maxLength={MEMO_MAX}
             rows={5}
-            placeholder="신청 링크나 준비물을 적어 두면 좋아요."
+            placeholder="신청 링크·준비물"
             className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
             value={values.memo}
             onChange={(e) => set({ memo: e.target.value })}

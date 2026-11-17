@@ -200,11 +200,11 @@ export function useReviewCertification() {
 export function contentErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'NOTICE_REMIND_USED':
-      return '이 공지는 이미 한 번 더 알렸어요. 공지당 한 번만 보낼 수 있어요.'
+      return '이 공지는 이미 한 번 더 알렸어요. 추가 알림은 공지당 한 번만 보낼 수 있어요.'
     case 'CERT_ALREADY_REVIEWED':
-      return '이미 다른 운영진이 확인한 인증이에요. 목록을 새로 불러왔어요.'
+      return '다른 운영진이 이미 확인한 인증이에요.'
     case 'NOT_FOUND':
-      return '삭제됐거나 없는 항목이에요. 목록을 새로 불러왔어요.'
+      return '해당 항목을 찾을 수 없어요.'
     case 'FORBIDDEN':
       return '운영진만 할 수 있어요.'
     case 'VALIDATION_FAILED':

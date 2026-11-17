@@ -14,8 +14,8 @@ interface AvailabilityResponse {
 /** 화면에서 먼저 거르는 닉네임 규칙 (서버와 같음: 2–12자, '익명' 시작 금지) */
 export function nicknameRuleError(nickname: string): string | null {
   const trimmed = nickname.trim()
-  if (trimmed.length < 2 || trimmed.length > 12) return '닉네임은 2–12자예요.'
-  if (trimmed.startsWith('익명')) return "'익명'으로 시작하는 닉네임은 쓸 수 없어요."
+  if (trimmed.length < 2 || trimmed.length > 12) return '닉네임은 2~12자로 입력해 주세요.'
+  if (trimmed.startsWith('익명')) return "‘익명’으로 시작하는 닉네임은 쓸 수 없어요."
   return null
 }
 
@@ -42,6 +42,6 @@ export function useNicknameCheck(nickname: string): NicknameCheck {
   return {
     state: 'invalid',
     message:
-      query.data.reason === 'RESERVED' ? "'익명'으로 시작하는 닉네임은 쓸 수 없어요." : '이미 쓰는 닉네임이에요.',
+      query.data.reason === 'RESERVED' ? "‘익명’으로 시작하는 닉네임은 쓸 수 없어요." : '이미 사용 중인 닉네임',
   }
 }

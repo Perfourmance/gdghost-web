@@ -141,11 +141,11 @@ export function useDeleteNoticeComment(noticeId: number) {
 export function noticeErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'VALIDATION_FAILED':
-      return error.fieldMessage('body') ?? '댓글은 1–500자로 남겨 주세요.'
+      return error.fieldMessage('body') ?? '댓글은 1~500자로 남겨 주세요.'
     case 'NOT_AUTHOR':
-      return '내 댓글만 지울 수 있어요.'
+      return '내 댓글만 삭제할 수 있어요.'
     case 'NOT_FOUND':
-      return '공지나 댓글이 삭제됐어요. 화면을 새로 불러왔어요.'
+      return '공지나 댓글을 찾을 수 없어요.'
     default:
       return commonErrorMessage(error)
   }

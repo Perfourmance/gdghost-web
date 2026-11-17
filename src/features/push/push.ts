@@ -117,7 +117,7 @@ export function usePush() {
     try {
       setState(await action())
     } catch {
-      setError('알림 설정을 바꾸지 못했어요. 잠시 뒤 다시 시도해 주세요.')
+      setError('알림 설정 변경 실패. 잠시 뒤 다시 시도해 주세요.')
     } finally {
       setPending(false)
     }

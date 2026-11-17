@@ -26,7 +26,7 @@ export function InterestStep({ draft, onUpdate }: Props) {
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.interests}
         title="어떤 분야에 관심 있나요?"
-        description="여기 적은 내용으로 맞는 질문이 찾아와요. 귀찮아도 조금만 채워 주세요"
+        description="관심 분야에 맞는 질문을 받아요."
       />
 
       <TagsState tags={tags} />
@@ -41,7 +41,7 @@ export function InterestStep({ draft, onUpdate }: Props) {
 
       <StepFooter>
         <Button type="submit" size="lg" className="h-12 w-full" disabled={info.interestTagIds.length === 0}>
-          {info.interestTagIds.length === 0 ? '관심 분야를 하나 이상 골라 주세요' : '다음'}
+          {info.interestTagIds.length === 0 ? '관심 분야를 하나 이상 골라 주세요.' : '경험 고르기'}
         </Button>
       </StepFooter>
     </form>

@@ -21,7 +21,7 @@ export function QuestionEditPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/questions">
-        <LockPanel next={location.pathname} title="질문은 부원만 고칠 수 있어요" buttonText="로그인하고 계속하기" />
+        <LockPanel next={location.pathname} title="질문은 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
       </SubPageLayout>
     )
   }
@@ -31,7 +31,7 @@ export function QuestionEditPage() {
 
   return (
     <SubPageLayout fallback={back}>
-      {notFound && <Notice title="글을 찾을 수 없어요" text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
+      {notFound && <Notice title="글을 찾을 수가 없어요." text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
 
       {!notFound && detail.isPending && (
         <div className="space-y-4">
@@ -52,7 +52,7 @@ export function QuestionEditPage() {
       )}
 
       {detail.data && !detail.data.mine && (
-        <Notice title="본인 질문만 고칠 수 있어요" text="다른 부원의 질문은 수정할 수 없어요." to={back} link="질문으로 돌아가기" />
+        <Notice title="본인 질문만 고칠 수 있어요" text="내 질문만 수정할 수 있어요." to={back} link="질문으로 돌아가기" />
       )}
 
       {/* key: 다른 질문으로 바뀌면 입력 상태를 새로 */}

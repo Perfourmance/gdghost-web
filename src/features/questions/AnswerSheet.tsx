@@ -133,9 +133,9 @@ function AnswerForm({
         {target.kind === 'reply' && target.parent.body ? (
           <span className="line-clamp-2">{target.parent.body}</span>
         ) : isReply ? (
-          '꼬리 질문이나 감사 인사를 남겨 보세요.'
+          '추가 질문이나 감사 인사'
         ) : (
-          `${ANSWER_MIN}자 이상 적어 주세요. 겪어 본 일을 나눠 주면 큰 도움이 돼요.`
+          `직접 해 본 방법이나 팁을 ${ANSWER_MIN}자 이상 남겨 주세요.`
         )}
       </SheetDescription>
 

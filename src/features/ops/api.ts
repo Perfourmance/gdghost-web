@@ -282,11 +282,11 @@ export function useInviteCodeMembers(id: number | null) {
 export function opsErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'LAST_STAFF':
-      return '마지막 운영진은 해제할 수 없어요. 다른 운영진을 먼저 지정해 주세요.'
+      return '마지막 운영진 해제 불가. 다른 운영진을 먼저 지정해 주세요.'
     case 'TARGET_IS_STAFF':
-      return '운영진 · 개발자는 정지할 수 없어요. 먼저 운영진에서 해제해 주세요.'
+      return '운영진과 개발자 계정은 정지할 수 없어요. 운영진 계정은 먼저 운영진 권한을 해제해 주세요.'
     case 'NOT_FOUND':
-      return '대상을 찾을 수 없어요. 화면을 새로 불러왔어요.'
+      return '선택한 항목을 찾을 수 없어요.'
     case 'FORBIDDEN':
       return '운영진만 할 수 있어요.'
     case 'VALIDATION_FAILED':

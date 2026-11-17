@@ -73,11 +73,11 @@ export function PhotoPicker({
 
       {photos.some((p) => p.error) && (
         <p className="mt-2 text-xs text-destructive" role="alert">
-          {photos.find((p) => p.error)?.error} 그 사진을 빼고 다시 골라 주세요.
+          {photos.find((p) => p.error)?.error} 해당 사진을 빼고 다시 선택해 주세요.
         </p>
       )}
       {overflow && <p className="mt-2 text-xs text-muted-foreground">사진은 {MAX_PHOTOS}장까지 올릴 수 있어요.</p>}
-      <p className="mt-2 text-xs text-muted-foreground">위치 정보는 지우고 크기를 줄여서 올려요.</p>
+      <p className="mt-2 text-xs text-muted-foreground">사진은 위치 정보를 지우고 용량을 줄여 올려요.</p>
     </div>
   )
 }

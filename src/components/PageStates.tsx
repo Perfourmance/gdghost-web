@@ -5,7 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 /** 삭제 · 숨김 · 없는 글 — 안내 후 목록으로 (IA 2장) */
 export function GoneNotice({
-  title = '글을 찾을 수 없어요',
+  title = '글을 찾을 수가 없어요.',
   text = '삭제됐거나 운영진이 숨긴 글이에요.',
   to,
   link,

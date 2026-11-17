@@ -107,15 +107,15 @@ export function useSaveProfile() {
 export function profileSaveErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'NICKNAME_TAKEN':
-      return '이미 쓰는 닉네임이에요.'
+      return '이미 사용 중인 닉네임'
     case 'NICKNAME_RESERVED':
-      return "'익명'으로 시작하는 닉네임은 쓸 수 없어요."
+      return "‘익명’으로 시작하는 닉네임은 쓸 수 없어요."
     case 'NICKNAME_CHANGE_TOO_SOON':
       return '닉네임은 30일에 한 번만 바꿀 수 있어요.'
     case 'VALIDATION_FAILED':
       return error.fieldErrors[0]?.message ?? '입력한 내용을 확인해 주세요.'
     case 'RATE_LIMITED':
-      return '오늘은 프로필을 너무 많이 고쳤어요. 내일 다시 해 주세요.'
+      return '오늘 프로필 수정 횟수를 다 썼어요. 내일 다시 시도해 주세요.'
     default:
       return commonErrorMessage(error)
   }
@@ -135,9 +135,9 @@ export function useUpdateSettings() {
 
 /** 현재 비밀번호 확인이 있는 요청(비밀번호 · 이메일 변경 · 탈퇴) 공통 */
 function currentPasswordError(error: ApiError): string | null {
-  if (error.code === 'CURRENT_PASSWORD_WRONG') return '현재 비밀번호가 맞지 않아요.'
+  if (error.code === 'CURRENT_PASSWORD_WRONG') return '현재 비밀번호를 다시 확인해 주세요.'
   if (error.code === 'RATE_LIMITED') {
-    return `비밀번호를 여러 번 틀렸어요. ${formatWait(error.retryAfter ?? 600)} 뒤에 다시 해 주세요.`
+    return `비밀번호 시도 횟수를 넘었어요. ${formatWait(error.retryAfter ?? 600)} 뒤 다시 시도해 주세요.`
   }
   return null
 }
@@ -152,7 +152,7 @@ export function useChangePassword() {
 }
 
 export function passwordChangeErrorMessage(error: ApiError): string {
-  if (error.code === 'PASSWORD_POLICY') return '새 비밀번호는 8자 이상, 영문 · 숫자 · 특수문자를 모두 넣어 주세요.'
+  if (error.code === 'PASSWORD_POLICY') return '새 비밀번호는 8자 이상이어야 해요. 영문, 숫자, 특수문자를 모두 넣어 주세요.'
   return currentPasswordError(error) ?? commonErrorMessage(error)
 }
 
@@ -177,13 +177,13 @@ export function useConfirmEmailChange() {
 /** sameAsCurrent: 지금 쓰는 메일을 넣었는지 (서버는 둘 다 EMAIL_ALREADY_USED) */
 export function emailChangeErrorMessage(error: ApiError, sameAsCurrent: boolean): string {
   if (error.code === 'EMAIL_ALREADY_USED') {
-    return sameAsCurrent ? '지금 쓰는 이메일이에요.' : '이미 다른 계정이 쓰는 이메일이에요.'
+    return sameAsCurrent ? '현재 사용 중인 이메일' : '다른 계정에서 사용 중인 이메일'
   }
   if (error.code === 'EMAIL_CHANGE_TOO_SOON') return '이메일은 30일에 한 번만 바꿀 수 있어요.'
   // 이메일 변경은 시간당 5회 한도도 있다 — 비밀번호 잠금과 같은 429라 retryAfter로만 안내
-  if (error.code === 'CURRENT_PASSWORD_WRONG') return '현재 비밀번호가 맞지 않아요.'
+  if (error.code === 'CURRENT_PASSWORD_WRONG') return '현재 비밀번호를 다시 확인해 주세요.'
   if (error.code === 'RATE_LIMITED') {
-    return `요청이 많아 잠시 막혔어요. ${formatWait(error.retryAfter ?? 600)} 뒤에 다시 해 주세요.`
+    return `요청이 너무 많아요. ${formatWait(error.retryAfter ?? 600)} 뒤 다시 시도해 주세요.`
   }
   return emailCodeErrorMessage(error)
 }
@@ -200,6 +200,6 @@ export function useWithdraw() {
 }
 
 export function withdrawalErrorMessage(error: ApiError): string {
-  if (error.code === 'LAST_STAFF') return '혼자 남은 운영진은 탈퇴할 수 없어요. 다른 운영진을 먼저 지정해 주세요.'
+  if (error.code === 'LAST_STAFF') return '마지막 운영진은 탈퇴할 수 없어요. 다른 운영진을 먼저 지정해 주세요.'
   return currentPasswordError(error) ?? commonErrorMessage(error)
 }

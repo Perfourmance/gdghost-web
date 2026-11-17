@@ -24,8 +24,8 @@ export function useLoginIdCheck(loginId: string): LoginIdCheck {
   })
 
   if (value === '') return { state: 'empty' }
-  if (!valid) return { state: 'invalid', message: '영문 · 숫자 4–16자로 정해 주세요.' }
+  if (!valid) return { state: 'invalid', message: '아이디는 영문과 숫자 4~16자로 입력해 주세요.' }
   if (!ready || query.isPending) return { state: 'checking' }
   if (query.isError) return { state: 'error' }
-  return query.data.available ? { state: 'available' } : { state: 'invalid', message: '이미 쓰는 아이디예요.' }
+  return query.data.available ? { state: 'available' } : { state: 'invalid', message: '이미 사용 중인 아이디' }
 }

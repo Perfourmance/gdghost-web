@@ -50,7 +50,7 @@ function RequestForm({ target, onClose }: { target: CoffeeTarget; onClose: () =>
       <div className="py-2 text-center">
         <SheetTitle className="text-lg font-bold text-title">신청을 보냈어요</SheetTitle>
         <SheetDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {target.nickname}님이 7일 안에 수락하면, 연락 방법이 담긴 한 줄이 보여요.
+          {target.nickname}님이 7일 안에 수락하면 연락 방법을 볼 수 있어요.
         </SheetDescription>
         <Link
           to="/coffee-chats?tab=sent"
@@ -69,20 +69,20 @@ function RequestForm({ target, onClose }: { target: CoffeeTarget; onClose: () =>
     <form onSubmit={handleSubmit} noValidate>
       <SheetTitle className="text-lg font-bold text-title">{target.nickname}님에게 커피챗 신청</SheetTitle>
       <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        무엇이 궁금한지 적어 주세요. 수락하면 상대가 정해 둔 연락 방법이 14일 동안 보여요.
+        궁금한 점을 적어 주세요. 상대가 수락하면 14일 동안 연락 방법을 볼 수 있어요.
       </SheetDescription>
       <div className="mt-5">
         <textarea
           aria-label="궁금한 점"
           rows={4}
           maxLength={PURPOSE_MAX}
-          placeholder="예) 프론트엔드 인턴 준비 과정이 궁금해요. 30분 정도 이야기 나눌 수 있을까요?"
+          placeholder="예: 프론트엔드 인턴 준비, 30분 정도 이야기 나눌 수 있을까요?"
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
           className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
         />
         <div className="mt-1 flex justify-between text-xs text-muted-foreground tabular-nums">
-          <span>{tooShort && trimmed.length > 0 ? `${PURPOSE_MIN}자 이상 적어 주세요` : ''}</span>
+          <span>{tooShort && trimmed.length > 0 ? `${PURPOSE_MIN}자 이상 적어 주세요.` : ''}</span>
           <span>
             {purpose.length} / {PURPOSE_MAX}
           </span>

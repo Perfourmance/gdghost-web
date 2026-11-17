@@ -8,7 +8,7 @@ export function ErrorPage() {
   if (isRouteErrorResponse(error) && error.status === 404) return <NotFoundPage />
 
   return (
-    <CenteredMessage title="문제가 생겼어요" description="잠시 뒤 다시 시도해 주세요">
+    <CenteredMessage title="문제가 생겼어요" description="잠시 뒤 다시 시도해 주세요.">
       <Button size="lg" className="w-full" onClick={() => window.location.reload()}>
         새로고침
       </Button>

@@ -20,7 +20,7 @@ export function AdminToolsPage() {
       <section>
         <h2 className="text-base font-bold text-title">계정 도구</h2>
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-          운영진이 모두 연락이 끊겼을 때나, 로그인도 메일도 안 되는 부원을 도울 때만 써요. 모두 운영 기록에 남아요.
+          운영진 전원에게 연락이 닿지 않거나 부원이 로그인과 이메일을 모두 이용할 수 없을 때만 쓰세요. 모든 조치는 운영 기록에 남아요.
         </p>
         <MemberPicker picked={member} onPick={setMember} />
         {member && (
@@ -47,7 +47,7 @@ function ExportSection() {
   const exporter = useRoutingExport()
 
   function download() {
-    if (!window.confirm('라우팅 데이터를 내려받을까요? 받을 때마다 운영 기록과 개발자 디스코드에 남아요.')) return
+    if (!window.confirm('라우팅 데이터 다운로드? 받을 때마다 운영 기록과 개발자 디스코드에 남아요.')) return
     exporter.mutate({ from, to })
   }
 
@@ -55,7 +55,7 @@ function ExportSection() {
     <section>
       <h2 className="text-base font-bold text-title">라우팅 데이터 내보내기 (CSV)</h2>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-        이름 · 제목 · 본문 없이 id와 숫자만 담겨요. 익명 질문은 부원 id를 비워요. 보낸 시각 기준, 최대 1년.
+        포함: ID와 숫자만(익명 질문의 부원 ID 제외) · 발송 시각 기준 최대 1년
       </p>
       <div className="mt-3 flex items-center gap-2">
         <Input type="date" aria-label="시작일" max={to} className="h-10 bg-card" value={from} onChange={(e) => e.target.value && setFrom(e.target.value)} />
@@ -114,7 +114,7 @@ function MemberPicker({ picked, onPick }: { picked: PickedMember | null; onPick:
         />
       </div>
       <p className="mt-1.5 text-xs text-muted-foreground">
-        {q ? `${list.data?.total ?? 0}명` : '최근 가입순'} · 목록에서 숨긴 부원과 정지된 부원도 나와요
+        {q ? `${list.data?.total ?? 0}명` : '최근 가입순'} · 숨김·정지 부원 포함
       </p>
       {list.isPending && <Skeleton className="mt-2 h-32 w-full rounded-xl" />}
       {list.isError && <p className="mt-2 text-sm text-destructive">부원을 불러오지 못했어요.</p>}
@@ -170,14 +170,14 @@ function StaffForm({ member }: { member: PickedMember }) {
     e.preventDefault()
     const t = title.trim()
     if (t.length < 2) return
-    if (!window.confirm(`${member.label}님을 운영진(${t})으로 지정할까요? 운영진 디스코드에 알림이 가요.`)) return
+    if (!window.confirm(`${member.label}님을 운영진(${t})으로 지정할까요? 운영진 디스코드로 알림이 전송돼요.`)) return
     assign.mutate({ memberId: member.id, staffTitle: t })
   }
 
   return (
     <form onSubmit={submit}>
       <h3 className="text-sm font-bold text-title">운영진 지정 (비상용)</h3>
-      <p className="mt-0.5 text-xs text-muted-foreground">이미 운영진이면 직함만 바뀌어요. 평소에는 운영 페이지에서 지정해요.</p>
+      <p className="mt-0.5 text-xs text-muted-foreground">이미 운영진인 부원은 직함만 바뀌어요. 새 운영진은 운영 페이지에서 지정해 주세요.</p>
       <div className="mt-2 flex gap-2">
         <Input aria-label="직함" maxLength={10} placeholder="직함 (예: 회장)" className="h-10 bg-card" value={title} onChange={(e) => setTitle(e.target.value)} />
         <Button type="submit" className="h-10 shrink-0" disabled={assign.isPending || title.trim().length < 2}>
@@ -215,14 +215,14 @@ function EmailForm({ member }: { member: PickedMember }) {
     <form onSubmit={submit}>
       <h3 className="text-sm font-bold text-title">이메일 변경 요청</h3>
       <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-        로그인도 메일도 안 되는 부원만. 새 메일로 확인 링크(24시간)가 가고, 부원이 링크를 열어야 바뀌어요. 이전 메일에도 안내가 가요.
+        로그인과 메일 모두 불가한 부원만. 새 이메일에서 확인 링크(24시간 유효)를 열면 변경돼요. 이전 이메일에도 안내해요.
       </p>
       <div className="mt-2 space-y-2">
         <Input type="email" aria-label="새 이메일" placeholder="새 이메일" className={field} value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
         <Input
           aria-label="본인 확인 메모"
           maxLength={100}
-          placeholder="본인 확인 방법 (5자 이상, 예: 학생증 대면 확인)"
+          placeholder="본인 확인 방법 · 5자 이상 (예: 학생증 대면 확인)"
           className={field}
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -234,7 +234,7 @@ function EmailForm({ member }: { member: PickedMember }) {
       </Button>
       {change.isError && <p className="mt-2 text-sm text-destructive">{adminErrorMessage(toApiError(change.error))}</p>}
       {change.isSuccess && (
-        <p className="mt-2 text-sm text-brand-text">새 메일로 확인 링크를 보냈어요. {formatDateTime(change.data.expiresAt)}까지 열 수 있어요.</p>
+        <p className="mt-2 text-sm text-brand-text">새 이메일로 확인 링크를 보냈어요. {formatDateTime(change.data.expiresAt)}까지 열 수 있어요.</p>
       )}
     </form>
   )

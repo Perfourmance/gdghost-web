@@ -29,7 +29,7 @@ export function TopBar() {
             <Link
               to="/notifications"
               className={iconLinkClass}
-              aria-label={me.unreadNotificationCount > 0 ? `알림 ${me.unreadNotificationCount}개 안 읽음` : '알림'}
+              aria-label={me.unreadNotificationCount > 0 ? `읽지 않은 알림 ${me.unreadNotificationCount}개` : '알림'}
             >
               <Bell className="size-5" />
               {me.unreadNotificationCount > 0 && (

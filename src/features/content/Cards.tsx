@@ -61,7 +61,7 @@ export function NoticeCard({ notice, target }: { notice: HomePinnedNotice; targe
           <span className="shrink-0 rounded bg-brand px-1.5 py-0.5 text-[11px] font-bold text-white">필독</span>
         )}
         <p className="line-clamp-1 flex-1 text-[15px] font-bold text-title">{notice.title}</p>
-        {notice.read === false && <span className="size-2 shrink-0 rounded-full bg-brand" aria-label="안 읽음" />}
+        {notice.read === false && <span className="size-2 shrink-0 rounded-full bg-brand" aria-label="읽지 않은 알림" />}
       </div>
     </CardLink>
   )

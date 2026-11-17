@@ -22,7 +22,7 @@ export function SavedSharesPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="저장한 공유는 로그인 후에 볼 수 있어요" />
+        <LockPanel next={location.pathname} title="로그인하면 저장한 글을 볼 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -43,7 +43,7 @@ export function SavedSharesPage() {
               </Link>
             }
           >
-            아직 저장한 공유가 없어요. 다시 보고 싶은 글을 저장해 두세요.
+            아직 저장한 글이 없어요.
           </EmptyCard>
         )}
         {items.map((s) => (

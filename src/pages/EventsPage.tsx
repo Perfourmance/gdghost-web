@@ -27,7 +27,7 @@ export function EventsPage() {
 
       {!member ? (
         <div className="mt-6">
-          <LockPanel next="/events" title="이벤트는 부원만 볼 수 있어요" buttonText="로그인하고 이벤트 보기" />
+          <LockPanel next="/events" title="이벤트는 부원만 볼 수 있어요." buttonText="로그인하고 이벤트 보기" />
         </div>
       ) : (
         <EventSections list={list} />
@@ -59,7 +59,7 @@ function EventSections({ list }: { list: ReturnType<typeof useEventList> }) {
   if (list.data.length === 0) {
     return (
       <div className="mt-5">
-        <EmptyCard>아직 열린 이벤트가 없어요. 운영진이 이벤트를 열면 여기에 보여요.</EmptyCard>
+        <EmptyCard>진행 중인 이벤트가 없어요.</EmptyCard>
       </div>
     )
   }

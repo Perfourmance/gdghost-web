@@ -59,7 +59,7 @@ export function OpsEventEditPage() {
   return (
     <OpsGuard>
       <SubPageLayout fallback="/ops/events">
-        {notFound && <GoneNotice title="이벤트를 찾을 수 없어요" text="없는 이벤트예요." to="/ops/events" link="이벤트 관리로" />}
+        {notFound && <GoneNotice title="이벤트를 찾을 수가 없어요." text="없는 이벤트예요." to="/ops/events" link="이벤트 관리로" />}
         {!notFound && detail.isPending && <Skeleton className="h-60 w-full rounded-xl" />}
         {!notFound && detail.isError && <LoadError text="이벤트를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
         {detail.data && <EditForm key={detail.data.id} event={detail.data} />}

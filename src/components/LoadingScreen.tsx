@@ -2,7 +2,7 @@ import door from '@/assets/mascot/door.png'
 import shh from '@/assets/mascot/shh.png'
 import { Logo } from '@/components/Logo'
 
-const DOT_DELAYS = ['0ms', '150ms', '300ms']
+const DOT_DELAYS = ['0ms', '160ms', '320ms']
 
 /** 시안 07 — 캐릭터 → 파란 점 세 개 → 로고. 비회원은 문 여는 유령, 회원은 쉿 포즈 */
 export function LoadingScreen({ member }: { member: boolean }) {
@@ -17,7 +17,7 @@ export function LoadingScreen({ member }: { member: boolean }) {
         {DOT_DELAYS.map((delay) => (
           <span
             key={delay}
-            className="size-2 animate-bounce rounded-full bg-brand"
+            className="loading-dot size-2 rounded-full bg-brand"
             style={{ animationDelay: delay }}
           />
         ))}

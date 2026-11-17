@@ -10,8 +10,8 @@ const QUESTION_CATEGORIES: Record<string, string> = {
 
 const QUESTION_STATES: Record<string, string> = {
   WAITING: '답변 대기',
-  ANSWERED: '답변 있음',
-  ADOPTED: '채택됨',
+  ANSWERED: '답변 등록',
+  ADOPTED: '채택 완료',
 }
 
 const SCHEDULE_KINDS: Record<string, string> = {

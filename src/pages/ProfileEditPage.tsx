@@ -125,7 +125,7 @@ export function ProfileEditPage() {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요" />
+        <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -169,7 +169,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
   const diff = profileDiff(initial, values)
   const contactsDirty = contactsChanged(initial, values)
   const dirty = diff != null || contactsDirty
-  const allowLeave = useLeaveGuard(dirty && !save.isPending, '수정을 그만둘까요? 바꾼 내용은 사라져요.')
+  const allowLeave = useLeaveGuard(dirty && !save.isPending, '수정을 그만둘까요? 변경 사항은 저장되지 않아요.')
 
   function set<K extends keyof FormValues>(key: K, value: FormValues[K]) {
     setValues((v) => ({ ...v, [key]: value }))
@@ -183,7 +183,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
     nickname: nicknameChanged && nicknameCheck.state === 'invalid' ? nicknameCheck.message : null,
     department: values.department.trim() === '' ? '학과를 적어 주세요.' : null,
     interests: values.interestTagIds.length === 0 ? '관심 분야를 하나 이상 골라 주세요.' : null,
-    phone: phone !== '' && !/^[0-9-]+$/.test(phone) ? '전화번호는 숫자와 하이픈(-)만 쓸 수 있어요.' : null,
+    phone: phone !== '' && !/^[0-9-]+$/.test(phone) ? '숫자와 하이픈(-)만 입력해 주세요.' : null,
   }
   const nicknamePending = nicknameChanged && nicknameCheck.state !== 'available'
   const hasError = Object.values(errors).some(Boolean)
@@ -210,7 +210,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
       <h1 className="text-[22px] leading-snug font-bold text-title">프로필 수정</h1>
       {missing.length > 0 ? (
         <p className="mt-2 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-          프로필을 {filled} / {total} 채웠어요. 채울수록 맞는 질문이 잘 찾아와요.
+          프로필을 {filled}/{total} 채웠어요. 더 채우면 내 경험에 맞는 질문을 받을 수 있어요.
           <span className="mt-0.5 block text-xs text-brand-text/80">
             비어 있는 것: {missing.map((m) => MISSING_LABELS[m] ?? m).join(' · ')}
           </span>
@@ -234,10 +234,10 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
           <p className="mt-2 text-xs" aria-live="polite">
             {nicknameLockedUntil != null ? (
               <span className="text-muted-foreground">
-                {formatMonthDay(nicknameLockedUntil)}부터 다시 바꿀 수 있어요. (30일에 한 번)
+                {formatMonthDay(nicknameLockedUntil)}부터 다시 바꿀 수 있어요. 30일에 한 번 바꿀 수 있어요.
               </span>
             ) : !nicknameChanged ? (
-              <span className="text-muted-foreground">2–12자. 바꾸면 30일 동안 다시 바꿀 수 없어요.</span>
+              <span className="text-muted-foreground">2~12자로 입력해 주세요. 바꾼 뒤 30일 동안은 다시 바꿀 수 없어요.</span>
             ) : nicknameCheck.state === 'checking' ? (
               <span className="text-muted-foreground">확인 중…</span>
             ) : nicknameCheck.state === 'available' ? (
@@ -245,7 +245,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
             ) : nicknameCheck.state === 'invalid' ? (
               <span className="text-destructive">{nicknameCheck.message}</span>
             ) : nicknameCheck.state === 'error' ? (
-              <span className="text-destructive">확인하지 못했어요. 잠시 뒤 다시 입력해 주세요.</span>
+              <span className="text-destructive">확인 실패. 잠시 뒤 다시 입력해 주세요.</span>
             ) : null}
           </p>
         </section>
@@ -321,7 +321,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
           <Input
             id="statusNote"
             maxLength={STATUS_NOTE_MAX}
-            placeholder="예) OO기업 백엔드 인턴 근무 중"
+            placeholder="예: OO기업 백엔드 인턴 근무 중"
             className="h-12 bg-card"
             value={values.statusNote}
             onChange={(e) => set('statusNote', e.target.value)}
@@ -333,8 +333,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
             자기소개
           </FieldLabel>
           <p className="mb-3 text-xs text-muted-foreground">
-            <b className="font-bold text-brand-text">어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배들이 이걸 보고
-            찾아와요
+            <b className="font-bold text-brand-text">어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배에게 보여요.
           </p>
           <textarea
             id="bio"
@@ -349,7 +348,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
         <section>
           <FieldLabel>연락 수단 (선택)</FieldLabel>
           <p className="mb-3 text-xs text-muted-foreground">
-            공개를 켠 것만 다른 부원 프로필에 보여요. 비워 두면 지워져요.
+            공개한 항목만 부원에게 보여요. 비워 두면 삭제돼요.
           </p>
           <ul className="space-y-3">
             {CONTACT_TYPES.map(({ value: type, label }) => {
@@ -395,7 +394,7 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
           </p>
         )}
         <Button type="submit" size="lg" className="h-12 w-full" disabled={!dirty || save.isPending}>
-          {save.isPending ? '저장하는 중…' : dirty ? '저장' : '바꾼 내용이 없어요'}
+          {save.isPending ? '저장하는 중…' : dirty ? '저장' : '바꾼 내용이 없어요.'}
         </Button>
       </StepFooter>
     </form>

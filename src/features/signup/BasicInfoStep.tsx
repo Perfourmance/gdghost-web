@@ -41,7 +41,7 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.profile}
         title="기본 정보를 알려 주세요"
-        description="글에는 닉네임만 보이고, 이름은 프로필에서 부원에게만 보여요."
+        description="게시글에는 닉네임만 표시돼요. 이름은 부원만 프로필에서 볼 수 있어요."
       />
       <div className="space-y-6">
 
@@ -70,12 +70,12 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
           onChange={(e) => set('nickname', e.target.value)}
         />
         <p id="nickname-help" className="text-sm" aria-live="polite">
-          {nicknameCheck.state === 'empty' && <span className="text-muted-foreground">2–12자. 30일에 한 번 바꿀 수 있어요.</span>}
+          {nicknameCheck.state === 'empty' && <span className="text-muted-foreground">2~12자로 입력해 주세요. 30일에 한 번 바꿀 수 있어요.</span>}
           {nicknameCheck.state === 'checking' && <span className="text-muted-foreground">확인 중…</span>}
           {nicknameCheck.state === 'available' && <span className="text-brand-text">사용할 수 있어요.</span>}
           {nicknameCheck.state === 'invalid' && <span className="text-destructive">{nicknameCheck.message}</span>}
           {nicknameCheck.state === 'error' && (
-            <span className="text-destructive">확인하지 못했어요. 잠시 뒤 다시 입력해 주세요.</span>
+            <span className="text-destructive">확인 실패. 잠시 뒤 다시 입력해 주세요.</span>
           )}
         </p>
       </div>
@@ -117,7 +117,7 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
         </div>
       </div>
       <p id="studentNo-help" className="-mt-4 text-xs text-muted-foreground">
-        학번은 입학 연도 두 자리예요.
+        입학 연도 끝 두 자리
       </p>
 
       <fieldset>
@@ -135,7 +135,7 @@ export function BasicInfoStep({ draft, onUpdate }: Props) {
 
       <StepFooter>
         <Button type="submit" size="lg" className="h-12 w-full" disabled={!canNext}>
-          다음
+          관심 분야 고르기
         </Button>
       </StepFooter>
     </form>

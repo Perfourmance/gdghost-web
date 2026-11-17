@@ -37,7 +37,7 @@ export function CoffeeChatsPage() {
   if (!me) {
     return (
       <SubPageLayout fallback="/">
-        <LockPanel next={location.pathname + location.search} title="커피챗은 로그인 후에 볼 수 있어요" />
+        <LockPanel next={location.pathname + location.search} title="로그인하면 커피챗을 볼 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -87,7 +87,7 @@ function ChatList({ box }: { box: CoffeeBox }) {
             )
           }
         >
-          {box === 'RECEIVED' ? '아직 받은 신청이 없어요.' : '아직 보낸 신청이 없어요. 이야기 나누고 싶은 선배에게 신청해 보세요.'}
+          {box === 'RECEIVED' ? '아직 받은 신청이 없어요.' : '아직 보낸 신청이 없어요.'}
         </EmptyCard>
       )}
       {items.map((item) => (
@@ -117,7 +117,7 @@ function ChatCard({ item, box, now }: { item: CoffeeChatItem; box: CoffeeBox; no
   const [error, setError] = useState<{ text: string; memo: boolean } | null>(null)
 
   function answer(action: 'ACCEPT' | 'DECLINE') {
-    if (action === 'DECLINE' && !window.confirm('신청을 거절할까요? 상대에게 거절 알림이 가요.')) return
+    if (action === 'DECLINE' && !window.confirm('신청을 거절할까요? 상대에게 알림이 가요.')) return
     setError(null)
     respond.mutate(
       { id: item.id, action },
@@ -161,14 +161,14 @@ function ChatCard({ item, box, now }: { item: CoffeeChatItem; box: CoffeeBox; no
       <p className="mt-2 text-sm leading-relaxed whitespace-pre-line text-foreground">{item.purpose}</p>
       <p className="mt-1.5 text-xs text-muted-foreground">
         {formatRelative(item.createdAt, now)} 신청
-        {item.state === 'REQUESTED' && item.expiresAt && ` · ${formatMonthDay(item.expiresAt)}까지 응답이 없으면 만료돼요`}
+        {item.state === 'REQUESTED' && item.expiresAt && `· ${formatMonthDay(item.expiresAt)}까지 답이 없으면 신청이 만료돼요`}
       </p>
 
       {item.coffeeMemo && (
         <div className="mt-3 rounded-lg bg-brand-soft px-3 py-2.5 text-sm">
           <p className="text-xs font-bold text-brand-text">{box === 'SENT' ? `${who.nickname}님의 연락 방법` : '상대에게 보이는 내 한 줄'}</p>
           <p className="mt-0.5 break-all text-foreground">{item.coffeeMemo}</p>
-          <p className="mt-1 text-[11px] text-muted-foreground">수락하고 14일 동안만 보여요.</p>
+          <p className="mt-1 text-[11px] text-muted-foreground">수락한 날부터 14일 동안 볼 수 있어요.</p>
         </div>
       )}
 

@@ -18,7 +18,7 @@ import {
   type SignupStep,
 } from '@/features/signup/draft'
 
-const EXPIRED_MESSAGE = '가입 시간(30분)이 지났어요. 초대 코드부터 다시 입력해 주세요.'
+const EXPIRED_MESSAGE = '가입 시간 30분이 지났어요. 초대 코드부터 다시 입력해 주세요.'
 
 /** 가입 (S02). 한 주소 안에서 단계를 바꾼다 */
 export function SignupPage() {
@@ -38,7 +38,7 @@ export function SignupPage() {
   )
   useEffect(() => {
     if (blocker.state !== 'blocked') return
-    if (window.confirm('가입을 그만둘까요? 입력한 내용은 사라져요.')) {
+    if (window.confirm('가입을 그만둘까요? 입력한 내용은 저장되지 않아요.')) {
       clearSignupDraft()
       blocker.proceed()
     } else {

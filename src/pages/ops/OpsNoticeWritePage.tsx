@@ -53,7 +53,7 @@ export function OpsNoticeEditPage() {
   return (
     <OpsGuard>
       <SubPageLayout fallback="/ops/notices">
-        {notFound && <GoneNotice title="공지를 찾을 수 없어요" text="삭제됐거나 없는 공지예요." to="/ops/notices" link="공지 관리로" />}
+        {notFound && <GoneNotice title="공지를 찾지 못했어요." text="삭제됐거나 없는 공지예요." to="/ops/notices" link="공지 관리로" />}
         {!notFound && detail.isPending && <Skeleton className="h-60 w-full rounded-xl" />}
         {!notFound && detail.isError && <LoadError text="공지를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
         {detail.data && <EditForm key={detail.data.id} notice={detail.data} />}

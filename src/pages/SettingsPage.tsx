@@ -35,7 +35,7 @@ export function SettingsPage() {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname} title="설정은 로그인 후에 볼 수 있어요" />
+        <LockPanel next={location.pathname} title="로그인하면 설정을 볼 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -99,7 +99,7 @@ function SettingsBody({ profile, refetchProfile }: { profile: MyProfile; refetch
       <Group title="알림">
         <PushPanel serverOn={profile.settings.pushOn} onChange={() => refetchProfile()} />
         <p className="py-3 text-xs leading-relaxed text-muted-foreground">
-          디스코드 알림은 디스코드 앱에서 채널을 음소거해 주세요.
+          알림을 끄려면 디스코드 앱에서 해당 채널을 음소거해 주세요.
         </p>
       </Group>
 
@@ -144,13 +144,13 @@ function SettingsBody({ profile, refetchProfile }: { profile: MyProfile; refetch
       <PasswordChangeSheet
         open={sheet === 'password'}
         onClose={() => setSheet(null)}
-        onDone={() => done('비밀번호를 바꿨어요. 다른 기기에서는 로그아웃됐어요.')}
+        onDone={() => done('비밀번호를 바꿨어요. 다른 기기에서는 로그아웃했어요.')}
       />
       <EmailChangeSheet
         open={sheet === 'email'}
         onClose={() => setSheet(null)}
         currentEmail={profile.email}
-        onDone={() => done('이메일을 바꿨어요. 다른 기기에서는 로그아웃됐어요.')}
+        onDone={() => done('이메일을 바꿨어요. 다른 기기에서는 로그아웃했어요.')}
       />
       <WithdrawalSheet
         open={sheet === 'withdrawal'}
@@ -196,7 +196,7 @@ function ReceiveSettings({ settings }: { settings: MySettings }) {
       <SwitchRow
         id="acceptQuestion"
         label="질문 받기"
-        description="끄면 AI 추천 · 지목 질문이 나에게 오지 않아요."
+        description="질문 받기를 끄면 추천이나 지목으로 오는 질문을 받지 않아요."
         checked={settings.acceptQuestion}
         disabled={update.isPending}
         onChange={(on) => toggle({ acceptQuestion: on })}
@@ -205,7 +205,7 @@ function ReceiveSettings({ settings }: { settings: MySettings }) {
         <SwitchRow
           id="acceptCoffee"
           label="커피챗 받기"
-          description="켜면 다른 부원이 커피챗을 신청할 수 있어요."
+          description="커피챗 받기를 켜면 다른 부원이 내게 신청할 수 있어요."
           checked={settings.acceptCoffee || memoOpen}
           disabled={update.isPending}
           onChange={handleCoffee}
@@ -216,11 +216,11 @@ function ReceiveSettings({ settings }: { settings: MySettings }) {
             <label htmlFor="coffeeMemo" className="text-xs font-bold text-title">
               수락하면 상대에게 보일 한 줄
             </label>
-            <p className="mt-0.5 text-xs text-muted-foreground">일정을 잡을 연락 방법을 적어 주세요.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">일정 조율에 쓸 연락 방법</p>
             <Input
               id="coffeeMemo"
               maxLength={COFFEE_MEMO_MAX}
-              placeholder="예) 카톡 오픈채팅으로 연락 주세요: open.kakao.com/…"
+              placeholder="예: 카톡 오픈채팅 open.kakao.com/…"
               className="mt-2 h-11 bg-card"
               value={memo}
               onChange={(e) => setMemo(e.target.value)}
@@ -249,8 +249,8 @@ function ReceiveSettings({ settings }: { settings: MySettings }) {
       </div>
       <SwitchRow
         id="hiddenFromList"
-        label="부원 목록에서 숨기기"
-        description="켜면 부원 목록과 선배 추천에서 빠져요. 내가 쓴 글은 그대로 보여요."
+        label="내 프로필 숨기기"
+        description="부원 목록과 선배 추천에서 내 프로필을 숨겨요. 작성한 글은 그대로 보여요."
         checked={settings.hiddenFromList}
         disabled={update.isPending}
         onChange={(on) => toggle({ hiddenFromList: on })}
@@ -265,7 +265,7 @@ function ReceiveSettings({ settings }: { settings: MySettings }) {
 }
 
 function settingsErrorMessage(error: ReturnType<typeof toApiError>): string {
-  if (error.code === 'VALIDATION_FAILED') return '커피챗을 받으려면 상대에게 보일 한 줄을 적어 주세요.'
+  if (error.code === 'VALIDATION_FAILED') return '커피챗을 받으려면 상대에게 보일 한 줄이 필요해요.'
   return commonErrorMessage(error)
 }
 

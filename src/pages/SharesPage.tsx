@@ -88,7 +88,7 @@ export function SharesPage() {
           )}
         </div>
       )}
-      {tooShort && <p className="mt-1.5 text-xs text-muted-foreground">{QUERY_MIN}자 이상 입력하면 찾아요.</p>}
+      {tooShort && <p className="mt-1.5 text-xs text-muted-foreground">검색어 {QUERY_MIN}자 이상</p>}
 
       <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
         <div className="flex w-max gap-2">
@@ -129,7 +129,7 @@ export function SharesPage() {
 
         {list.isSuccess && shares.length === 0 && (
           <EmptyCard>
-            {q ? `'${q}'에 맞는 공유가 없어요.` : category ? '이 분류에는 아직 공유가 없어요.' : '아직 공유가 없어요. 아는 정보를 나눠 주세요.'}
+            {q ? `‘${q}’에 맞는 글이 없어요.` : category ? '이 분류에는 아직 글이 없어요.' : '아직 공유된 글이 없어요.'}
           </EmptyCard>
         )}
 
@@ -169,11 +169,11 @@ export function SharesPage() {
         <LockSheet
           next={lock.next}
           onClose={lock.close}
-          title="공유는 부원만 올릴 수 있어요"
-          description="GDGoC SMU 부원으로 로그인하면 정보를 나눌 수 있어요."
+          title="공유는 부원만 올릴 수 있어요."
+          description="부원으로 로그인하면 글을 공유할 수 있어요."
         />
       ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="공유 글은 부원만 볼 수 있어요" />
+        <LockSheet next={lock.next} onClose={lock.close} title="공유 글은 부원만 볼 수 있어요." />
       )}
     </div>
   )

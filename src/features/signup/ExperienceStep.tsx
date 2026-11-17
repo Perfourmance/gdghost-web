@@ -28,7 +28,7 @@ export function ExperienceStep({ draft, onUpdate }: Props) {
       <StepHeader
         eyebrow={SIGNUP_STEP_LABELS.experiences}
         title="해 본 경험이 있나요?"
-        description={`해 본 것만 골라 주세요. ${MAX_EXPERIENCES}개까지 고를 수 있고, 없으면 건너뛰어도 돼요.`}
+        description={`해 본 것만 ${MAX_EXPERIENCES}개까지 골라 주세요. 없으면 건너뛰어도 돼요.`}
       />
 
       <TagsState tags={tags} />
@@ -43,7 +43,7 @@ export function ExperienceStep({ draft, onUpdate }: Props) {
 
       <StepFooter>
         <Button type="submit" size="lg" variant={count === 0 ? 'secondary' : 'default'} className="h-12 w-full">
-          {count === 0 ? '건너뛰기' : '다음'}
+          {count === 0 ? '건너뛰기' : '소개 쓰기'}
         </Button>
       </StepFooter>
     </form>

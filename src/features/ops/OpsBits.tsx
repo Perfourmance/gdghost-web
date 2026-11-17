@@ -28,7 +28,7 @@ export function OpsGuard({ children }: { children: ReactNode }) {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="운영 페이지는 운영진만 볼 수 있어요" />
+        <LockPanel next={location.pathname + location.search} title="운영진 전용 페이지" />
       </SubPageLayout>
     )
   }
@@ -37,7 +37,7 @@ export function OpsGuard({ children }: { children: ReactNode }) {
       <SubPageLayout>
         <div className="rounded-2xl bg-card px-6 py-10 text-center">
           <p className="text-lg font-bold text-title">운영진만 볼 수 있어요</p>
-          <p className="mt-1 text-sm text-muted-foreground">운영진으로 지정되면 설정에 `관리` 메뉴가 생겨요.</p>
+          <p className="mt-1 text-sm text-muted-foreground">운영진으로 지정하면 설정에 ‘관리’ 메뉴가 표시돼요.</p>
           <Link to="/" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
             홈으로
           </Link>

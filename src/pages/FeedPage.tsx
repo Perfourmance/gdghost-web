@@ -79,7 +79,7 @@ export function FeedPage() {
         {list.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-40 w-full rounded-xl" />)}
         {list.isError && <LoadError text="피드를 불러오지 못했어요." onRetry={() => list.refetch()} />}
         {list.isSuccess && posts.length === 0 && (
-          <EmptyCard>{category ? '이 분류에는 아직 글이 없어요.' : '아직 올라온 글이 없어요. 오늘 있었던 일을 나눠 보세요.'}</EmptyCard>
+          <EmptyCard>{category ? '이 분류에는 아직 글이 없어요.' : '아직 올라온 글이 없어요.'}</EmptyCard>
         )}
 
         {posts.map((post) => (

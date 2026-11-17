@@ -96,7 +96,7 @@ function OwnerMenu({ postId, onError }: { postId: number; onError: (message: str
           label: '삭제',
           destructive: true,
           onClick: () => {
-            if (!window.confirm('글을 삭제할까요? 삭제하면 되돌릴 수 없어요.')) return
+            if (!window.confirm('글을 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
             onError(null)
             remove.mutate(undefined, {
               onSuccess: leave,
@@ -133,7 +133,7 @@ function PostBody({ post, onReport }: { post: FeedPost; onReport: (target: Repor
   }, [comments.data, location.hash, hasNextPage, isFetchingNextPage, fetchNextPage, pageCount])
 
   function handleDelete(comment: FeedComment) {
-    if (!window.confirm('댓글을 삭제할까요? 삭제하면 되돌릴 수 없어요.')) return
+    if (!window.confirm('댓글을 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
     setError(null)
     remove.mutate(comment.id, { onError: (e) => setError(feedErrorMessage(toApiError(e))) })
   }

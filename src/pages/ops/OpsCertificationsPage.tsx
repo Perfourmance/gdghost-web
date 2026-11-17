@@ -65,7 +65,7 @@ export function OpsCertificationsPage() {
         {list.isPending && <Skeleton className="h-48 w-full rounded-xl" />}
         {list.isError && <LoadError text="인증을 불러오지 못했어요." onRetry={() => list.refetch()} />}
         {list.isSuccess && list.data.items.length === 0 && (
-          <EmptyCard>{state === 'PENDING' ? '확인을 기다리는 인증이 없어요.' : '해당하는 인증이 없어요.'}</EmptyCard>
+          <EmptyCard>{state === 'PENDING' ? '확인 대기 중인 인증이 없어요.' : '해당하는 인증이 없어요.'}</EmptyCard>
         )}
         {list.data?.items.map((c) => (
           <CertCard key={c.id} cert={c} />

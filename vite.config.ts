@@ -14,6 +14,8 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'autoUpdate',
+      // 첫 로딩 화면을 그리기 전에 서비스 워커 등록 파일을 기다리지 않는다.
+      injectRegister: 'script-defer',
       manifest: {
         name: 'GDGhost',
         short_name: 'GDGhost',

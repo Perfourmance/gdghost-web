@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 
 const STATES: { value: ReportState; label: string }[] = [
   { value: 'OPEN', label: '미처리' },
-  { value: 'DISMISSED', label: '괜찮음' },
+  { value: 'DISMISSED', label: '신고 기각' },
   { value: 'HIDDEN', label: '숨김' },
   { value: 'RESTORED', label: '되돌림' },
 ]
@@ -59,7 +59,7 @@ export function OpsReportsPage() {
           전체
         </Chip>
       </div>
-      {list.data && <p className="mt-3 text-xs text-muted-foreground">{list.data.total}건 · 작성자에게는 알리지 않아요</p>}
+      {list.data && <p className="mt-3 text-xs text-muted-foreground">{list.data.total}건 · 작성자에게는 알림이 가지 않아요.</p>}
       <div className={cn('mt-2 space-y-2', list.isPlaceholderData && 'opacity-60')}>
         {list.isPending && [0, 1].map((i) => <Skeleton key={i} className="h-36 w-full rounded-xl" />)}
         {list.isError && <LoadError text="신고를 불러오지 못했어요." onRetry={() => list.refetch()} />}
@@ -81,9 +81,9 @@ function ReportCard({ report: r }: { report: OpsReportItem }) {
 
   function act(action: ReportAction) {
     const confirmText: Record<ReportAction, string> = {
-      DISMISS: '문제없는 글로 닫을까요? 같은 글의 다른 신고도 함께 닫혀요.',
-      HIDE: '이 글을 숨길까요? 부원들에게 보이지 않게 돼요. 같은 글의 다른 신고도 함께 닫혀요.',
-      RESTORE: '숨김을 되돌릴까요? 다시 부원들에게 보여요.',
+      DISMISS: '문제없음으로 처리할까요? 같은 글의 다른 신고도 닫혀요.',
+      HIDE: '글을 숨길까요? 부원에게 보이지 않고, 같은 글의 다른 신고도 닫혀요.',
+      RESTORE: '숨김을 해제할까요? 부원에게 다시 보여요.',
     }
     if (!window.confirm(confirmText[action])) return
     setError(null)
@@ -111,7 +111,7 @@ function ReportCard({ report: r }: { report: OpsReportItem }) {
 
       {/* 대상 미리보기 — 숨긴 글 · 지운 글도 운영진에게는 보인다 */}
       <div className="mt-2 rounded-lg bg-background px-3 py-2 text-sm">
-        {r.targetPreview ? <p className="line-clamp-3 text-foreground">{r.targetPreview}</p> : <p className="text-muted-foreground">미리보기 없음</p>}
+        {r.targetPreview ? <p className="line-clamp-3 text-foreground">{r.targetPreview}</p> : <p className="text-muted-foreground">미리보기가 없어요.</p>}
         {r.targetDeletedBy && (
           <p className="mt-1 text-xs text-muted-foreground">
             {r.targetDeletedBy === 'AUTHOR' ? '작성자가 지운 글이에요' : '운영진이 숨긴 글이에요'}
@@ -135,7 +135,7 @@ function ReportCard({ report: r }: { report: OpsReportItem }) {
       {r.state === 'OPEN' && (
         <div className="mt-3 grid grid-cols-2 gap-2">
           <Button variant="secondary" className="h-10" disabled={handle.isPending} onClick={() => act('DISMISS')}>
-            괜찮음
+            신고 기각
           </Button>
           <Button variant="destructive" className="h-10" disabled={handle.isPending} onClick={() => act('HIDE')}>
             숨기기

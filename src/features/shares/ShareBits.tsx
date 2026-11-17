@@ -16,8 +16,8 @@ export function ShareListCard({ share, target, now }: { share: ShareSummary; tar
       <div className="flex items-center justify-between gap-2">
         <p className="text-xs font-bold text-brand-text">{shareCategoryLabel(share.category)}</p>
         <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
-          {share.hasPhoto && <Image className="size-3.5" aria-label="사진 있음" />}
-          {share.saved && <Bookmark className="size-3.5 fill-current text-brand-text" aria-label="저장함" />}
+          {share.hasPhoto && <Image className="size-3.5" aria-label="사진이 첨부된 글" />}
+          {share.saved && <Bookmark className="size-3.5 fill-current text-brand-text" aria-label="저장한 글" />}
         </span>
       </div>
       <p className="mt-1 line-clamp-2 text-[15px] leading-snug font-bold text-title">{share.title}</p>

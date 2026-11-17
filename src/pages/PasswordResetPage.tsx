@@ -55,7 +55,7 @@ export function PasswordResetPage() {
         <NewPasswordStep
           resetToken={resetToken}
           onDone={() => setStep('done')}
-          onTokenExpired={() => restart('인증한 지 10분이 지났어요. 인증번호를 다시 받아 주세요.')}
+          onTokenExpired={() => restart('인증 후 10분이 지났어요. 인증번호를 다시 받아 주세요.')}
         />
       )}
       {step === 'done' && (
@@ -63,7 +63,7 @@ export function PasswordResetPage() {
           <StepHeader
             eyebrow="비밀번호 재설정"
             title="비밀번호를 바꿨어요"
-            description="모든 기기에서 로그아웃됐어요. 새 비밀번호로 다시 로그인해 주세요."
+            description="모든 기기에서 로그아웃했어요. 새 비밀번호로 로그인해 주세요."
           />
           <Link to="/login" replace className={buttonVariants({ size: 'lg', className: 'h-12 w-full' })}>
             로그인하러 가기
@@ -115,7 +115,7 @@ function VerifyStep({
       <StepHeader
         eyebrow="계정 찾기"
         title="비밀번호 재설정"
-        description="가입할 때 인증한 이메일로 인증번호를 보내 드려요."
+        description="가입할 때 인증한 이메일로 인증번호를 보내요."
       />
 
       <div className="space-y-6">
@@ -159,7 +159,7 @@ function VerifyStep({
           {sentToThisEmail && !send.isError && (
             // 가입 여부를 드러내지 않도록 항상 같은 안내 (F1-07)
             <p className="rounded-lg bg-brand-soft px-3 py-2 text-xs leading-relaxed text-brand-text">
-              가입된 메일이면 인증번호가 도착해요(10분 유효). 메일이 안 오면 스팸함을 확인해 주세요.
+              가입한 이메일이면 인증번호가 와요. 10분 안에 입력해 주세요.
             </p>
           )}
         </div>
@@ -187,13 +187,13 @@ function VerifyStep({
         )}
 
         <p className="text-xs leading-relaxed text-muted-foreground">
-          가입한 이메일이 기억나지 않으면 운영진에게 문의해 주세요.
+          가입 때 쓴 이메일이 기억나지 않으면 운영진에게 문의해 주세요.
         </p>
       </div>
 
       <StepFooter>
         <Button type="submit" size="lg" className="h-12 w-full" disabled={!canVerify}>
-          {verify.isPending ? '확인 중…' : '다음'}
+          {verify.isPending ? '확인 중…' : '인증번호 확인'}
         </Button>
       </StepFooter>
     </form>
@@ -238,7 +238,7 @@ function NewPasswordStep({
       <StepHeader
         eyebrow="비밀번호 재설정"
         title="새 비밀번호를 정해 주세요"
-        description="바꾸면 모든 기기에서 로그아웃돼요."
+        description="비밀번호를 바꾸면 모든 기기에서 로그아웃돼요."
       />
 
       <div className="space-y-6">
@@ -252,7 +252,7 @@ function NewPasswordStep({
         {errorCode && errorCode.code !== 'RESET_TOKEN_INVALID' && (
           <p className="text-sm text-destructive" role="alert">
             {errorCode.code === 'PASSWORD_POLICY'
-              ? '비밀번호는 8자 이상, 영문 · 숫자 · 특수문자를 모두 넣어 주세요.'
+              ? '8자 이상 · 영문, 숫자, 특수문자 포함'
               : commonErrorMessage(errorCode)}
           </p>
         )}

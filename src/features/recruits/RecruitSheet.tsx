@@ -38,7 +38,7 @@ export function RecruitSheet({ recruitId, onClose }: { recruitId: number | null;
         {detail.isError && (
           <div className="py-4 text-center">
             <SheetTitle className="text-lg font-bold text-title">
-              {notFound ? '모집을 찾을 수 없어요' : '모집을 불러오지 못했어요'}
+              {notFound ? '모집을 찾을 수가 없어요.' : '모집을 불러오지 못했어요.'}
             </SheetTitle>
             <SheetDescription className="mt-1 text-sm text-muted-foreground">
               {notFound ? '없는 모집이에요.' : '잠시 뒤 다시 시도해 주세요.'}
@@ -132,12 +132,12 @@ function RecruitBody({ recruit }: { recruit: RecruitDetail }) {
               size="lg"
               className="h-12 w-full"
               disabled={pending}
-              onClick={() => run(close, '모집을 닫을까요? 닫으면 다시 열 수 없어요.')}
+              onClick={() => run(close, '모집을 닫을까요? 다시 열 수 없어요.')}
             >
               {close.isPending ? '닫는 중…' : '모집 닫기'}
             </Button>
           ) : (
-            <p className="text-center text-sm text-muted-foreground">마감된 모집이에요.</p>
+            <p className="text-center text-sm text-muted-foreground">모집이 마감됐어요.</p>
           )
         ) : recruit.joined ? (
           canLeave ? (
@@ -151,7 +151,7 @@ function RecruitBody({ recruit }: { recruit: RecruitDetail }) {
               {leave.isPending ? '취소하는 중…' : '참여 취소'}
             </Button>
           ) : (
-            <p className="text-center text-sm text-muted-foreground">마감돼서 참여를 취소할 수 없어요.</p>
+            <p className="text-center text-sm text-muted-foreground">마감된 모집은 참여를 취소할 수 없어요.</p>
           )
         ) : recruit.state === 'OPEN' ? (
           <Button size="lg" className="h-12 w-full" disabled={pending} onClick={() => run(join)}>
@@ -164,11 +164,11 @@ function RecruitBody({ recruit }: { recruit: RecruitDetail }) {
         )}
 
         {(recruit.joined || recruit.mine) && !timePassed && (
-          <p className="text-center text-xs text-muted-foreground">만나기 3일 전과 하루 전에 알림을 보내 드려요.</p>
+          <p className="text-center text-xs text-muted-foreground">만나기 3일 전과 하루 전에 알려요.</p>
         )}
         {!recruit.joined && recruit.state === 'OPEN' && (
           <p className="text-center text-xs text-muted-foreground">
-            참여해도 연 사람에게 알림은 가지 않아요. 메모를 보고 직접 연락해 주세요.
+            참여 알림은 가지 않아요. 메모를 보고 모집을 연 사람에게 연락해 주세요.
           </p>
         )}
       </div>

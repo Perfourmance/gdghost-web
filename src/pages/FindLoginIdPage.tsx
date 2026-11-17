@@ -43,7 +43,7 @@ export function FindLoginIdPage() {
         <StepHeader
           eyebrow="계정 찾기"
           title="아이디 찾기"
-          description="가입할 때 인증한 이메일을 넣으면, 그 메일로 아이디를 보내 드려요."
+          description="가입 때 인증한 이메일로 아이디를 보내 드려요."
         />
 
         <div className="space-y-2">
@@ -75,12 +75,12 @@ export function FindLoginIdPage() {
           // 가입 여부를 드러내지 않도록 항상 같은 안내 (F1-11)
           <div className="mt-6 space-y-1 rounded-xl bg-brand-soft p-4 text-sm leading-relaxed text-brand-text" role="status">
             <p className="font-bold">{sentTo}로 보냈어요</p>
-            <p>가입된 메일이면 아이디가 도착해요. 메일이 안 오면 스팸함을 확인해 주세요.</p>
+            <p>가입된 이메일로 아이디를 보내요. 메일이 없으면 스팸함을 확인해 주세요.</p>
           </div>
         )}
 
         <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-          가입한 이메일이 기억나지 않으면 운영진에게 문의해 주세요.
+          가입 때 쓴 이메일이 기억나지 않으면 운영진에게 문의해 주세요.
         </p>
 
         <StepFooter>
@@ -92,7 +92,7 @@ export function FindLoginIdPage() {
               className="h-12 w-full"
               disabled={!canSend}
             >
-              {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초 뒤 다시 보낼 수 있어요` : sentTo ? '다시 보내기' : '아이디 받기'}
+              {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초 뒤 다시 보낼 수 있어요.` : sentTo ? '다시 보내기' : '아이디 받기'}
             </Button>
             {sentTo && (
               <Link to="/login" className={buttonVariants({ size: 'lg', className: 'h-12 w-full' })}>

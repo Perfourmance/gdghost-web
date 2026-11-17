@@ -47,7 +47,7 @@ export function OpsHomePage() {
 
       <Section title="3일 넘게 답 없는 질문" count={d.staleQuestions.total} moreTo={d.staleQuestions.total > d.staleQuestions.items.length ? '/ops/routing' : undefined}>
         {d.staleQuestions.items.length === 0 ? (
-          <EmptyCard>모든 질문에 3일 안에 답이 달렸어요.</EmptyCard>
+          <EmptyCard>모든 질문에 3일 안에 답변이 달렸어요.</EmptyCard>
         ) : (
           d.staleQuestions.items.map((q) => (
             <Link key={q.id} to={`/questions/${q.id}`} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">
@@ -98,7 +98,7 @@ export function OpsHomePage() {
 
       <Section title="확인이 덜 된 필독 공지">
         {d.unconfirmedMustRead.length === 0 ? (
-          <EmptyCard>확인을 기다리는 필독 공지가 없어요.</EmptyCard>
+          <EmptyCard>확인할 필독 공지가 없어요.</EmptyCard>
         ) : (
           d.unconfirmedMustRead.map((n) => (
             <Link key={n.noticeId} to={`/notices/${n.noticeId}`} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">

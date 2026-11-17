@@ -20,7 +20,7 @@ export function LockSheet({
   next,
   onClose,
   title = '부원만 볼 수 있어요',
-  description = 'GDGoC SMU 부원이라면 로그인해 주세요.',
+  description = 'GDGoC SMU 부원 로그인',
 }: Props) {
   return (
     <Sheet open={next != null} onOpenChange={(open) => !open && onClose()}>

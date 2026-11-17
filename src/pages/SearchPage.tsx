@@ -55,7 +55,7 @@ export function SearchPage() {
   if (!me) {
     return (
       <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요" />
+        <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요." />
       </SubPageLayout>
     )
   }
@@ -117,8 +117,8 @@ export function SearchPage() {
         {q == null ? (
           <p className="py-10 text-center text-sm text-muted-foreground">
             {text.trim().length > 0 && text.trim().length < QUERY_MIN
-              ? `${QUERY_MIN}자 이상 입력하면 찾아요.`
-              : '닉네임, 관심 분야, 질문 제목, 태그, 일정 이름으로 찾을 수 있어요.'}
+              ? `검색어 ${QUERY_MIN}자 이상`
+              : '닉네임, 관심 분야, 질문 제목, 태그, 일정명으로 검색'}
           </p>
         ) : type ? (
           <TypeResults key={`${type}-${q}`} type={type} q={q} />
@@ -145,7 +145,7 @@ function ItemCard<T extends SearchType>({ type, item, now }: { type: T; item: Se
 
 function searchError(error: unknown): string {
   const apiError = toApiError(error)
-  if (apiError.code === 'VALIDATION_FAILED') return `검색어는 ${QUERY_MIN}–${QUERY_MAX}자로 입력해 주세요.`
+  if (apiError.code === 'VALIDATION_FAILED') return `검색어를 ${QUERY_MIN}~${QUERY_MAX}자로 입력해 주세요.`
   return commonErrorMessage(apiError)
 }
 
@@ -165,7 +165,7 @@ function AllResults({ q, onMore }: { q: string; onMore: (type: SearchType) => vo
   if (all.isError) return <LoadError text={searchError(all.error)} onRetry={() => all.refetch()} />
 
   const groups = TYPES.map((t) => ({ ...t, ...all.data[t.group] }))
-  if (groups.every((g) => g.total === 0)) return <EmptyCard>'{q}'에 맞는 결과가 없어요.</EmptyCard>
+  if (groups.every((g) => g.total === 0)) return <EmptyCard>‘{q}’ 검색 결과가 없어요.</EmptyCard>
 
   return (
     <div className="space-y-8">
@@ -213,7 +213,7 @@ function TypeResults({ type, q }: { type: SearchType; q: string }) {
     <div className="space-y-2">
       {list.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[80px] w-full rounded-xl" />)}
       {list.isError && <LoadError text={searchError(list.error)} onRetry={() => list.refetch()} />}
-      {list.isSuccess && items.length === 0 && <EmptyCard>'{q}'에 맞는 결과가 없어요.</EmptyCard>}
+      {list.isSuccess && items.length === 0 && <EmptyCard>‘{q}’ 검색 결과가 없어요.</EmptyCard>}
       {items.map((item) => (
         <ItemCard key={item.id} type={type} item={item} now={now} />
       ))}

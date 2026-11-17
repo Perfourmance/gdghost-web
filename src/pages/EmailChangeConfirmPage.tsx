@@ -12,9 +12,9 @@ function errorMessage(e: ApiError): string {
   switch (e.code) {
     case 'RESET_TOKEN_INVALID':
     case 'VALIDATION_FAILED':
-      return '링크가 만료됐거나 이미 사용됐어요. 링크는 24시간 동안, 가장 최근에 받은 것만 쓸 수 있어요.'
+      return '이 링크는 사용할 수 없어요. 운영진에게 새 링크를 요청해 주세요.'
     case 'EMAIL_ALREADY_USED':
-      return '이 메일로 이미 다른 계정이 가입했어요. 운영진에게 문의해 주세요.'
+      return '이미 등록된 이메일이에요. 운영진에게 다른 주소로 변경을 요청해 주세요.'
     default:
       return commonErrorMessage(e)
   }
@@ -41,7 +41,7 @@ export function EmailChangeConfirmPage() {
         <StepHeader
           eyebrow="이메일 변경"
           title="이메일이 바뀌었어요"
-          description="모든 기기에서 로그아웃됐어요. 새 메일로 비밀번호를 다시 정한 뒤 로그인해 주세요."
+          description="새 이메일로 비밀번호를 다시 설정해 주세요."
         />
         <div className="space-y-2">
           <Link to="/password-reset" replace className={buttonVariants({ size: 'lg', className: 'h-12 w-full' })}>
@@ -59,13 +59,13 @@ export function EmailChangeConfirmPage() {
     <SubPageLayout>
       <StepHeader
         eyebrow="이메일 변경"
-        title="이 메일로 바꿀까요?"
-        description="운영진에게 요청한 이메일 변경을 확인하는 화면이에요. 확인하면 모든 기기에서 로그아웃돼요."
+        title="이 이메일로 바꿀까요?"
+        description="이메일 변경을 확인하면 모든 기기에서 로그아웃돼요."
       />
 
       {!token && (
         <p className="text-sm text-destructive" role="alert">
-          링크가 올바르지 않아요. 메일에 있는 링크를 다시 눌러 주세요.
+          가장 최근에 받은 이메일에서 링크를 열어 주세요.
         </p>
       )}
       {confirm.isError && (

@@ -75,7 +75,7 @@ function AnswerItem({ answer, now, actions, byId }: ItemProps) {
               )}
               <AuthorLink author={answer.author} />
               <span className="text-muted-foreground">{formatRelative(answer.createdAt, now)}</span>
-              {answer.editedAt && <span className="text-muted-foreground">· 수정됨</span>}
+              {answer.editedAt && <span className="text-muted-foreground">· 수정</span>}
             </div>
             {isReply && <ReplyTarget parent={parent} />}
             {answer.body && <LinkifiedText text={answer.body} className="mt-2 text-sm leading-relaxed text-foreground" />}

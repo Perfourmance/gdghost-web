@@ -28,7 +28,7 @@ export function OpsEventsPage() {
       <div className="mt-4 space-y-2">
         {list.isPending && [0, 1].map((i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
         {list.isError && <LoadError text="이벤트를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-        {list.isSuccess && list.data.length === 0 && <EmptyCard>아직 이벤트가 없어요.</EmptyCard>}
+        {list.isSuccess && list.data.length === 0 && <EmptyCard>이벤트가 없어요.</EmptyCard>}
         {list.data?.map((e) => (
           <article key={e.id} className="rounded-xl bg-card px-4 py-3.5">
             <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ function PublishForm({ event }: { event: EventSummary }) {
     return (
       <div className="text-center">
         <SheetTitle className="text-lg font-bold text-title">공지로 올렸어요</SheetTitle>
-        <SheetDescription className="mt-1 text-sm text-muted-foreground">부원 디스코드 채널에도 올라갔어요.</SheetDescription>
+        <SheetDescription className="mt-1 text-sm text-muted-foreground">부원 디스코드 채널에도 올렸어요.</SheetDescription>
         <Link to={`/notices/${doneId}`} className={buttonVariants({ size: 'lg', className: 'mt-5 h-12 w-full' })}>
           공지 보기
         </Link>
@@ -104,7 +104,7 @@ function PublishForm({ event }: { event: EventSummary }) {
     <div>
       <SheetTitle className="text-lg font-bold text-title">'{event.name}' 공지로 발행</SheetTitle>
       <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        설명과 4단계 안내로 공지를 만들어요. 마감일은 이벤트 끝나는 날이에요.
+        설명과 4단계 안내로 공지를 만들어요. 마감일은 이벤트가 끝나는 날이에요.
       </SheetDescription>
       <div className="mt-4 space-y-3 text-sm">
         <label className="flex items-center gap-2.5">

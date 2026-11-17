@@ -46,8 +46,8 @@ export function useSeniorMatch() {
 export function seniorMatchErrorMessage(error: ApiError): string {
   if (error.code === 'RATE_LIMITED') {
     return error.retryAfter
-      ? `잠깐 쉬었다가 ${waitText(error.retryAfter)} 뒤에 다시 찾아 주세요.`
-      : '잠깐 쉬었다가 다시 찾아 주세요.'
+      ? `${waitText(error.retryAfter)} 뒤에 다시 검색해 주세요.`
+      : '잠시 뒤 다시 검색해 주세요.'
   }
   if (error.code === 'VALIDATION_FAILED') return error.fieldErrors[0]?.message ?? error.message
   return commonErrorMessage(error)
@@ -77,7 +77,7 @@ export function usePassRouting(questionId: number) {
 }
 
 export function passErrorMessage(error: ApiError): string {
-  if (error.code === 'ROUTING_NOT_ASSIGNED') return '이미 넘겼거나 나에게 온 질문이 아니에요.'
+  if (error.code === 'ROUTING_NOT_ASSIGNED') return '이미 넘겼거나 내게 온 질문이 아니에요.'
   if (error.code === 'NOT_FOUND') return '질문이 삭제됐어요.'
   return commonErrorMessage(error)
 }

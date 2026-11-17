@@ -64,7 +64,7 @@ function ReportForm({ target, onClose }: { target: ReportTarget; onClose: () => 
           {done === 'sent' ? '신고했어요' : '이미 신고했어요'}
         </SheetTitle>
         <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          운영진이 확인하고 필요하면 숨길게요. 신고한 사실은 작성자에게 알리지 않아요.
+          운영진 검토 후 필요시 숨김 처리. 작성자에게는 신고 사실을 알리지 않아요.
         </SheetDescription>
         <Button size="lg" className="mt-6 h-12 w-full font-bold" onClick={onClose}>
           확인
@@ -77,14 +77,14 @@ function ReportForm({ target, onClose }: { target: ReportTarget; onClose: () => 
     <form onSubmit={handleSubmit}>
       <SheetTitle className="text-lg font-bold text-title">이 {name} 신고할까요?</SheetTitle>
       <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        운영진만 볼 수 있어요. 작성자에게는 알리지 않아요.
+        운영진만 볼 수 있어요. 작성자에게는 알림이 가지 않아요.
       </SheetDescription>
       <textarea
         autoFocus
         aria-label="신고 이유"
         rows={4}
         maxLength={REASON_MAX}
-        placeholder="어떤 점이 문제인지 적어 주세요"
+        placeholder="신고 이유"
         value={reason}
         onChange={(e) => setReason(e.target.value)}
         className="mt-5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"

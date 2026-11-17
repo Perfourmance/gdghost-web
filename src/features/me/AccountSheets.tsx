@@ -80,7 +80,7 @@ function ErrorText({ children }: { children: ReactNode }) {
 /** 비밀번호 변경 — 이 기기는 로그인 유지, 다른 기기는 로그아웃 */
 export function PasswordChangeSheet({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
   return (
-    <AccountSheet open={open} onClose={onClose} title="비밀번호 변경" description="바꾸면 이 기기를 뺀 다른 기기에서는 로그아웃돼요.">
+    <AccountSheet open={open} onClose={onClose} title="비밀번호 변경" description="변경하면 다른 기기에서 로그아웃돼요.">
       <PasswordChangeForm onDone={onDone} />
     </AccountSheet>
   )
@@ -133,7 +133,7 @@ export function EmailChangeSheet({
       open={open}
       onClose={onClose}
       title="이메일 변경"
-      description="아이디 · 비밀번호를 찾을 때 쓰는 메일이에요. 바꾸면 30일 동안 다시 바꿀 수 없어요."
+      description="계정 찾기에 쓰는 이메일. 변경 후 30일간 다시 변경할 수 없어요."
     >
       <EmailChangeForm currentEmail={currentEmail} onDone={onDone} />
     </AccountSheet>
@@ -201,10 +201,10 @@ function EmailChangeForm({ currentEmail, onDone }: { currentEmail: string; onDon
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">지금 메일: {currentEmail}</p>
-        {sameAsCurrent && trimmed !== '' && <p className="text-xs text-destructive">지금 쓰는 이메일이에요.</p>}
+        {sameAsCurrent && trimmed !== '' && <p className="text-xs text-destructive">현재 사용 중인 이메일</p>}
         {codeSent && (
           <p className="text-xs text-brand-text" role="status">
-            인증번호를 보냈어요(10분 유효). 메일이 안 오면 스팸함을 확인해 주세요.
+            인증번호를 보냈어요. 10분 안에 입력해 주세요.
           </p>
         )}
       </div>
@@ -258,9 +258,9 @@ function WithdrawalForm({ onDone }: { onDone: () => void }) {
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
       <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-foreground">
-        <li>남긴 질문 · 답변 · 공유는 지워지지 않고 작성자가 &lsquo;탈퇴한 부원&rsquo;으로 바뀌어요.</li>
-        <li>피드 글과 프로필 · 연락 수단은 모두 지워져요.</li>
-        <li>탈퇴는 되돌릴 수 없어요.</li>
+        <li>질문·답변·공유글은 남고, 작성자는 ‘탈퇴한 부원’으로 표시돼요.</li>
+        <li>피드 글, 프로필, 연락 수단은 삭제돼요.</li>
+        <li>탈퇴하면 계정을 복구할 수 없어요.</li>
       </ul>
       <CurrentPasswordField value={password} onChange={setPassword} />
       {withdraw.isError && <ErrorText>{withdrawalErrorMessage(toApiError(withdraw.error))}</ErrorText>}

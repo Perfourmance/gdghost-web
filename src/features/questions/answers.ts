@@ -87,14 +87,14 @@ export function answerErrorMessage(error: ApiError): string {
       return '익명 질문에서만 익명으로 답할 수 있어요.'
     case 'ANSWER_TOO_FAST':
       return error.retryAfter
-        ? `방금 답변을 남겼어요. ${error.retryAfter}초 뒤에 다시 시도해 주세요.`
-        : '방금 답변을 남겼어요. 잠시 뒤 다시 시도해 주세요.'
+        ? `답변을 방금 남겼어요. ${error.retryAfter}초 뒤에 다시 시도해 주세요.`
+        : '방금 답변을 남겼어요. 잠시 뒤 다시 작성해 주세요.'
     case 'NOT_AUTHOR':
-      return '본인 답변만 고치거나 지울 수 있어요.'
+      return '내 답변만 수정하거나 삭제할 수 있어요.'
     case 'NOT_FOUND':
-      return '답변이나 질문이 삭제됐어요. 화면을 새로 불러왔어요.'
+      return '질문이나 답변을 찾을 수 없어요.'
     case 'ADOPT_INVALID':
-      return '채택할 수 없는 답변이에요. 화면을 새로 불러왔어요.'
+      return '이 답변은 채택할 수 없어요.'
     default:
       return commonErrorMessage(error)
   }

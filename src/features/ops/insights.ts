@@ -47,9 +47,9 @@ export function useHandleReport() {
 
 export function reportHandleErrorMessage(error: ApiError): string {
   if (error.code === 'REPORT_ALREADY_HANDLED') {
-    return error.message.includes('지운') ? '작성자가 지운 글이라 되돌릴 수 없어요.' : '이미 처리된 신고예요. 목록을 새로 불러왔어요.'
+    return error.message.includes('지운') ? '작성자가 지운 글이라 되돌릴 수 없어요.' : '이미 처리한 신고예요.'
   }
-  if (error.code === 'NOT_FOUND') return '신고를 찾을 수 없어요.'
+  if (error.code === 'NOT_FOUND') return '신고를 찾을 수가 없어요.'
   return commonErrorMessage(error)
 }
 

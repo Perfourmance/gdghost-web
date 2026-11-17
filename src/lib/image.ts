@@ -28,9 +28,9 @@ export async function prepareImage(file: File): Promise<PreparedImage> {
   } catch {
     // 아이폰 사진(HEIC)을 PC로 옮겨 Chrome 등에서 고른 경우. 아이폰에서 바로 고르면 JPEG로 넘어와 여기 오지 않는다
     if (/heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name)) {
-      throw new ImageError('이 브라우저에서는 HEIC 사진을 열 수 없어요. 휴대폰에서 바로 올리거나 JPEG로 바꿔서 골라 주세요.')
+      throw new ImageError('이 브라우저는 HEIC를 열 수 없어요. 휴대폰에서 올리거나 JPEG로 바꿔 주세요.')
     }
-    throw new ImageError('이 사진은 열 수 없어요. JPEG · PNG · WebP 사진을 골라 주세요.')
+    throw new ImageError('이 사진은 열 수 없어요. JPEG, PNG, WebP 중 하나를 골라 주세요.')
   }
 
   let scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height))
@@ -43,7 +43,7 @@ export async function prepareImage(file: File): Promise<PreparedImage> {
       canvas.width = width
       canvas.height = height
       const context = canvas.getContext('2d')
-      if (!context) throw new ImageError('사진을 처리하지 못했어요.')
+      if (!context) throw new ImageError('이 사진을 열지 못했어요.')
       // 투명한 PNG가 JPEG로 바뀔 때 검게 되지 않게
       context.fillStyle = '#ffffff'
       context.fillRect(0, 0, width, height)
@@ -53,7 +53,7 @@ export async function prepareImage(file: File): Promise<PreparedImage> {
         let blob = await toBlob(canvas, 'image/webp', quality)
         // WebP로 못 만드는 브라우저(일부 Safari)는 PNG를 돌려준다 → JPEG로
         if (!blob || blob.type !== 'image/webp') blob = await toBlob(canvas, 'image/jpeg', quality)
-        if (!blob) throw new ImageError('사진을 처리하지 못했어요.')
+        if (!blob) throw new ImageError('이 사진을 열지 못했어요.')
         if (blob.size <= MAX_UPLOAD_BYTES) return { blob, type: blob.type, width, height }
       }
       scale *= 0.75
@@ -61,5 +61,5 @@ export async function prepareImage(file: File): Promise<PreparedImage> {
   } finally {
     bitmap.close()
   }
-  throw new ImageError('사진이 너무 커요. 다른 사진을 골라 주세요.')
+  throw new ImageError('사진 용량이 너무 커요. 다른 사진을 골라 주세요.')
 }

@@ -35,7 +35,7 @@ export function OpsNoticesPage() {
       <div className="mt-4 space-y-2">
         {list.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
         {list.isError && <LoadError text="공지를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-        {list.isSuccess && list.data.items.length === 0 && <EmptyCard>아직 공지가 없어요.</EmptyCard>}
+        {list.isSuccess && list.data.items.length === 0 && <EmptyCard>공지가 없어요.</EmptyCard>}
         {list.data?.items.map((n) => (
           <NoticeRow key={n.id} notice={n} onMessage={setMessage} />
         ))}
@@ -53,16 +53,16 @@ function NoticeRow({ notice: n, onMessage }: { notice: OpsNotice; onMessage: (m:
   const unconfirmed = n.stats.memberCount - n.stats.confirmedCount
 
   function handleRemind() {
-    if (!window.confirm(`확인하지 않은 ${unconfirmed}명에게 한 번 더 알릴까요? 공지당 한 번만 보낼 수 있어요.`)) return
+    if (!window.confirm(`미확인 ${unconfirmed}명에게 다시 알릴까요? 추가 알림은 공지당 한 번만 보낼 수 있어요.`)) return
     onMessage(null)
     remind.mutate(n.id, {
-      onSuccess: (r) => onMessage({ text: `${r.targetCount}명에게 한 번 더 알렸어요.`, error: false }),
+      onSuccess: (r) => onMessage({ text: `${r.targetCount}명에게 알림을 한 번 더 보냈어요.`, error: false }),
       onError: (e) => onMessage({ text: contentErrorMessage(toApiError(e)), error: true }),
     })
   }
 
   function handleDelete() {
-    if (!window.confirm(`'${n.title}' 공지를 삭제할까요? 디스코드에 올라간 메시지는 지워지지 않아요.`)) return
+    if (!window.confirm(`‘${n.title}’ 공지를 삭제할까요? 디스코드 메시지는 남아요.`)) return
     onMessage(null)
     remove.mutate(n.id, {
       onSuccess: () => onMessage({ text: '공지를 삭제했어요.', error: false }),
