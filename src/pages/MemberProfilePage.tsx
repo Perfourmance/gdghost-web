@@ -188,7 +188,7 @@ function CoffeeAction({ profile }: { profile: MemberProfile }) {
   else if (myRequestState === 'REQUESTED')
     notice = (
       <>
-        상대가 수락하면 연락 방법을 볼 수 있어요.
+        상대가 수락하면 연락 방법을 볼 수 있어요.{' '}
         <Link to="/coffee-chats?tab=sent" className="font-bold text-brand-text underline-offset-2 hover:underline">
           보낸 신청 보기
         </Link>

@@ -159,7 +159,7 @@ export function useAdminEmailChange() {
 export function adminErrorMessage(error: ApiError): string {
   switch (error.code) {
     case 'CURRENT_PASSWORD_WRONG':
-      return '두 비밀번호가 달라요. 같은 비밀번호를 입력해 주세요.'
+      return '현재 비밀번호를 다시 확인해 주세요.'
     case 'EMAIL_ALREADY_USED':
       return '다른 계정에서 사용 중인 이메일'
     case 'EMAIL_CHANGE_TOO_SOON':
