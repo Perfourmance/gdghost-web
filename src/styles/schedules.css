@@ -1,0 +1,1312 @@
+/* 일정 · 모집 · 이벤트 묶음 (schedule · sdetail · event · edetail) — 화면 전용 모양. 공통 부품은 story.css */
+
+/* JS가 불러와 index.css보다 먼저 들어갈 수 있다 — 층 순서를 먼저 못 박는다 */
+@layer theme, base, components, utilities;
+
+@layer components {
+  .gh-ssky {
+    position: relative;
+    background: linear-gradient(rgba(18, 26, 45, 0) 55%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-ssky .gh-big {
+    padding-top: 16px;
+  }
+  .gh-sdesc {
+    padding: 8px 22px 0;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-ssky .gh-speek {
+    position: absolute;
+    right: 8px;
+    top: 54px;
+    z-index: 4;
+    width: 100px;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+    transform: rotate(6deg);
+  }
+  .gh-ssky .gh-dotchips {
+    padding-top: 30px;
+  }
+
+  /* 밤하늘 달력 */
+  .gh-cal {
+    position: relative;
+    margin: 14px 14px 0;
+    padding: 16px 12px 14px;
+    overflow: hidden;
+    border-radius: 26px;
+    background: linear-gradient(#0a1226, #16203a);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line), 0 20px 40px -20px #000;
+  }
+  .gh-cal::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('../assets/scene/bg-sky.webp') center / 500px auto;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .gh-cal-h {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 10px;
+  }
+  .gh-cal-h b {
+    font: 400 18px var(--font-title);
+  }
+  .gh-cal-h b small {
+    margin-right: 6px;
+    font: 400 12px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-cal-h button {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-gh-sky);
+  }
+  .gh-cal-h button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-cal-g {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 4px;
+    text-align: center;
+  }
+  .gh-cal-g .gh-wd {
+    padding-bottom: 6px;
+    font: 400 11px var(--font-title);
+    color: #66728c;
+  }
+  .gh-cal-g .gh-wd.is-sun {
+    color: #e58a8a;
+  }
+  .gh-cal-g button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    font: 400 14px var(--font-title);
+    color: #dce4f3;
+  }
+  .gh-cal-g button.is-past {
+    color: #4d5a76;
+  }
+  .gh-cal-g button > span {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
+  .gh-cal-g button.is-today > span {
+    background: radial-gradient(circle at 40% 35%, #ffe7b0, var(--color-gh-amber));
+    color: var(--color-gh-night);
+    box-shadow: 0 0 18px 6px rgba(245, 185, 82, 0.45);
+  }
+  .gh-cal-g button[aria-pressed='true'] > span {
+    background: var(--color-gh-ink);
+    color: var(--color-gh-night);
+    box-shadow: 0 0 14px 3px rgba(169, 199, 255, 0.45);
+  }
+  .gh-cal-g .gh-st {
+    position: absolute;
+    bottom: 3px;
+    display: flex;
+    gap: 2px;
+  }
+  .gh-cal-g button.is-today .gh-st,
+  .gh-cal-g button[aria-pressed='true'] .gh-st {
+    bottom: -2px;
+  }
+  .gh-cal-g .gh-st i {
+    width: 7px;
+    height: 7px;
+    background: var(--c);
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    filter: drop-shadow(0 0 3px var(--c));
+  }
+  .gh-cal-g button.is-past .gh-st i {
+    opacity: 0.4;
+  }
+
+  /* 이달 일정 = 은하수 길 */
+  .gh-ssh {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin: 34px 22px 6px;
+    font: 400 18px var(--font-title);
+  }
+  .gh-ssh small {
+    font: 400 12.5px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-ssh button {
+    margin-left: auto;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-road {
+    position: relative;
+    margin: 0 16px 0 22px;
+    padding-left: 28px;
+  }
+  .gh-road::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 20px;
+    width: 3px;
+    border-radius: 2px;
+    background: linear-gradient(rgba(169, 199, 255, 0.12), rgba(169, 199, 255, 0.35) 45%, rgba(245, 185, 82, 0.55) 60%, rgba(245, 185, 82, 0.08));
+  }
+  .gh-past {
+    position: relative;
+    display: block;
+    padding: 12px 52px 12px 0;
+    opacity: 0.55;
+  }
+  .gh-past::before {
+    content: '';
+    position: absolute;
+    left: -27px;
+    top: 16px;
+    width: 13px;
+    height: 13px;
+    background: #6f7c96;
+    clip-path: polygon(50% 0, 63% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 37% 36%);
+  }
+  .gh-past .gh-t {
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-past .gh-t em {
+    font-style: normal;
+    color: var(--c);
+  }
+  .gh-past b {
+    display: block;
+    margin-top: 3px;
+    font: 400 15px var(--font-title);
+  }
+  .gh-past .gh-x {
+    position: absolute;
+    right: 0;
+    top: 13px;
+    font: 400 11px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-now {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 96px;
+    margin: 8px 0 6px -40px;
+  }
+  .gh-now img {
+    width: 84px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+  }
+  .gh-now div {
+    padding: 8px 13px;
+    border-radius: 14px;
+    background: rgba(245, 185, 82, 0.12);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.35);
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-now small {
+    display: block;
+    margin-top: 2px;
+    font: 400 11.5px var(--font-body);
+    color: #e8cf9e;
+  }
+  .gh-tw {
+    position: relative;
+    margin-top: 12px;
+  }
+  .gh-tw::before {
+    content: '';
+    position: absolute;
+    left: -38px;
+    top: 26px;
+    width: 18px;
+    height: 18px;
+    background: var(--color-gh-amber);
+    clip-path: polygon(50% 0, 63% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 37% 36%);
+    filter: drop-shadow(0 0 6px rgba(245, 185, 82, 0.9));
+  }
+  .gh-tw .gh-ticket {
+    margin: 0;
+  }
+  .gh-sskel {
+    height: 90px;
+    margin: 12px 16px 0;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: gh-s-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes gh-s-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ── 일정 상세 (sdetail-final '하늘에 뜬 그날', 별 색 = 분류 색) ── */
+@layer components {
+  .gh-sd {
+    padding-bottom: 40px;
+  }
+  .gh-sd-hero {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+  }
+  .gh-sd-top {
+    position: relative;
+    background: linear-gradient(rgba(18, 26, 45, 0) 60%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-bigstar {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    width: 130px;
+    height: 130px;
+  }
+  .gh-bigstar::before {
+    content: '';
+    position: absolute;
+    inset: -50px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--c) 45%, transparent), transparent);
+  }
+  .gh-bigstar i {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 45% 40%, var(--c2), var(--c) 60%, var(--c3));
+    clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    animation: gh-tw 3s ease-in-out infinite;
+  }
+  .gh-sd.is-ended .gh-bigstar {
+    opacity: 0.45;
+  }
+  @keyframes gh-tw {
+    50% {
+      transform: scale(1.05) rotate(4deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .gh-bigstar i {
+      animation: none;
+    }
+  }
+  .gh-sd-tt {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 18px;
+  }
+  .gh-sd-tt .gh-lab {
+    background: color-mix(in srgb, var(--c) 18%, transparent);
+    color: var(--c);
+  }
+  .gh-sd-tt h1 {
+    max-width: 250px;
+    margin-top: 12px;
+    font: 400 30px/1.25 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-sd-tt .gh-by {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--color-gh-sub);
+  }
+  .gh-sd-tt .gh-by b {
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-span {
+    margin: 6px 16px 0;
+    padding: 18px 18px 16px;
+    border-radius: 22px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-span-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .gh-span-top b {
+    font: 400 17px var(--font-title);
+  }
+  .gh-span-top small {
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-span-top small.is-dim {
+    color: var(--color-gh-sub);
+  }
+  .gh-sbar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin: 22px 4px 6px;
+  }
+  .gh-sbar::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 3px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--c) 22%, transparent);
+    transform: translateY(-50%);
+  }
+  .gh-sbar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: var(--done, 0%);
+    top: 50%;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--c);
+    transform: translateY(-50%);
+  }
+  .gh-sbar i {
+    position: relative;
+    z-index: 1;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #2a3554;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--c) 50%, transparent);
+  }
+  .gh-sbar i.is-p {
+    background: var(--c);
+    box-shadow: none;
+  }
+  .gh-sbar i.is-now {
+    width: 16px;
+    height: 16px;
+    margin: -3.5px 0;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 12px 4px rgba(245, 185, 82, 0.6);
+  }
+  .gh-sbar i.is-end {
+    background: var(--c);
+    box-shadow: 0 0 10px 3px color-mix(in srgb, var(--c) 60%, transparent);
+  }
+  .gh-ends {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-ends .is-now {
+    font-family: var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-span-place {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-gh-line);
+    font-size: 13.5px;
+    color: #c9d3e6;
+  }
+  .gh-say {
+    position: relative;
+    margin: 14px 16px 0;
+    padding: 16px 18px;
+    border-radius: 18px 18px 18px 4px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .gh-say small {
+    display: block;
+    margin-bottom: 3px;
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-pine);
+  }
+  .gh-say a {
+    color: var(--color-gh-pine);
+    text-decoration: underline;
+  }
+  .gh-sd-sh {
+    margin: 30px 22px 0;
+    font: 400 18px var(--font-title);
+  }
+  .gh-sd-sh small {
+    display: block;
+    margin-top: 4px;
+    font: 400 12.5px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-con {
+    position: relative;
+    height: 150px;
+    margin: 0 16px;
+  }
+  .gh-con svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .gh-con img {
+    position: absolute;
+    left: -6px;
+    top: 2px;
+    width: 126px;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+  }
+  .gh-rlist {
+    margin: 12px 16px 0;
+  }
+  .gh-rlist a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding: 13px 14px;
+    border-radius: 16px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-rlist a > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .gh-rlist b {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 15px var(--font-title);
+  }
+  .gh-rlist small {
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-rlist .gh-rst {
+    flex: none;
+    padding: 4px 9px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-rlist .gh-rst.is-open {
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+  }
+  .gh-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+    margin: 14px 16px 0;
+    border-radius: 28px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 15.5px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.9);
+  }
+  .gh-open svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ── 이벤트 목록 (event-final '별똥별 지도') ── */
+@layer components {
+  .gh-ev-top {
+    position: relative;
+  }
+  .gh-ev-top .gh-big {
+    padding-top: 16px;
+  }
+  .gh-ev-top .gh-speek {
+    position: absolute;
+    right: 8px;
+    top: 54px;
+    z-index: 4;
+    width: 100px;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+    transform: rotate(6deg);
+  }
+  .gh-map {
+    position: relative;
+    margin: 22px 16px 0;
+    padding: 16px 16px 14px;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(#0a1226, #16203a);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-map::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('../assets/scene/bg-sky.webp') center / 480px auto;
+    opacity: 0.55;
+  }
+  .gh-map-t {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .gh-map-t b {
+    font: 400 15px var(--font-title);
+  }
+  .gh-map-t small {
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-plot {
+    position: relative;
+    margin-top: 10px;
+  }
+  .gh-plot .gh-mon {
+    position: absolute;
+    top: 0;
+    bottom: 22px;
+    border-left: 1px dashed rgba(169, 199, 255, 0.14);
+  }
+  .gh-plot .gh-mon span {
+    position: absolute;
+    bottom: -22px;
+    left: 4px;
+    font: 400 11px var(--font-title);
+    color: #66728c;
+    white-space: nowrap;
+  }
+  .gh-plot .gh-today {
+    position: absolute;
+    top: -4px;
+    bottom: 22px;
+    width: 0;
+    border-left: 2px solid rgba(245, 185, 82, 0.7);
+  }
+  .gh-plot .gh-today span {
+    position: absolute;
+    top: -2px;
+    left: 5px;
+    font: 400 10.5px var(--font-title);
+    color: var(--color-gh-amber);
+    white-space: nowrap;
+  }
+  .gh-tr {
+    position: absolute;
+    height: 6px;
+    border-radius: 3px;
+  }
+  .gh-tr .gh-lb {
+    position: absolute;
+    bottom: 8px;
+    left: 0;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 11.5px var(--font-title);
+  }
+  .gh-tr.is-past {
+    background: #3a4256;
+  }
+  .gh-tr.is-past .gh-lb {
+    color: #66728c;
+  }
+  .gh-tr.is-soon {
+    background: repeating-linear-gradient(90deg, rgba(169, 199, 255, 0.55) 0 6px, transparent 6px 11px);
+  }
+  .gh-tr.is-soon .gh-lb {
+    left: auto;
+    right: 0;
+    color: var(--color-gh-sky);
+  }
+  .gh-tr.is-live {
+    background: rgba(245, 185, 82, 0.18);
+  }
+  .gh-tr.is-live .gh-lb {
+    color: var(--color-gh-ink);
+  }
+  .gh-tr .gh-done {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 2px;
+    background: linear-gradient(90deg, rgba(245, 185, 82, 0), var(--color-gh-amber));
+  }
+  .gh-tr .gh-head {
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background: #ffe7b0;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    filter: drop-shadow(0 0 6px var(--color-gh-amber));
+    transform: translate(-50%, -50%);
+  }
+  .gh-esh {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 30px 22px 10px;
+    font: 400 17px var(--font-title);
+  }
+  .gh-esh small {
+    font: 400 12.5px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-ecards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 16px;
+  }
+  .gh-ec {
+    display: block;
+    padding: 16px 16px 14px;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-ec.is-live {
+    background: linear-gradient(120deg, rgba(245, 185, 82, 0.14), rgba(27, 37, 58, 0.85) 55%);
+    box-shadow: inset 0 0 0 1.2px rgba(245, 185, 82, 0.35);
+  }
+  .gh-ec.is-gone {
+    opacity: 0.6;
+  }
+  .gh-ec .gh-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gh-ec h3 {
+    flex: 1;
+    min-width: 0;
+    font: 400 16.5px var(--font-title);
+  }
+  .gh-est {
+    flex: none;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font: 400 11px var(--font-title);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-gh-sub);
+  }
+  .gh-est.is-live {
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+  }
+  .gh-est.is-soon {
+    background: rgba(169, 199, 255, 0.12);
+    color: var(--color-gh-sky);
+  }
+  .gh-ec .gh-m {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-ec .gh-m span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .gh-ec .gh-m svg {
+    width: 14px;
+    height: 14px;
+  }
+  .gh-ec .gh-m .gh-me {
+    margin-left: auto;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-ec.is-gone .gh-m .gh-me {
+    color: var(--color-gh-sky);
+  }
+}
+
+/* ── 이벤트 상세 (edetail-final '별똥별 따라가기') ── */
+@layer components {
+  .gh-ed {
+    padding-bottom: 40px;
+  }
+  .gh-ed-top {
+    background: linear-gradient(rgba(18, 26, 45, 0) 55%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-ed-hero {
+    position: relative;
+    height: 240px;
+    overflow: hidden;
+  }
+  .gh-streak {
+    position: absolute;
+    right: -30px;
+    top: -6px;
+    width: 170px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, rgba(245, 185, 82, 0), rgba(245, 185, 82, 0.9));
+    transform: rotate(-24deg);
+    transform-origin: right center;
+  }
+  .gh-streak::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 34px;
+    height: 34px;
+    background: #ffe7b0;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    filter: drop-shadow(0 0 10px var(--color-gh-amber));
+    transform: translate(-50%, -50%);
+  }
+  .gh-ed.is-gone .gh-streak {
+    opacity: 0.35;
+  }
+  .gh-ed-tt {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 16px;
+  }
+  .gh-ed-tt h1 {
+    margin-top: 12px;
+    font: 400 30px/1.25 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-ed-tt .gh-w {
+    margin-top: 8px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-ebar {
+    position: relative;
+    height: 6px;
+    margin-top: 12px;
+    border-radius: 3px;
+    background: rgba(245, 185, 82, 0.15);
+  }
+  .gh-ebar i {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    border-radius: 3px;
+    background: linear-gradient(90deg, rgba(245, 185, 82, 0.2), var(--color-gh-amber));
+  }
+  .gh-ebar b {
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffe7b0;
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.7);
+    transform: translate(-50%, -50%);
+  }
+  .gh-eends {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-emine {
+    margin: 6px 16px 0;
+    padding: 18px;
+    border-radius: 24px;
+    background: linear-gradient(130deg, rgba(245, 185, 82, 0.2), rgba(27, 37, 58, 0.9) 60%);
+    box-shadow: inset 0 0 0 1.2px rgba(245, 185, 82, 0.4);
+  }
+  .gh-emine .gh-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gh-emine img {
+    width: 70px;
+    margin: -18px -6px -10px -8px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+  }
+  .gh-emine small {
+    display: block;
+    font: 400 12px var(--font-title);
+    color: #e8cf9e;
+  }
+  .gh-emine b {
+    font: 400 30px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-emine b span {
+    margin-left: 3px;
+    font-size: 15px;
+    color: var(--color-gh-ink);
+  }
+  .gh-emine .gh-pend {
+    margin-left: auto;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-up {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 54px;
+    margin-top: 14px;
+    border-radius: 27px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 15.5px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.9);
+  }
+  .gh-up svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-up.is-small {
+    width: auto;
+    height: 38px;
+    margin-top: 8px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+  .gh-emine > p {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--color-gh-sub);
+  }
+  .gh-rej {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(240, 138, 122, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(240, 138, 122, 0.3);
+    font-size: 13.5px;
+  }
+  .gh-rej b {
+    display: block;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-error-night);
+  }
+  .gh-rej small {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-staffnote {
+    margin: 12px 16px 0;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(169, 199, 255, 0.08);
+    font-size: 13px;
+    color: var(--color-gh-sky);
+  }
+  .gh-esay {
+    margin: 22px 16px 0;
+    padding: 16px 18px;
+    border-radius: 18px 18px 18px 4px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .gh-esay a {
+    color: var(--color-gh-pine);
+    text-decoration: underline;
+  }
+  .gh-need {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1.5px dashed var(--color-gh-paper-line);
+    font: 400 14px var(--font-title);
+  }
+  .gh-esay > .gh-need:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border: 0;
+  }
+  .gh-need small {
+    flex: none;
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: rgba(47, 110, 115, 0.12);
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-pine);
+  }
+  .gh-steps {
+    position: relative;
+    height: 200px;
+    margin: 0 16px;
+    overflow: hidden;
+    border-radius: 22px;
+    background: linear-gradient(#0a1226, #16203a);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-steps svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .gh-sp {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 60%;
+    font-size: 13px;
+    color: var(--color-gh-ink);
+  }
+  .gh-sp i {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    background: #e6edfa;
+    color: var(--color-gh-night);
+    font: 400 12px var(--font-title);
+    font-style: normal;
+    clip-path: polygon(50% 0, 62% 30%, 96% 35%, 70% 58%, 79% 92%, 50% 74%, 21% 92%, 30% 58%, 4% 35%, 38% 30%);
+  }
+  .gh-sp.is-last i {
+    background: var(--color-gh-amber);
+  }
+  .gh-rank {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 16px;
+  }
+  .gh-rk {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-rk .gh-n {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 13px var(--font-title);
+    box-shadow: 0 0 10px rgba(245, 185, 82, 0.5);
+  }
+  .gh-rk .gh-n.is-low {
+    background: rgba(169, 199, 255, 0.15);
+    color: var(--color-gh-sky);
+    box-shadow: none;
+  }
+  .gh-rk b {
+    font: 400 15px var(--font-title);
+  }
+  .gh-rk span {
+    margin-left: 4px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-rk em {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font: 400 13px var(--font-title);
+    font-style: normal;
+    color: var(--color-gh-amber);
+  }
+  .gh-rk em svg {
+    width: 14px;
+    height: 14px;
+  }
+  .gh-log {
+    position: relative;
+    margin: 0 16px 0 30px;
+    padding-left: 22px;
+  }
+  .gh-log::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(rgba(245, 185, 82, 0.5), rgba(169, 199, 255, 0.08));
+  }
+  .gh-lg {
+    position: relative;
+    padding: 2px 0 22px;
+    scroll-margin-top: 80px;
+  }
+  .gh-lg::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+    background: #ffe7b0;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    filter: drop-shadow(0 0 4px var(--color-gh-amber));
+  }
+  .gh-lg.is-wait::before {
+    background: #6f7c96;
+    filter: none;
+  }
+  .gh-lg .gh-who {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-lg .gh-who b {
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-lg .gh-who .gh-tag {
+    padding: 2px 7px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    font: 400 11px var(--font-title);
+  }
+  .gh-lg .gh-who .gh-tag.is-bad {
+    background: rgba(240, 138, 122, 0.12);
+    color: var(--color-gh-error-night);
+  }
+  .gh-lg p {
+    margin-top: 6px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .gh-lg .gh-photos {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .gh-lg .gh-photos img {
+    width: 100%;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #232d46;
+    box-shadow: 0 0 0 4px #fffdf6;
+  }
+  .gh-emore {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 0 16px;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+}
+
+/* ── 모집 (시안 없음: 등불 자리 카드 — 앉은 자리 = 켜진 등불) ── */
+@layer components {
+  .gh-rcards {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+    padding: 0 16px;
+  }
+  .gh-rc {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    text-align: left;
+  }
+  .gh-rc.is-mine {
+    box-shadow: inset 0 0 0 1.2px rgba(169, 199, 255, 0.4);
+  }
+  .gh-rc.is-closed {
+    opacity: 0.55;
+  }
+  .gh-rc .gh-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gh-rc .gh-top .gh-est {
+    margin-left: auto;
+  }
+  .gh-rc h3 {
+    margin-top: 8px;
+    font: 400 16.5px/1.4 var(--font-title);
+  }
+  .gh-rc .gh-when {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-seats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .gh-seats i {
+    position: relative;
+    width: 14px;
+    height: 19px;
+    border-radius: 7px 7px 3px 3px;
+    background: #2a3350;
+    box-shadow: inset 0 0 0 1.5px rgba(169, 199, 255, 0.25);
+  }
+  .gh-seats i::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    right: 3px;
+    top: -4px;
+    height: 3px;
+    border-radius: 2px;
+    background: #4d566e;
+  }
+  .gh-seats i.is-on {
+    background: radial-gradient(circle at 50% 60%, #ffe3a6, #f5b952 75%);
+    box-shadow: 0 0 10px 2px rgba(245, 185, 82, 0.55);
+  }
+  .gh-seats i.is-on::before {
+    background: #c9963a;
+  }
+  .gh-seats span {
+    margin-left: 4px;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-seats span.is-me {
+    margin-left: auto;
+    color: var(--color-gh-sky);
+  }
+  /* 모집 상세 시트 */
+  .gh-rinfo {
+    margin-top: 16px;
+    padding: 4px 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-rinfo > div {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    font-size: 14px;
+  }
+  .gh-rinfo > div + div {
+    border-top: 1px solid var(--color-gh-line);
+  }
+  .gh-rinfo dt {
+    flex: none;
+    width: 64px;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-rinfo dd {
+    min-width: 0;
+  }
+  .gh-rinfo a:hover {
+    text-decoration: underline;
+  }
+  .gh-rmemo {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 4px 4px 14px 4px;
+    background: #ffe9a8;
+    color: var(--color-gh-d-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    transform: rotate(-0.5deg);
+  }
+  .gh-rmemo a {
+    text-decoration: underline;
+  }
+  .gh-rppl {
+    margin-top: 16px;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-rppl ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .gh-rppl li {
+    padding: 5px 11px;
+    border-radius: 14px;
+    background: rgba(169, 199, 255, 0.1);
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-rppl li small {
+    margin-left: 4px;
+    font-size: 11px;
+    color: var(--color-gh-amber);
+  }
+  .gh-racts {
+    margin-top: 20px;
+  }
+  .gh-racts p {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+}

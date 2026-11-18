@@ -1,16 +1,15 @@
-import { CalendarPlus } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
 import { SegmentTabs } from '@/components/layout/SegmentTabs'
 import { SCHEDULE_SEGMENTS } from '@/components/layout/segments'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { BigTitle, DotChips, EmptyState, Fab, Ghost, IconCalendar, Pill, StoryTopBar, Ticket } from '@/components/story'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
 import { useLockSheet } from '@/features/auth/useLockSheet'
 import { EmptyCard, ScheduleCard, type CardTarget } from '@/features/content/Cards'
 import { scheduleKindLabel } from '@/features/content/labels'
-import { SCHEDULE_KINDS, useScheduleRange } from '@/features/schedules/api'
+import { SCHEDULE_KINDS, useScheduleRange, type ScheduleSummary } from '@/features/schedules/api'
 import {
   addMonths,
   coversDay,
@@ -21,6 +20,10 @@ import {
   ymd,
 } from '@/features/schedules/calendar'
 import { MonthCalendar } from '@/features/schedules/MonthCalendar'
+import { StarCalendar } from '@/features/schedules/StarCalendar'
+import { colorOf, SCHEDULE_COLORS } from '@/lib/categoryColors'
+import { formatDay } from '@/lib/time'
+import '@/styles/schedules.css'
 
 /** 캘린더 (S30) — 월간 달력 + 아래 목록. 날짜를 고르면 그날 일정만. 달 · 날짜 · 분류는 주소에 둔다(뒤로 와도 유지) */
 export function SchedulesPage() {
@@ -63,101 +66,150 @@ export function SchedulesPage() {
   const writePath = day ? `${WRITE_PATH}?date=${day}` : WRITE_PATH
   const dayLabel = day ? `${Number(day.slice(5, 7))}월 ${Number(day.slice(8))}일` : `${month}월`
 
-  return (
-    <div className="pb-20">
-      <h1 className="sr-only">일정</h1>
-      <SegmentTabs items={SCHEDULE_SEGMENTS} label="일정 탭" />
-
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div className="flex w-max gap-2">
-          <Chip selected={kind == null} onClick={() => update({ kind: null })}>
-            전체
-          </Chip>
-          {SCHEDULE_KINDS.map((k) => (
-            <Chip key={k} selected={kind === k} onClick={() => update({ kind: kind === k ? null : k })}>
-              {scheduleKindLabel(k)}
-            </Chip>
+  if (!member) {
+    return (
+      <div className="pb-20">
+        <h1 className="sr-only">일정</h1>
+        <SegmentTabs items={SCHEDULE_SEGMENTS} label="일정 탭" />
+        <div className="mt-4">
+          <MonthCalendar year={year} month={month} today={today} selected={day} schedules={schedules} onSelect={(d) => update({ day: d })} onMove={move} />
+        </div>
+        <div className="mt-6 space-y-2">
+          {range.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[76px] w-full rounded-xl" />)}
+          {range.isSuccess && shown.length === 0 && <EmptyCard>{day ? '이날은 일정이 없어요.' : '이번 달 일정이 없어요.'}</EmptyCard>}
+          {shown.map((s) => (
+            <ScheduleCard key={s.id} schedule={s} target={target} />
           ))}
         </div>
+        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원만 볼 수 있어요." />
       </div>
+    )
+  }
 
-      <div className="mt-4">
-        <MonthCalendar
-          year={year}
-          month={month}
-          today={today}
-          selected={day}
-          schedules={schedules}
-          onSelect={(d) => update({ day: d })}
-          onMove={move}
+  const isThisMonth = today.slice(0, 7) === monthKey(year, month)
+  const past = shown.filter((s) => (s.dDay ?? 0) < 0)
+  const upcoming = shown.filter((s) => (s.dDay ?? 0) >= 0)
+
+  return (
+    <div className="pb-44">
+      <div className="gh-ssky">
+        <StoryTopBar unread={me.unreadNotificationCount} />
+        <BigTitle
+          items={[
+            { to: '/schedules', label: '일정', on: true },
+            { to: '/recruits', label: '모집' },
+            { to: '/events', label: '이벤트' },
+          ]}
+        />
+        <p className="gh-sdesc">다가오는 날은 별이 되어 떠 있어요</p>
+        <Ghost pose="star" className="gh-speek" />
+        <DotChips
+          label="분류"
+          value={kind ?? 'ALL'}
+          onChange={(v) => update({ kind: v === 'ALL' ? null : v })}
+          options={[
+            { value: 'ALL', label: '전체' },
+            ...SCHEDULE_KINDS.map((k) => ({ value: k, label: scheduleKindLabel(k), color: colorOf(SCHEDULE_COLORS, k) })),
+          ]}
         />
       </div>
 
-      <div className="mt-6 flex items-baseline justify-between">
-        <h2 className="text-base font-bold text-title">{dayLabel} 일정</h2>
+      <StarCalendar year={year} month={month} today={today} selected={day} schedules={schedules} onSelect={(d) => update({ day: d })} onMove={move} />
+
+      <h2 className="gh-ssh">
+        {day ? `${dayLabel}의 별` : `${month}월의 은하수`}
+        {range.isSuccess && !day && (
+          <small>
+            지나간 별 {past.length} · 떠오를 별 {upcoming.length}
+          </small>
+        )}
         {day && (
-          <button type="button" className="text-sm text-muted-foreground" onClick={() => update({ day: null })}>
+          <button type="button" onClick={() => update({ day: null })}>
             {month}월 전체 보기
           </button>
         )}
-      </div>
+      </h2>
 
-      <div className="mt-3 space-y-2">
-        {range.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[76px] w-full rounded-xl" />)}
+      {range.isPending && [0, 1].map((i) => <div key={i} className="gh-sskel" />)}
 
-        {range.isError && !range.data && (
-          <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-            <p className="text-sm">일정을 불러오지 못했어요.</p>
-            <Button variant="secondary" onClick={() => range.refetch()}>
-              다시 시도
-            </Button>
-          </div>
-        )}
-
-        {range.isSuccess && shown.length === 0 && (
-          <EmptyCard>
-            {day ? '이날은 일정이 없어요.' : '이번 달 일정이 없어요.'}
-            {member && ' 공모전이나 채용 일정을 알고 있다면 등록해 주세요.'}
-          </EmptyCard>
-        )}
-
-        {shown.map((s) => (
-          <ScheduleCard key={s.id} schedule={s} target={target} />
-        ))}
-      </div>
-
-      {/* 일정 등록 — 하단 탭 위에 떠 있다. 비회원은 잠금 안내 */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-10 mx-auto flex max-w-md justify-end px-4">
-        {member ? (
-          <Link to={writePath} className={writeButtonClass}>
-            <CalendarPlus aria-hidden />
-            일정 등록
-          </Link>
-        ) : (
-          <button type="button" className={writeButtonClass} onClick={() => lock.open(WRITE_PATH)}>
-            <CalendarPlus aria-hidden />
-            일정 등록
-          </button>
-        )}
-      </div>
-
-      {lock.next === WRITE_PATH ? (
-        <LockSheet
-          next={lock.next}
-          onClose={lock.close}
-          title="일정은 부원만 등록할 수 있어요."
-          description="부원으로 로그인하면 공모전·채용 일정을 공유할 수 있어요."
-        />
-      ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원만 볼 수 있어요." />
+      {range.isError && !range.data && (
+        <div className="px-4 pt-2">
+          <EmptyState
+            row
+            pose="shh"
+            title="일정을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => range.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
       )}
+
+      {range.isSuccess && shown.length === 0 && (
+        <div className="px-4 pt-2">
+          <EmptyState row pose="star" title={day ? '이날은 뜬 별이 없어요' : '이번 달은 조용한 밤이에요'}>
+            공모전이나 채용 일정을 알고 있다면 띄워 주세요.
+          </EmptyState>
+        </div>
+      )}
+
+      {shown.length > 0 && (
+        <div className="gh-road">
+          {past.map((s) => (
+            <Link key={s.id} to={`/schedules/${s.id}`} className="gh-past">
+              <div className="gh-t">
+                <em style={{ '--c': colorOf(SCHEDULE_COLORS, s.kind) } as CSSProperties}>{scheduleKindLabel(s.kind)}</em>
+                {s.isOfficial && ' 공식'} · {dayRange(s)}
+                {s.place && ` · ${s.place}`}
+              </div>
+              <b>{s.title}</b>
+              <span className="gh-x">지남</span>
+            </Link>
+          ))}
+          {isThisMonth && !day && (
+            <div className="gh-now">
+              <Ghost pose="lantern" />
+              <div>
+                오늘 · {formatDay(today)}
+                <small>여기서부터 별이 떠 있어요</small>
+              </div>
+            </div>
+          )}
+          {upcoming.map((s) => (
+            <div key={s.id} className="gh-tw">
+              <Ticket
+                to={`/schedules/${s.id}`}
+                color={colorOf(SCHEDULE_COLORS, s.kind)}
+                category={scheduleKindLabel(s.kind)}
+                official={s.isOfficial}
+                title={s.title}
+                when={[dayRange(s), s.place].filter(Boolean).join(' · ')}
+                dday={dDayText(s.dDay)}
+                ddayCaption={s.endDate && s.endDate !== s.startDate ? '마감까지' : '남았어요'}
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 일정 등록 — 하단 탭 위에 떠 있다 */}
+      <Fab to={writePath} icon={<IconCalendar />}>
+        날 하나 띄우기
+      </Fab>
     </div>
   )
 }
 
 const WRITE_PATH = '/schedules/new'
 
-const writeButtonClass = buttonVariants({
-  size: 'lg',
-  className: 'pointer-events-auto h-12 rounded-full px-5 text-[15px] font-bold shadow-lg',
-})
+function dDayText(dDay: number | undefined): string | undefined {
+  if (dDay == null) return undefined
+  return dDay === 0 ? 'D-DAY' : `D-${dDay}`
+}
+
+/** "11.16(월) ~ 11.30(월)" (제목 글꼴에 en dash가 없어 ~) */
+function dayRange(s: ScheduleSummary): string {
+  return s.endDate && s.endDate !== s.startDate ? `${formatDay(s.startDate)} ~ ${formatDay(s.endDate)}` : formatDay(s.startDate)
+}

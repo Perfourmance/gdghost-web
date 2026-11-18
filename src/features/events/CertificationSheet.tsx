@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { FieldError, IconCamera, LinedBox, Pill, StorySheet } from '@/components/story'
 import {
   BODY_MAX,
   certificationErrorMessage,
@@ -33,37 +32,45 @@ export function CertificationSheet({
   target: CertificationTarget | null
   onClose: () => void
 }) {
+  const resubmit = target?.mode === 'resubmit'
   return (
-    <Sheet open={target != null} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[90dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
+    <StorySheet
+      open={target != null}
+      onOpenChange={(next) => !next && onClose()}
+      ghost="star"
+      bubble={resubmit ? '다시 띄워 볼까요?' : '오늘의 별 하나!'}
+      title={resubmit ? '인증 다시 올리기' : '인증 올리기'}
+      description={
+        target?.mode === 'resubmit' ? (
+          <>반려 사유: {target.rejectReason}</>
+        ) : requirement ? (
+          <>필요한 것: {requirement}</>
+        ) : (
+          '운영진이 확인하면 인증 횟수에 반영돼요.'
+        )
+      }
+    >
         {/* 닫으면 고른 사진 · 글을 비운다 */}
         {target && (
           <CertificationForm
             key={target.mode === 'resubmit' ? target.id : 'new'}
             eventId={eventId}
-            requirement={requirement}
             photoRequired={photoRequired}
             target={target}
             onDone={onClose}
           />
         )}
-      </SheetContent>
-    </Sheet>
+    </StorySheet>
   )
 }
 
 function CertificationForm({
   eventId,
-  requirement,
   photoRequired,
   target,
   onDone,
 }: {
   eventId: number
-  requirement: string | null
   photoRequired: boolean
   target: CertificationTarget
   onDone: () => void
@@ -114,67 +121,34 @@ function CertificationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <SheetTitle className="text-lg font-bold text-title">{resubmit ? '인증 다시 올리기' : '인증 올리기'}</SheetTitle>
-      <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        {resubmit ? (
-          <>
-            반려 사유: <span className="text-foreground">{target.rejectReason}</span>
-          </>
-        ) : requirement ? (
-          <>필요한 것: {requirement}</>
-        ) : (
-          '운영진이 확인하면 인증 횟수에 반영돼요.'
-        )}
-      </SheetDescription>
+    <form onSubmit={handleSubmit} noValidate className="mt-5">
+      <p className="mb-2 font-title text-[13px] text-gh-sky">사진 {!photoRequired && <span className="text-gh-sub">· 선택</span>}</p>
+      <PhotoPicker uploads={uploads} disabled={pending} />
+      {triedSubmit && noPhoto && <FieldError>사진을 한 장 이상 골라 주세요.</FieldError>}
 
-      <div className="mt-6 space-y-6">
-        <section>
-          <p className="mb-2 text-sm font-bold text-title">
-            사진 {!photoRequired && <span className="font-normal text-muted-foreground">(선택)</span>}
-          </p>
-          <PhotoPicker uploads={uploads} disabled={pending} />
-          {triedSubmit && noPhoto && (
-            <p className="mt-2 text-xs text-destructive" role="alert">
-              사진을 한 장 이상 골라 주세요.
-            </p>
-          )}
-        </section>
-
-        <section>
-          <div className="mb-2 flex items-baseline justify-between">
-            <label htmlFor="cert-body" className="text-sm font-bold text-title">
-              한 줄
-            </label>
-            <span className="text-xs text-muted-foreground tabular-nums">
-              {body.length} / {BODY_MAX}
-            </span>
-          </div>
-          <input
-            id="cert-body"
-            maxLength={BODY_MAX}
-            placeholder="예: 오늘은 DP 문제를 풀었어요"
-            className="h-12 w-full rounded-lg border border-input bg-background px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
-          {triedSubmit && noBody && (
-            <p className="mt-2 text-xs text-destructive" role="alert">
-              한 줄을 써 주세요.
-            </p>
-          )}
-        </section>
+      <div className="mt-5">
+        <LinedBox
+          id="cert-body"
+          label="한 줄"
+          rows={2}
+          maxLength={BODY_MAX}
+          placeholder="예: 오늘은 DP 문제를 풀었어요"
+          value={body}
+          onChange={(e) => setBody(e.target.value.replace(/\n/g, ' '))}
+        />
       </div>
+      {triedSubmit && noBody && <FieldError>한 줄을 써 주세요.</FieldError>}
+      <FieldError>{error}</FieldError>
 
-      {error && (
-        <p className="mt-5 text-center text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
-      <Button type="submit" size="lg" className="mt-6 h-12 w-full" disabled={pending || uploads.preparing}>
-        {uploading ? '사진 올리는 중…' : pending ? '저장하는 중…' : uploads.preparing ? '사진 준비 중…' : resubmit ? '다시 올리기' : '인증 올리기'}
-      </Button>
-      <p className="mt-2 text-center text-xs text-muted-foreground">운영진이 확인하면 알림이 가요.</p>
+      <div className="gh-foot">
+        <small>
+          {body.length} / {BODY_MAX} · 운영진이 확인하면 알림이 가요
+        </small>
+        <Pill type="submit" disabled={pending || uploads.preparing}>
+          <IconCamera />
+          {uploading ? '사진 올리는 중…' : pending ? '저장하는 중…' : uploads.preparing ? '사진 준비 중…' : resubmit ? '다시 올리기' : '올리기'}
+        </Pill>
+      </div>
     </form>
   )
 }
