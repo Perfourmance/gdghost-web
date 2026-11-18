@@ -644,3 +644,60 @@
     background: var(--color-gh-error);
   }
 }
+
+/* ── 시안 없는 운영 탭 · 어드민 안쪽: 옛 부품의 색 이름을 밤 마을 색으로 잇는다 ──
+   (운영 공지 · 이벤트 · 신고 · 라우팅 · 부원 · 초대 코드 · 졸업 · 어드민. 같은 화면 안에서 섞여도 튀지 않게) */
+.gh-bridge {
+  --background: var(--color-gh-night);
+  --foreground: var(--color-gh-ink);
+  --card: rgba(27, 37, 58, 0.78);
+  --card-foreground: var(--color-gh-ink);
+  --popover: #232d46;
+  --popover-foreground: var(--color-gh-ink);
+  --panel: rgba(27, 37, 58, 0.78);
+  --primary: var(--color-gh-blue);
+  --primary-foreground: #fff;
+  --secondary: rgba(255, 255, 255, 0.07);
+  --secondary-foreground: var(--color-gh-ink);
+  --muted: rgba(255, 255, 255, 0.05);
+  --muted-foreground: var(--color-gh-sub);
+  --accent: rgba(169, 199, 255, 0.1);
+  --accent-foreground: var(--color-gh-ink);
+  --border: rgba(169, 199, 255, 0.14);
+  --input: rgba(169, 199, 255, 0.22);
+  --ring: var(--color-gh-sky);
+  --brand: var(--color-gh-blue);
+  --brand-soft: rgba(169, 199, 255, 0.12);
+  --brand-text: var(--color-gh-sky);
+  --title: var(--color-gh-ink);
+  --destructive: var(--color-gh-error-night);
+  font-family: var(--font-body);
+}
+@layer components {
+  .gh-bridge h2,
+  .gh-bridge h3 {
+    font-family: var(--font-title);
+    font-weight: 400;
+  }
+  .gh-bridge .rounded-xl {
+    border-radius: 18px;
+  }
+  .gh-bridge button[data-slot='button'] {
+    font-family: var(--font-title);
+    font-weight: 400;
+    border-radius: 999px;
+  }
+  .gh-bridge input,
+  .gh-bridge select,
+  .gh-bridge textarea {
+    border-radius: 12px;
+  }
+}
+@layer components {
+  .gh-ops-body > :first-child {
+    margin-top: 20px;
+  }
+  .gh-ops-body {
+    padding-bottom: 48px;
+  }
+}

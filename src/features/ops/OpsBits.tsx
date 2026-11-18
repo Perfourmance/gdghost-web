@@ -62,7 +62,7 @@ export function OpsLayout() {
             ))}
           </nav>
         </div>
-        <div className="gh-ops-body">
+        <div className="gh-ops-body gh-bridge">
           <Outlet />
         </div>
       </StorySubPage>
