@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, IconCup, IconSearch, Pill, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -34,9 +33,7 @@ export function CoffeeChatsPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/">
-        <LockPanel next={location.pathname + location.search} title="로그인하면 커피챗을 볼 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="로그인하면 커피챗을 볼 수 있어요." />
     )
   }
 

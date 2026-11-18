@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, IconBookmark, IconCup, IconTack, Pill, StorySubPage, SwitchRow } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -31,9 +30,7 @@ export function SettingsPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname} title="로그인하면 설정을 볼 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="로그인하면 설정을 볼 수 있어요." />
     )
   }
 

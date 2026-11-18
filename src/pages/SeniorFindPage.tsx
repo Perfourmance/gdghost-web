@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   EmptyState,
   FieldError,
@@ -49,9 +48,7 @@ export function SeniorFindPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요." buttonText="로그인하고 선배 찾기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요." buttonText="로그인하고 선배 찾기" />
     )
   }
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, GoneSlot, IconCheck, IconEye, IconFlag, IconSparkle, Pill, PopMenu, RoundSend, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -40,13 +39,11 @@ export function QuestionDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/questions">
-        <LockPanel
+      <LockPanel
           next={location.pathname + location.hash}
           title="선배의 답변은 부원만 볼 수 있어요."
           buttonText="로그인하고 답변 보기"
         />
-      </SubPageLayout>
     )
   }
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useNavigate } from 'react-router'
 import { Ghost, IconBack } from '@/components/story'
 import { PASSWORD_RULES } from '@/lib/passwordRules'
 import { cn } from '@/lib/utils'
@@ -42,10 +43,10 @@ const WALKER: { x: number; y: number; say: string; sayX: number; sayY: number; r
 const pct = (px: number) => `${(px / 390) * 100}%`
 
 /** 위 띠 — 노을 길 + 등불 7개 + 등불 유령 + 말풍선 + 뒤로 + 단계 수 */
-export function SignupBand({ step, total, onBack }: { step: number; total: number; onBack: () => void }) {
+export function SignupBand({ step, total, onBack, say }: { step: number; total?: number; onBack: () => void; say?: string }) {
   const i = Math.min(Math.max(step, 0), SKIES.length - 1)
   const [top, bottom, far, hill, road] = SKIES[i]
-  const walker = WALKER[i]
+  const walker = { ...WALKER[i], say: say ?? WALKER[i].say }
   return (
     <header className="gh-su-band" style={{ background: `linear-gradient(180deg, ${top}, ${bottom})` }}>
       <svg viewBox="0 0 390 150" preserveAspectRatio="none" aria-hidden>
@@ -72,9 +73,11 @@ export function SignupBand({ step, total, onBack }: { step: number; total: numbe
       <button type="button" className="gh-su-back" aria-label="뒤로" onClick={onBack}>
         <IconBack />
       </button>
-      <span className="gh-su-no" aria-label={`가입 ${total}단계 중 ${step + 1}단계`}>
-        {step + 1} / {total}
-      </span>
+      {total != null && (
+        <span className="gh-su-no" aria-label={`가입 ${total}단계 중 ${step + 1}단계`}>
+          {step + 1} / {total}
+        </span>
+      )}
     </header>
   )
 }
@@ -209,5 +212,76 @@ export function SignupRetry({ message, onRetry }: { message: string; onRetry: ()
         다시 시도
       </button>
     </p>
+  )
+}
+
+/** 낮 한 장 화면 틀 (계정 찾기 · 비밀번호 재설정 · 이메일 변경 확인) — 노을 길 띠 + 종이 */
+export function DayFormPage({ say, fallback = '/login', children }: { say: string; fallback?: string; children: ReactNode }) {
+  const navigate = useNavigate()
+  function back() {
+    const idx = (window.history.state as { idx?: number } | null)?.idx ?? 0
+    if (idx > 0) navigate(-1)
+    else navigate(fallback, { replace: true })
+  }
+  return (
+    <div className="gh-day gh-su">
+      <div className="mx-auto max-w-md">
+        <SignupBand step={0} onBack={back} say={say} />
+        <main className="gh-su-page">{children}</main>
+      </div>
+    </div>
+  )
+}
+
+/** 새 비밀번호 + 확인 (낮 종이) — 규칙 4개를 입력하면서 청록 ✓ */
+export function DayNewPassword({
+  label = '비밀번호',
+  password,
+  confirm,
+  onPasswordChange,
+  onConfirmChange,
+}: {
+  label?: string
+  password: string
+  confirm: string
+  onPasswordChange: (v: string) => void
+  onConfirmChange: (v: string) => void
+}) {
+  const mismatch = confirm !== '' && confirm !== password
+  const space = /\s/.test(password)
+  return (
+    <>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="newPassword">{label}</SignupLabel>
+        <input
+          id="newPassword"
+          name="new-password"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-su-in"
+          aria-describedby="password-rules"
+          aria-invalid={space}
+          value={password}
+          onChange={(e) => onPasswordChange(e.target.value)}
+        />
+        <PasswordRuleDots id="password-rules" password={password} />
+        {space && <p className="gh-su-msg is-bad">공백은 넣을 수 없어요.</p>}
+      </div>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="newPasswordConfirm">{label} 확인</SignupLabel>
+        <input
+          id="newPasswordConfirm"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-su-in"
+          aria-invalid={mismatch}
+          value={confirm}
+          onChange={(e) => onConfirmChange(e.target.value)}
+        />
+        {mismatch && <p className="gh-su-msg is-bad">두 비밀번호가 달라요. 같은 비밀번호를 입력해 주세요.</p>}
+      </div>
+    </>
   )
 }

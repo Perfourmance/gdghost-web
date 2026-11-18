@@ -521,3 +521,89 @@
     display: none;
   }
 }
+
+/* ── 계정 시트 (시안 없음: 밤 시트 위 유리 입력칸) ── */
+@layer components {
+  .gh-sf {
+    margin-top: 16px;
+  }
+  .gh-sf label {
+    display: block;
+    margin-bottom: 8px;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-sin {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font-size: 15.5px;
+    color: var(--color-gh-ink);
+    outline: none;
+  }
+  .gh-sin:focus {
+    box-shadow: inset 0 0 0 1.5px var(--color-gh-sky);
+  }
+  .gh-sin[aria-invalid='true'] {
+    box-shadow: inset 0 0 0 1.5px var(--color-gh-error-night);
+  }
+  .gh-sin.is-code {
+    letter-spacing: 0.4em;
+    font: 400 20px var(--font-title);
+  }
+  .gh-sf-row {
+    display: flex;
+    gap: 8px;
+  }
+  .gh-sf-row button {
+    flex: none;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: rgba(169, 199, 255, 0.14);
+    color: var(--color-gh-sky);
+    font: 400 13px var(--font-title);
+    font-variant-numeric: tabular-nums;
+  }
+  .gh-sf-row button:disabled {
+    opacity: 0.45;
+  }
+  .gh-sf small {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-sf small.is-bad {
+    color: var(--color-gh-error-night);
+  }
+  .gh-sf small.is-ok {
+    color: var(--color-gh-mint);
+  }
+  .gh-sf .gh-su-rules li {
+    color: var(--color-gh-sub);
+  }
+  .gh-sf .gh-su-rules li::before {
+    box-shadow: inset 0 0 0 1.5px #5e6a84;
+  }
+  .gh-sf .gh-su-rules li.is-ok {
+    color: var(--color-gh-mint);
+  }
+  .gh-bye-list {
+    margin-top: 14px;
+    padding: 14px 16px 14px 32px;
+    border-radius: 14px;
+    background: rgba(240, 138, 122, 0.08);
+    list-style: disc;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: #e3c1bb;
+  }
+  .gh-sheet .gh-btn {
+    margin-top: 22px;
+  }
+}

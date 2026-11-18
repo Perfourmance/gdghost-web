@@ -1,5 +1,4 @@
 import { useLocation, useNavigate, useParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { Blocked, GoneSlot, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -18,9 +17,7 @@ export function ShareEditPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="공유는 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="공유는 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
     )
   }
 

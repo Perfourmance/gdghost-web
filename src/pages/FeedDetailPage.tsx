@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from 
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, GoneSlot, IconChat, IconFlag, IconHeart, IconHeartLine, IconTrash, IconX, InputBar, Pill, PopMenu, Rope, RoundSend, Scrap, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -43,9 +42,7 @@ export function FeedDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/feed">
-        <LockPanel next={location.pathname + location.hash} title="피드는 부원끼리만 나눠요" buttonText="로그인하고 피드 보기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.hash} title="피드는 부원끼리만 나눠요" buttonText="로그인하고 피드 보기" />
     )
   }
 

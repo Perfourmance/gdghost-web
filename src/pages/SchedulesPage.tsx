@@ -1,13 +1,10 @@
 import type { CSSProperties } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { SegmentTabs } from '@/components/layout/SegmentTabs'
-import { SCHEDULE_SEGMENTS } from '@/components/layout/segments'
-import { Skeleton } from '@/components/ui/skeleton'
-import { BigTitle, DotChips, EmptyState, Fab, Ghost, IconCalendar, Pill, StoryTopBar, Ticket } from '@/components/story'
+import { BigTitle, DotChips, EmptyState, Fab, Ghost, IconBack, IconCalendar, Pill, StoryDayTopBar, StoryTopBar, Ticket } from '@/components/story'
+import { DayRetry, DayTicket } from '@/components/day/Day'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
 import { useLockSheet } from '@/features/auth/useLockSheet'
-import { EmptyCard, ScheduleCard, type CardTarget } from '@/features/content/Cards'
 import { scheduleKindLabel } from '@/features/content/labels'
 import { SCHEDULE_KINDS, useScheduleRange, type ScheduleSummary } from '@/features/schedules/api'
 import {
@@ -19,7 +16,6 @@ import {
   todayKst,
   ymd,
 } from '@/features/schedules/calendar'
-import { MonthCalendar } from '@/features/schedules/MonthCalendar'
 import { StarCalendar } from '@/features/schedules/StarCalendar'
 import { colorOf, SCHEDULE_COLORS } from '@/lib/categoryColors'
 import { formatDay } from '@/lib/time'
@@ -62,26 +58,69 @@ export function SchedulesPage() {
     update({ month: key === today.slice(0, 7) ? null : key, day: null })
   }
 
-  const target: CardTarget = { member, onLocked: lock.open }
   const writePath = day ? `${WRITE_PATH}?date=${day}` : WRITE_PATH
   const dayLabel = day ? `${Number(day.slice(5, 7))}월 ${Number(day.slice(8))}일` : `${month}월`
 
   if (!member) {
     return (
-      <div className="pb-20">
-        <h1 className="sr-only">일정</h1>
-        <SegmentTabs items={SCHEDULE_SEGMENTS} label="일정 탭" />
-        <div className="mt-4">
-          <MonthCalendar year={year} month={month} today={today} selected={day} schedules={schedules} onSelect={(d) => update({ day: d })} onMove={move} />
+      <div className="gh-dayback pb-28">
+        <StoryDayTopBar loginTo="/login?next=%2Fschedules" />
+        <BigTitle
+          items={[
+            { to: '/schedules', label: '일정', on: true },
+            { to: '/recruits', label: '모집' },
+            { to: '/events', label: '이벤트' },
+          ]}
+        />
+        <p className="gh-gdesc">
+          <b>일정 제목</b>은 누구나 볼 수 있어요. 자세한 내용은 부원이 되면 열려요.
+        </p>
+        <div className="gh-gmonth">
+          <button type="button" aria-label="이전 달" onClick={() => move(-1)}>
+            <IconBack />
+          </button>
+          <b aria-live="polite">
+            {year}년 {month}월
+          </b>
+          <button type="button" aria-label="다음 달" onClick={() => move(1)}>
+            <IconBack className="rotate-180" />
+          </button>
         </div>
-        <div className="mt-6 space-y-2">
-          {range.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[76px] w-full rounded-xl" />)}
-          {range.isSuccess && shown.length === 0 && <EmptyCard>{day ? '이날은 일정이 없어요.' : '이번 달 일정이 없어요.'}</EmptyCard>}
-          {shown.map((s) => (
-            <ScheduleCard key={s.id} schedule={s} target={target} />
-          ))}
-        </div>
-        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원만 볼 수 있어요." />
+        {range.isPending && (
+          <div className="space-y-2.5 px-4 pt-[18px]" aria-label="불러오는 중">
+            {[0, 1].map((i) => (
+              <div key={i} className="gh-day-skeleton" />
+            ))}
+          </div>
+        )}
+        {range.isError && !range.data && (
+          <div className="px-4 pt-[18px]">
+            <DayRetry onRetry={() => range.refetch()}>일정을 불러오지 못했어요.</DayRetry>
+          </div>
+        )}
+        {range.isSuccess && schedules.length === 0 && (
+          <div className="px-4 pt-[18px]">
+            <EmptyState row pose="star" title="이번 달은 조용해요">
+              새 일정이 뜨면 여기 걸어 둘게요.
+            </EmptyState>
+          </div>
+        )}
+        {schedules.length > 0 && (
+          <div className="gh-glist">
+            {schedules.map((s) => (
+              <DayTicket
+                key={s.id}
+                startDate={s.startDate}
+                endDate={s.endDate}
+                category={scheduleKindLabel(s.kind)}
+                official={s.isOfficial}
+                title={s.title}
+                onClick={() => lock.open(`/schedules/${s.id}`)}
+              />
+            ))}
+          </div>
+        )}
+        <LockSheet next={lock.next} onClose={lock.close} title="일정 내용은 부원이 되면 열려요" />
       </div>
     )
   }

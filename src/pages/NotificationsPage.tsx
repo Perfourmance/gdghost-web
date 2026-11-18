@@ -1,7 +1,6 @@
 import { useEffect, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   EmptyState,
   IconBell,
@@ -51,9 +50,7 @@ export function NotificationsPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname} title="알림은 부원만 볼 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="알림은 부원만 볼 수 있어요." />
     )
   }
   return <NotificationList myId={me.id} staff={me.role === 'STAFF'} unreadCount={me.unreadNotificationCount} />

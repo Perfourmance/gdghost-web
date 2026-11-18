@@ -75,3 +75,51 @@ export const PinBookmark = () => (
     <path d="M7 4h10v16l-5-3.5L7 20z" />
   </svg>
 )
+
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
+
+function dayParts(date: string) {
+  const [y, m, d] = date.split('-').map(Number)
+  return { m, d, w: WEEKDAYS[new Date(y, m - 1, d).getDay()] }
+}
+
+/** 낮 일정 티켓 — 청록 머리(날짜 · 요일) + 분류 · 제목. 누르면 잠금 안내 (비회원 홈 · 일정) */
+export function DayTicket({
+  startDate,
+  endDate,
+  category,
+  official,
+  title,
+  onClick,
+}: {
+  startDate: string
+  endDate: string | null
+  category: string
+  official?: boolean
+  title: string
+  onClick: () => void
+}) {
+  const a = dayParts(startDate)
+  let day = `${a.m}.${a.d}`
+  let week = a.w
+  if (endDate && endDate !== startDate) {
+    const b = dayParts(endDate)
+    day = a.m === b.m ? `${a.m}.${a.d} - ${b.d}` : `${a.m}.${a.d} - ${b.m}.${b.d}`
+    week = `${a.w} ~ ${b.w}`
+  }
+  return (
+    <button type="button" className="gh-dticket" onClick={onClick}>
+      <div className="gh-dd">
+        {day}
+        <small>{week}</small>
+      </div>
+      <div className="gh-db">
+        <span className="gh-lab is-day">
+          {category}
+          {official && ' · 공식'}
+        </span>
+        <h4>{title}</h4>
+      </div>
+    </button>
+  )
+}

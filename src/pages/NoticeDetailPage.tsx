@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   EmptyState,
   GoneSlot,
@@ -55,13 +54,11 @@ export function NoticeDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/notices">
-        <LockPanel
+      <LockPanel
           next={location.pathname + location.hash}
           title="공지는 부원만 볼 수 있어요."
           buttonText="로그인하고 공지 보기"
         />
-      </SubPageLayout>
     )
   }
 
@@ -97,7 +94,7 @@ function NoticeBody({ notice, now }: { notice: NoticeDetail; now: number }) {
   const overdue = notice.dueDate != null && isOverdue(notice.dueDate)
   return (
     <article>
-      <div className="gh-board">
+      <div className="gh-nboard">
         <div className="gh-npost">
           {notice.isMustRead && <span className="gh-seal">필독</span>}
           {notice.isPinned && (

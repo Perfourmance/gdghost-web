@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, IconBack, PillLink, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -27,9 +26,7 @@ export function OpsGuard({ children }: { children: ReactNode }) {
   if (isPending) return null
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="운영진 전용 페이지" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="운영진 전용 페이지" />
     )
   }
   if (me.role !== 'STAFF') {

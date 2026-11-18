@@ -2,7 +2,6 @@ import { useEffect, useState, type CSSProperties, type FormEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, GoneSlot, IconBookmark, IconBookmarkFill, IconFlag, IconPencil, IconTrash, InputBar, Pill, PopMenu, RoundSend, Scrap, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -49,9 +48,7 @@ export function ShareDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname + location.hash} title="공유 글은 부원만 볼 수 있어요." buttonText="로그인하고 글 보기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.hash} title="공유 글은 부원만 볼 수 있어요." buttonText="로그인하고 글 보기" />
     )
   }
 

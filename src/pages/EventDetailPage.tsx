@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, IconCamera, IconStar, Pill, PillLink, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -31,13 +30,11 @@ export function EventDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/events">
-        <LockPanel
+      <LockPanel
           next={location.pathname + location.hash}
           title="이벤트는 부원만 볼 수 있어요."
           buttonText="로그인하고 이벤트 보기"
         />
-      </SubPageLayout>
     )
   }
 

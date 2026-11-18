@@ -1,6 +1,4 @@
 import { Link, useLocation, useSearchParams } from 'react-router'
-import { SegmentTabs } from '@/components/layout/SegmentTabs'
-import { QUESTION_SEGMENTS } from '@/components/layout/segments'
 import { BigTitle, EmptyState, Ghost, House, LineChips, Pill, StoryTopBar, TextTabs, Town } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -20,13 +18,7 @@ export function MembersPage() {
 
   if (!me) {
     return (
-      <div className="pb-4">
-        <h1 className="sr-only">부원</h1>
-        <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
-        <div className="mt-5">
-          <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요." />
-        </div>
-      </div>
+      <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요." />
     )
   }
 

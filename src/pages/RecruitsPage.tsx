@@ -1,6 +1,4 @@
 import { useSearchParams } from 'react-router'
-import { SegmentTabs } from '@/components/layout/SegmentTabs'
-import { SCHEDULE_SEGMENTS } from '@/components/layout/segments'
 import { BigTitle, DotChips, EmptyState, Fab, Ghost, IconPeople, Pill, StoryTopBar } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -36,17 +34,11 @@ export function RecruitsPage() {
 
   if (!member) {
     return (
-      <div className="pb-4">
-        <h1 className="sr-only">모집</h1>
-        <SegmentTabs items={SCHEDULE_SEGMENTS} label="일정 탭" />
-        <div className="mt-6">
-          <LockPanel
+      <LockPanel
             next={`/recruits${params.toString() ? `?${params}` : ''}`}
             title="모집은 부원만 볼 수 있어요."
             buttonText="로그인하고 모집 보기"
           />
-        </div>
-      </div>
     )
   }
 

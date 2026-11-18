@@ -1,6 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLocation, useSearchParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   Bookmark,
   EmptyState,
@@ -73,9 +72,7 @@ export function SearchPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요." />
     )
   }
 

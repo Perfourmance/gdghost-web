@@ -26,25 +26,7 @@ export function FeedPage() {
 
   if (!me) {
     return (
-      <div className="pb-4">
-        <h1 className="text-xl font-bold text-title">피드</h1>
-        {/* 블러 처리한 가짜 카드 위에 가입 안내 — 실제 글은 받지 않는다 */}
-        <div className="relative mt-4">
-          <div aria-hidden className="pointer-events-none space-y-3 blur-sm select-none">
-            {[0, 1, 2].map((i) => (
-              <div key={i} className="rounded-xl bg-card px-4 py-4">
-                <div className="h-3 w-24 rounded bg-muted" />
-                <div className="mt-3 h-3 w-full rounded bg-muted" />
-                <div className="mt-2 h-3 w-4/5 rounded bg-muted" />
-                <div className="mt-3 h-32 w-full rounded-lg bg-muted" />
-              </div>
-            ))}
-          </div>
-          <div className="absolute inset-x-0 top-6">
-            <LockPanel next={location.pathname} title="피드는 부원끼리만 나눠요" buttonText="로그인하고 피드 보기" />
-          </div>
-        </div>
-      </div>
+      <LockPanel next={location.pathname} title="피드는 부원끼리만 나눠요" buttonText="로그인하고 피드 보기" />
     )
   }
 

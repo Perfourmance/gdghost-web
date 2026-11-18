@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
  * 묶음을 옮길 때마다 주소를 더하고, 다 옮기면 옛 틀(TopBar · BottomTabs)과 이 목록을 지운다
  */
 const STORY_ROUTES = {
-  guest: ['/', '/questions'],
+  guest: ['/', '/questions', '/members', '/schedules', '/recruits', '/events', '/shares', '/feed'],
   member: ['/', '/questions', '/members', '/schedules', '/recruits', '/events', '/shares', '/feed'] as string[],
 }
 

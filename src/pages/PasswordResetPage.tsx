@@ -1,14 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router'
-import { NewPasswordFields } from '@/components/form/NewPasswordFields'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { resetPassword, sendPasswordResetCode, verifyPasswordResetCode } from '@/features/account/api'
 import { meQueryKey, switchSession } from '@/features/auth/session'
+import { DayFormPage, DayNewPassword, OtpInput, SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 import { useSecondsUntil } from '@/hooks/useSecondsUntil'
 import { toApiError } from '@/lib/api'
 import { EMAIL_PATTERN, emailCodeErrorMessage } from '@/lib/emailErrors'
@@ -34,9 +29,9 @@ export function PasswordResetPage() {
   }
 
   return (
-    <SubPageLayout fallback="/login">
+    <DayFormPage say={step === 'done' ? '새 열쇠가 생겼어요' : '열쇠를 다시 만들어요'}>
       {notice && (
-        <p className="mb-6 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
+        <p className="gh-su-notice" role="status">
           {notice}
         </p>
       )}
@@ -59,18 +54,20 @@ export function PasswordResetPage() {
         />
       )}
       {step === 'done' && (
-        <div className="pb-10">
-          <StepHeader
-            eyebrow="비밀번호 재설정"
-            title="비밀번호를 바꿨어요"
-            description="모든 기기에서 로그아웃했어요. 새 비밀번호로 로그인해 주세요."
-          />
-          <Link to="/login" replace className={buttonVariants({ size: 'lg', className: 'h-12 w-full' })}>
-            로그인하러 가기
-          </Link>
-        </div>
+        <>
+          <SignupHead eye="비밀번호 재설정" title="비밀번호를 바꿨어요">
+            모든 기기에서 로그아웃했어요. 새 비밀번호로 로그인해 주세요.
+          </SignupHead>
+          <div className="gh-su-cta is-two">
+            <div>
+              <Link to="/login" replace>
+                로그인하러 가기
+              </Link>
+            </div>
+          </div>
+        </>
       )}
-    </SubPageLayout>
+    </DayFormPage>
   )
 }
 
@@ -112,90 +109,76 @@ function VerifyStep({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow="계정 찾기"
-        title="비밀번호 재설정"
-        description="가입할 때 인증한 이메일로 인증번호를 보내요."
-      />
+      <SignupHead eye="계정 찾기" title="비밀번호를 다시 정해요">
+        가입할 때 인증한 이메일로 인증번호를 보내요.
+      </SignupHead>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="email">
-            가입한 이메일
-          </Label>
-          <div className="flex gap-2">
-            <Input
-              id="email"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              autoCapitalize="none"
-              maxLength={254}
-              className="h-12 flex-1 bg-card"
-              value={email}
-              onChange={(e) => {
-                onEmailChange(e.target.value)
-                send.reset()
-              }}
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              className="h-12 shrink-0"
-              disabled={!canSend}
-              onClick={() => {
-                verify.reset()
-                send.mutate()
-              }}
-            >
-              {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초` : sentToThisEmail ? '다시 받기' : '인증번호 받기'}
-            </Button>
-          </div>
-          {send.isError && (
-            <p className="text-sm text-destructive" role="alert">
-              {emailCodeErrorMessage(toApiError(send.error))}
-            </p>
-          )}
-          {sentToThisEmail && !send.isError && (
-            // 가입 여부를 드러내지 않도록 항상 같은 안내 (F1-07)
-            <p className="rounded-lg bg-brand-soft px-3 py-2 text-xs leading-relaxed text-brand-text">
-              가입한 이메일이면 인증번호가 와요. 10분 안에 입력해 주세요.
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="email">가입한 이메일</SignupLabel>
+        <div className="gh-su-row">
+          <input
+            id="email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            maxLength={254}
+            placeholder="name@example.com"
+            className="gh-su-in"
+            aria-invalid={send.isError}
+            value={email}
+            onChange={(e) => {
+              onEmailChange(e.target.value)
+              send.reset()
+            }}
+          />
+          <button
+            type="button"
+            className="gh-su-side"
+            disabled={!canSend}
+            onClick={() => {
+              verify.reset()
+              send.mutate()
+            }}
+          >
+            {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초` : sentToThisEmail ? '다시 받기' : '인증번호 받기'}
+          </button>
+        </div>
+      </div>
+      {send.isError && (
+        <p className="gh-su-msg is-bad" role="alert">
+          {emailCodeErrorMessage(toApiError(send.error))}
+        </p>
+      )}
+      {sentToThisEmail && !send.isError && (
+        // 가입 여부를 드러내지 않도록 항상 같은 안내 (F1-07)
+        <p className="gh-su-msg is-info" role="status">
+          가입한 이메일이면 인증번호가 와요. 10분 안에 입력해 주세요.
+        </p>
+      )}
+
+      {sentToThisEmail && (
+        <div className="gh-su-fl">
+          <SignupLabel htmlFor="code">인증번호 6자리</SignupLabel>
+          <OtpInput
+            id="code"
+            value={code}
+            invalid={verify.isError}
+            onChange={(v) => {
+              setCode(v)
+              if (verify.isError) verify.reset()
+            }}
+          />
+          {verify.isError && (
+            <p className="gh-su-msg is-bad" role="alert">
+              {emailCodeErrorMessage(toApiError(verify.error))}
             </p>
           )}
         </div>
+      )}
+      <p className="gh-su-foot">가입 때 쓴 이메일이 기억나지 않으면 운영진에게 물어봐 주세요.</p>
 
-        {sentToThisEmail && (
-          <div className="space-y-2">
-            <Label className="font-bold text-title" htmlFor="code">
-              인증번호 6자리
-            </Label>
-            <Input
-              id="code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              className="h-12 bg-card text-lg tracking-[0.4em]"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-            />
-            {verify.isError && (
-              <p className="text-sm text-destructive" role="alert">
-                {emailCodeErrorMessage(toApiError(verify.error))}
-              </p>
-            )}
-          </div>
-        )}
-
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          가입 때 쓴 이메일이 기억나지 않으면 운영진에게 문의해 주세요.
-        </p>
-      </div>
-
-      <StepFooter>
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canVerify}>
-          {verify.isPending ? '확인 중…' : '인증번호 확인'}
-        </Button>
-      </StepFooter>
+      <SignupCta disabled={!canVerify}>{verify.isPending ? '확인하는 중…' : '인증번호 확인'}</SignupCta>
     </form>
   )
 }
@@ -235,34 +218,18 @@ function NewPasswordStep({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow="비밀번호 재설정"
-        title="새 비밀번호를 정해 주세요"
-        description="비밀번호를 바꾸면 모든 기기에서 로그아웃돼요."
-      />
+      <SignupHead eye="비밀번호 재설정" title="새 열쇠를 만들어요">
+        비밀번호를 바꾸면 모든 기기에서 로그아웃돼요.
+      </SignupHead>
 
-      <div className="space-y-6">
-        <NewPasswordFields
-          label="새 비밀번호"
-          password={password}
-          confirm={confirm}
-          onPasswordChange={setPassword}
-          onConfirmChange={setConfirm}
-        />
-        {errorCode && errorCode.code !== 'RESET_TOKEN_INVALID' && (
-          <p className="text-sm text-destructive" role="alert">
-            {errorCode.code === 'PASSWORD_POLICY'
-              ? '8자 이상 · 영문, 숫자, 특수문자 포함'
-              : commonErrorMessage(errorCode)}
-          </p>
-        )}
-      </div>
+      <DayNewPassword label="새 비밀번호" password={password} confirm={confirm} onPasswordChange={setPassword} onConfirmChange={setConfirm} />
+      {errorCode && errorCode.code !== 'RESET_TOKEN_INVALID' && (
+        <p className="gh-su-msg is-bad" role="alert">
+          {errorCode.code === 'PASSWORD_POLICY' ? '8자 이상 · 영문, 숫자, 특수문자 포함' : commonErrorMessage(errorCode)}
+        </p>
+      )}
 
-      <StepFooter>
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canSubmit}>
-          {reset.isPending ? '바꾸는 중…' : '비밀번호 바꾸기'}
-        </Button>
-      </StepFooter>
+      <SignupCta disabled={!canSubmit}>{reset.isPending ? '바꾸는 중…' : '비밀번호 바꾸기'}</SignupCta>
     </form>
   )
 }

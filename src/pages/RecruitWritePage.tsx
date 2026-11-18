@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   FieldError,
   Hint,
@@ -48,9 +47,7 @@ export function RecruitWritePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/recruits">
-        <LockPanel next={location.pathname + location.search} title="모집은 부원만 열 수 있어요." buttonText="로그인하고 모집 열기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="모집은 부원만 열 수 있어요." buttonText="로그인하고 모집 열기" />
     )
   }
   return <RecruitForm />

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { LoadError } from '@/components/PageStates'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
+  BigTitle,
   Bookmark,
   DotChips,
   EmptyState,
@@ -13,15 +12,15 @@ import {
   SearchField,
   Shelf,
   SortLinks,
+  StoryDayTopBar,
   StoryTopBar,
 } from '@/components/story'
+import { DayRetry } from '@/components/day/Day'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
 import { useLockSheet } from '@/features/auth/useLockSheet'
-import { EmptyCard, type CardTarget } from '@/features/content/Cards'
 import { SHARE_CATEGORY_KEYS, shareCategoryLabel } from '@/features/content/labels'
 import { QUERY_MAX, QUERY_MIN, useShareList, type ShareFilters, type ShareSort } from '@/features/shares/api'
-import { ShareListCard } from '@/features/shares/ShareBits'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { authorName } from '@/features/member/author'
@@ -60,23 +59,71 @@ export function SharesPage() {
     setParams(next, { replace: true, preventScrollReset: true })
   }
 
-  const target: CardTarget = { member, onLocked: lock.open }
   const shares = list.data?.pages.flatMap((page) => page.items) ?? []
   const tooShort = query.trim().length > 0 && query.trim().length < QUERY_MIN
 
   if (!me) {
     return (
-      <div className="pb-20">
-        <h1 className="text-xl font-bold text-title">공유</h1>
-        <div className="mt-4 space-y-2">
-          {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[92px] w-full rounded-xl" />)}
-          {list.isError && <LoadError text="공유를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-          {list.isSuccess && shares.length === 0 && <EmptyCard>아직 공유된 글이 없어요.</EmptyCard>}
-          {shares.map((s) => (
-            <ShareListCard key={s.id} share={s} target={target} now={now} />
-          ))}
-        </div>
-        <LockSheet next={lock.next} onClose={lock.close} title="공유 글은 부원만 볼 수 있어요." />
+      <div className="gh-dayback pb-28">
+        <StoryDayTopBar loginTo="/login?next=%2Fshares" />
+        <BigTitle items={[{ label: '공유' }]} />
+        <p className="gh-gdesc">
+          <b>마을 사람들이 꽂아 둔 책갈피</b>예요. 제목은 누구나, 내용은 부원이 되면 볼 수 있어요.
+        </p>
+        <DotChips
+          label="분류"
+          className="px-4 pt-4"
+          value={category ?? 'ALL'}
+          onChange={(v) => setFilter('category', v === 'ALL' ? null : v)}
+          options={[
+            { value: 'ALL', label: '전체' },
+            ...SHARE_CATEGORY_KEYS.map((c) => ({ value: c, label: shareCategoryLabel(c), color: colorOf(SHARE_COLORS, c) })),
+          ]}
+        />
+        {list.isPending && (
+          <div className="space-y-2.5 px-4 pt-[18px]" aria-label="불러오는 중">
+            {[0, 1].map((i) => (
+              <div key={i} className="gh-day-skeleton" />
+            ))}
+          </div>
+        )}
+        {list.isError && (
+          <div className="px-4 pt-[18px]">
+            <DayRetry onRetry={() => list.refetch()}>공유를 불러오지 못했어요.</DayRetry>
+          </div>
+        )}
+        {list.isSuccess && shares.length === 0 && (
+          <div className="px-4 pt-[18px]">
+            <EmptyState row pose="glass" title="아직 꽂힌 책갈피가 없어요" />
+          </div>
+        )}
+        {shares.length > 0 && (
+          <div className="px-3.5">
+            <Shelf>
+              {shares.map((s) => (
+                <Bookmark
+                  key={s.id}
+                  to={`/shares/${s.id}`}
+                  onClick={() => lock.open(`/shares/${s.id}`)}
+                  color={colorOf(SHARE_COLORS, s.category)}
+                  category={shareCategoryLabel(s.category)}
+                  title={s.title}
+                  tags={s.tags}
+                  saveCount={s.saveCount}
+                />
+              ))}
+            </Shelf>
+          </div>
+        )}
+        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+        <Fab night membersOnly icon={<IconBookmark />} onClick={() => lock.open(WRITE_PATH)}>
+          책갈피 꽂기
+        </Fab>
+        {lock.next === WRITE_PATH ? (
+          <LockSheet next={lock.next} onClose={lock.close} title="책갈피는 부원이 되면 꽂을 수 있어요" />
+        ) : (
+          <LockSheet next={lock.next} onClose={lock.close} title="책갈피 내용은 부원이 되면 열려요" />
+        )}
       </div>
     )
   }

@@ -1,15 +1,13 @@
-import { Link, useLocation } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useLocation } from 'react-router'
+import { EmptyState, IconTack, LoadFail, LoadingDots, PostIt, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
-import { EmptyCard } from '@/features/content/Cards'
 import { useNoticeList, type NoticeSummary } from '@/features/notices/api'
-import { MustReadBadge, PinnedBadge } from '@/features/notices/NoticeBits'
 import { dueText, isOverdue, noticeAuthorText } from '@/features/notices/format'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
+import '@/styles/common.css'
+import '@/styles/ops.css'
 
 /** 공지 목록 (S11) — 고정 먼저, 그 안에서 최신순. 안 읽은 공지 · 확인 안 한 필독을 표시 */
 export function NoticesPage() {
@@ -22,88 +20,69 @@ export function NoticesPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname} title="공지는 부원만 볼 수 있어요." buttonText="로그인하고 공지 보기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="공지는 부원만 볼 수 있어요." buttonText="로그인하고 공지 보기" />
     )
   }
 
   const notices = list.data?.pages.flatMap((page) => page.items) ?? []
 
   return (
-    <SubPageLayout>
-      <h1 className="text-[22px] font-bold text-title">운영진 공지</h1>
-
-      <div className="mt-5 space-y-2 pb-6">
-        {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[76px] w-full rounded-xl" />)}
-
-        {list.isError && (
-          <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-            <p className="text-sm">공지를 불러오지 못했어요.</p>
-            <Button variant="secondary" onClick={() => list.refetch()}>
-              다시 시도
-            </Button>
-          </div>
-        )}
-
-        {list.isSuccess && notices.length === 0 && (
-          <EmptyCard>아직 공지가 없어요.</EmptyCard>
-        )}
-
-        {notices.map((notice) => (
-          <NoticeRow key={notice.id} notice={notice} now={now} />
-        ))}
-
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {isFetchingNextPage && <Skeleton className="h-[76px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더보기
-          </Button>
-        )}
-        {list.isFetchNextPageError && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더 불러오지 못했어요. 다시 시도
-          </Button>
-        )}
+    <StorySubPage className="pb-12">
+      <div className="gh-nlist-ttl">
+        <h1>마을 게시판</h1>
+        <p>운영진이 붙여 둔 공지예요. 고정한 공지가 먼저 보여요.</p>
       </div>
-    </SubPageLayout>
+
+      {list.isPending && <div className="gh-ops-skel mx-3" aria-label="불러오는 중" />}
+      {list.isError && <LoadFail title="공지를 불러오지 못했어요" onRetry={() => list.refetch()} />}
+      {list.isSuccess && notices.length === 0 && (
+        <div className="px-4 pt-6">
+          <EmptyState pose="b" title="아직 붙은 공지가 없어요">
+            운영진이 공지를 올리면 여기 붙어요.
+          </EmptyState>
+        </div>
+      )}
+
+      {notices.length > 0 && (
+        <div className="gh-nlist">
+          {notices.map((notice, i) => (
+            <NoticeRow key={notice.id} notice={notice} now={now} mint={i % 3 === 2} />
+          ))}
+        </div>
+      )}
+
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {isFetchingNextPage && <LoadingDots className="mt-6" />}
+      {(showMoreButton || list.isFetchNextPageError) && (
+        <button type="button" className="gh-cmore" onClick={() => fetchNextPage()}>
+          {list.isFetchNextPageError ? '더 불러오지 못했어요. 다시 시도' : '더보기'}
+        </button>
+      )}
+    </StorySubPage>
   )
 }
 
-function NoticeRow({ notice, now }: { notice: NoticeSummary; now: number }) {
+function NoticeRow({ notice, now, mint }: { notice: NoticeSummary; now: number; mint: boolean }) {
   // 확인 안 한 필독 — 마감이 지나지 않았을 때만 강조 (홈의 미확인 필독 수와 같은 기준)
   const needsConfirm = notice.isMustRead && !notice.confirmed && !isOverdue(notice.dueDate)
   return (
-    <Link
-      to={`/notices/${notice.id}`}
-      className="block w-full rounded-xl bg-card px-4 py-3.5 text-left transition-colors hover:bg-accent"
-    >
-      <div className="flex items-center gap-1.5">
-        {notice.isPinned && <PinnedBadge />}
-        {notice.isMustRead && <MustReadBadge />}
-        <p className="line-clamp-1 flex-1 text-[15px] font-bold text-title">{notice.title}</p>
-        {!notice.read && <span className="size-2 shrink-0 rounded-full bg-brand" aria-label="읽지 않은 알림" />}
-      </div>
-      <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
+    <PostIt to={`/notices/${notice.id}`} mustRead={notice.isMustRead} mint={mint && !notice.isMustRead}>
+      {!notice.read && <span className="gh-unread" aria-label="안 읽음" />}
+      {notice.isPinned && (
+        <span className="gh-ntag">
+          <IconTack />
+          고정
+        </span>
+      )}
+      <h3>{notice.title}</h3>
+      <div className="gh-nm">
         <span>{noticeAuthorText(notice.author)}</span>
-        <span aria-hidden>·</span>
         <span>{formatRelative(notice.createdAt, now)}</span>
-        {notice.commentCount > 0 && (
-          <>
-            <span aria-hidden>·</span>
-            <span>댓글 {notice.commentCount}</span>
-          </>
-        )}
-        {notice.dueDate && (
-          <>
-            <span aria-hidden>·</span>
-            <span>{dueText(notice.dueDate)}</span>
-          </>
-        )}
-      </p>
-      {needsConfirm && <p className="mt-1 text-xs font-bold text-brand-text">아직 확인하지 않았어요</p>}
-      {notice.confirmed && <p className="mt-1 text-xs text-brand-text">✓ 확인 완료</p>}
-    </Link>
+        {notice.commentCount > 0 && <span>쪽지 {notice.commentCount}</span>}
+        {notice.dueDate && <span>{dueText(notice.dueDate)}</span>}
+      </div>
+      {needsConfirm && <p className="gh-nst">아직 확인하지 않았어요</p>}
+      {notice.confirmed && <p className="gh-nst is-ok">✓ 확인했어요</p>}
+    </PostIt>
   )
 }

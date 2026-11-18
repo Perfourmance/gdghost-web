@@ -1,5 +1,4 @@
 import { useLocation, useNavigate, useParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Pill, PillLink, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -20,9 +19,7 @@ export function QuestionEditPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/questions">
-        <LockPanel next={location.pathname} title="질문은 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="질문은 부원만 고칠 수 있어요." buttonText="로그인하고 계속하기" />
     )
   }
 

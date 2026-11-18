@@ -2,7 +2,6 @@ import { useState, type CSSProperties } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { EmptyState, Ghost, IconPencil, IconPeople, IconTrash, Pill, PillLink, PopMenu, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -32,9 +31,7 @@ export function ScheduleDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname} title="일정 내용은 부원만 볼 수 있어요." buttonText="로그인하고 일정 보기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="일정 내용은 부원만 볼 수 있어요." buttonText="로그인하고 일정 보기" />
     )
   }
 

@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -20,9 +19,7 @@ export function ShareWritePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="공유는 부원만 올릴 수 있어요." buttonText="로그인하고 공유하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="공유는 부원만 올릴 수 있어요." buttonText="로그인하고 공유하기" />
     )
   }
 

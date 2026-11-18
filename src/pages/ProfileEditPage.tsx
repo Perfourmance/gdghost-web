@@ -1,6 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   ChipGroup,
   EmptyState,
@@ -148,9 +147,7 @@ export function ProfileEditPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요." />
     )
   }
 

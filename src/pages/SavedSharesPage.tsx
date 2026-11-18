@@ -1,5 +1,4 @@
 import { useLocation } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { Bookmark, EmptyState, Pill, PillLink, Shelf, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -21,9 +20,7 @@ export function SavedSharesPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="로그인하면 저장한 글을 볼 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="로그인하면 저장한 글을 볼 수 있어요." />
     )
   }
 

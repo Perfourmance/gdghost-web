@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { confirmEmailChange } from '@/features/account/api'
 import { meQueryKey } from '@/features/auth/session'
+import { DayFormPage, SignupHead } from '@/features/signup/SignupParts'
 import { toApiError, type ApiError } from '@/lib/api'
 import { commonErrorMessage } from '@/lib/errorMessage'
 
@@ -37,53 +35,46 @@ export function EmailChangeConfirmPage() {
 
   if (confirm.isSuccess) {
     return (
-      <SubPageLayout>
-        <StepHeader
-          eyebrow="이메일 변경"
-          title="이메일이 바뀌었어요"
-          description="새 이메일로 비밀번호를 다시 설정해 주세요."
-        />
-        <div className="space-y-2">
-          <Link to="/password-reset" replace className={buttonVariants({ size: 'lg', className: 'h-12 w-full' })}>
-            비밀번호 재설정하기
-          </Link>
-          <Link to="/" replace className={buttonVariants({ variant: 'secondary', size: 'lg', className: 'h-12 w-full' })}>
-            홈으로
-          </Link>
+      <DayFormPage say="새 우편함이 생겼어요" fallback="/">
+        <SignupHead eye="이메일 변경" title="이메일이 바뀌었어요">
+          새 이메일로 비밀번호를 다시 정해 주세요.
+        </SignupHead>
+        <div className="gh-su-cta is-two">
+          <div>
+            <Link to="/password-reset" replace>
+              비밀번호 다시 정하기
+            </Link>
+            <Link to="/" replace className="!bg-white !text-gh-d-ink">
+              홈으로
+            </Link>
+          </div>
         </div>
-      </SubPageLayout>
+      </DayFormPage>
     )
   }
 
   return (
-    <SubPageLayout>
-      <StepHeader
-        eyebrow="이메일 변경"
-        title="이 이메일로 바꿀까요?"
-        description="이메일 변경을 확인하면 모든 기기에서 로그아웃돼요."
-      />
-
+    <DayFormPage say="우편함을 옮길까요?" fallback="/">
+      <SignupHead eye="이메일 변경" title="이 이메일로 바꿀까요?">
+        확인하면 모든 기기에서 로그아웃돼요.
+      </SignupHead>
       {!token && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="gh-su-msg is-bad" role="alert">
           가장 최근에 받은 이메일에서 링크를 열어 주세요.
         </p>
       )}
       {confirm.isError && (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="gh-su-msg is-bad" role="alert">
           {errorMessage(toApiError(confirm.error))}
         </p>
       )}
-
-      <StepFooter>
-        <Button
-          size="lg"
-          className="h-12 w-full"
-          disabled={!token || confirm.isPending}
-          onClick={() => confirm.mutate()}
-        >
-          {confirm.isPending ? '확인 중…' : '이메일 변경 확인'}
-        </Button>
-      </StepFooter>
-    </SubPageLayout>
+      <div className="gh-su-cta">
+        <div>
+          <button type="button" disabled={!token || confirm.isPending} onClick={() => confirm.mutate()}>
+            {confirm.isPending ? '확인하는 중…' : '이메일 변경 확인'}
+          </button>
+        </div>
+      </div>
+    </DayFormPage>
   )
 }

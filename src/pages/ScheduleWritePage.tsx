@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -33,9 +32,7 @@ export function ScheduleWritePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname + location.search} title="일정은 부원만 등록할 수 있어요." buttonText="로그인하고 등록하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="일정은 부원만 등록할 수 있어요." buttonText="로그인하고 등록하기" />
     )
   }
 

@@ -1,6 +1,5 @@
 import { useState, type CSSProperties, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { DotChips, FieldError, Ghost, IconSend, Rope, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -23,9 +22,7 @@ export function FeedWritePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/feed">
-        <LockPanel next={location.pathname} title="피드는 부원만 쓸 수 있어요." buttonText="로그인하고 글쓰기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="피드는 부원만 쓸 수 있어요." buttonText="로그인하고 글쓰기" />
     )
   }
   return (

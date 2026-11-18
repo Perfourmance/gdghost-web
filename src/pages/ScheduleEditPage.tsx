@@ -1,5 +1,4 @@
 import { useLocation, useNavigate, useParams } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import { Blocked, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
@@ -52,9 +51,7 @@ export function ScheduleEditPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/schedules">
-        <LockPanel next={location.pathname} title="일정은 부원만 고칠 수 있어요." buttonText="로그인하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="일정은 부원만 고칠 수 있어요." buttonText="로그인하기" />
     )
   }
 

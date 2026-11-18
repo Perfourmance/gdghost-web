@@ -1,7 +1,6 @@
 import { Fragment, useState, type CSSProperties, type ReactNode } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
 import {
   EmptyState,
   Ghost,
@@ -44,9 +43,7 @@ export function MemberProfilePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="프로필은 부원만 볼 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="프로필은 부원만 볼 수 있어요." />
     )
   }
 
