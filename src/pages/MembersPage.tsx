@@ -1,17 +1,14 @@
-import { Search } from 'lucide-react'
 import { Link, useLocation, useSearchParams } from 'react-router'
-import { Chip, FilterToggle } from '@/components/Chip'
 import { SegmentTabs } from '@/components/layout/SegmentTabs'
 import { QUESTION_SEGMENTS } from '@/components/layout/segments'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { BigTitle, EmptyState, Ghost, House, LineChips, Pill, StoryTopBar, TextTabs, Town } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
-import { EmptyCard } from '@/features/content/Cards'
 import { useMemberList, type MemberFilters } from '@/features/member/api'
-import { MemberCard } from '@/features/member/MemberCard'
-import { MEMBER_STATUSES, type MemberStatus } from '@/features/member/labels'
+import { MEMBER_STATUSES, memberStatusLabel, positionLabel, type MemberStatus } from '@/features/member/labels'
 import { useLoadMore } from '@/hooks/useLoadMore'
+import { colorOf, ROOF_COLORS } from '@/lib/categoryColors'
+import '@/styles/members.css'
 
 // 기수 칩은 1–4기 (디자인 가이드 6장). 그보다 늦은 기수가 가입해 있으면 그 기수까지 늘린다
 const MIN_GENERATIONS = 4
@@ -21,17 +18,35 @@ export function MembersPage() {
   const { data: me } = useMe()
   const location = useLocation()
 
-  return (
-    <div className="pb-4">
-      <h1 className="sr-only">부원</h1>
-      <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
-      {me ? (
-        <MemberDirectory maxGeneration={Math.max(MIN_GENERATIONS, me.generation)} />
-      ) : (
+  if (!me) {
+    return (
+      <div className="pb-4">
+        <h1 className="sr-only">부원</h1>
+        <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
         <div className="mt-5">
           <LockPanel next={location.pathname} title="부원 목록은 부원만 볼 수 있어요." />
         </div>
-      )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="pb-28">
+      <div className="gh-msky">
+        <StoryTopBar unread={me.unreadNotificationCount} />
+        <BigTitle items={[{ to: '/questions', label: '질문' }, { to: '/members', label: '부원', on: true }]} />
+        <p className="gh-mdesc">기수를 넘어 이어지는 사람들</p>
+        <Ghost pose="glass" className="gh-peek" />
+      </div>
+      {/* 선배 찾기 (IA S25 — 부원 목록 상단) */}
+      <Link to="/find-senior" className="gh-findbar">
+        <span>
+          <b>질문에 맞는 선배 찾기</b>
+          유령이 이야기 나눌 선배를 찾아 드려요
+        </span>
+        <em>시작</em>
+      </Link>
+      <MemberDirectory maxGeneration={Math.max(MIN_GENERATIONS, me.generation)} />
     </div>
   )
 }
@@ -62,83 +77,82 @@ function MemberDirectory({ maxGeneration }: { maxGeneration: number }) {
 
   return (
     <>
-      <div className="mt-1 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">GDGhost 부원 둘러보기</p>
-        {/* 선배 찾기 (IA S25 — 부원 목록 상단) */}
-        <Link to="/find-senior" className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'shrink-0' })}>
-          <Search aria-hidden />
-          선배 찾기
-        </Link>
+      <TextTabs
+        label="기수"
+        className="mt-1"
+        value={generation == null ? 'ALL' : String(generation)}
+        onChange={(v) => setFilter('generation', v === 'ALL' ? null : v)}
+        options={[{ value: 'ALL', label: '전체' }, ...generations.map((g) => ({ value: String(g), label: `${g}기` }))]}
+      />
+      {/* 상태는 테두리 칩 — 한 번 더 누르면 해제 */}
+      <div className="gh-mstates">
+        <LineChips label="상태" value={status} onChange={(v) => setFilter('status', v)} options={MEMBER_STATUSES} />
       </div>
 
-      {/* 기수 칩 — 가로로 밀어서 본다 */}
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div className="flex w-max gap-2">
-          <Chip selected={generation == null} onClick={() => setFilter('generation', null)}>
-            전체
-          </Chip>
-          {generations.map((g) => (
-            <Chip
-              key={g}
-              selected={generation === g}
-              onClick={() => setFilter('generation', generation === g ? null : String(g))}
-            >
-              {g}기
-            </Chip>
-          ))}
-        </div>
-      </div>
-
-      {/* 상태는 글씨 토글 — 한 번 더 누르면 해제 */}
-      <div className="mt-2 flex gap-4" role="group" aria-label="상태">
-        {MEMBER_STATUSES.map((s) => (
-          <FilterToggle
-            key={s.value}
-            checked={status === s.value}
-            onClick={() => setFilter('status', status === s.value ? null : s.value)}
-          >
-            {s.label}
-          </FilterToggle>
-        ))}
-      </div>
-
-      <div className="mt-5 space-y-2">
-        {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[92px] w-full rounded-xl" />)}
-
-        {list.isError && (
-          <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-            <p className="text-sm">부원 목록을 불러오지 못했어요.</p>
-            <Button variant="secondary" onClick={() => list.refetch()}>
-              다시 시도
-            </Button>
+      {list.isPending && (
+        <div className="gh-town" aria-label="불러오는 중">
+          <div>
+            <div className="gh-mskel" />
+            <div className="gh-mskel" />
           </div>
-        )}
+          <div>
+            <div className="gh-mskel" />
+          </div>
+        </div>
+      )}
 
-        {list.isSuccess && members.length === 0 && (
-          <EmptyCard>
-            {generation != null || status != null ? '조건에 맞는 부원이 없어요.' : '부원이 없어요.'}
-          </EmptyCard>
-        )}
+      {list.isError && (
+        <div className="px-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="부원 목록을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
+      )}
 
-        {members.map((m) => (
-          <MemberCard key={m.id} member={m} />
-        ))}
+      {list.isSuccess && members.length === 0 && (
+        <div className="px-4">
+          <EmptyState pose="glass" title={generation != null || status != null ? '조건에 맞는 부원이 없어요' : '아직 불 켜진 집이 없어요'}>
+            {generation != null || status != null ? '다른 기수나 상태로 찾아보세요.' : '부원이 가입하면 여기 집이 생겨요.'}
+          </EmptyState>
+        </div>
+      )}
 
-        {/* 첫 페이지를 받은 뒤에만 바닥을 지켜본다 */}
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {isFetchingNextPage && <Skeleton className="h-[92px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더보기
-          </Button>
-        )}
-        {list.isFetchNextPageError && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더 불러오지 못했어요. 다시 시도
-          </Button>
-        )}
-      </div>
+      {members.length > 0 && (
+        <Town>
+          {members.map((m) => (
+            <House
+              key={m.id}
+              to={`/members/${m.id}`}
+              roofColor={colorOf(ROOF_COLORS, m.position)}
+              track={positionLabel(m.position)}
+              staff={m.isStaff}
+              lit={m.acceptCoffee}
+              generation={`${m.generation}기 · ${memberStatusLabel(m.status)}`}
+              name={m.nickname}
+              intro={m.statusNote}
+              field={m.interestTags[0]}
+              answers={m.answerCount}
+            />
+          ))}
+        </Town>
+      )}
+
+      {/* 첫 페이지를 받은 뒤에만 바닥을 지켜본다 */}
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {isFetchingNextPage && <div className="gh-mskel mx-3.5 mt-3.5" />}
+      {(showMoreButton || list.isFetchNextPageError) && (
+        <button type="button" className="gh-mmore" onClick={() => fetchNextPage()}>
+          {list.isFetchNextPageError ? '더 불러오지 못했어요. 다시 시도' : '더보기'}
+        </button>
+      )}
+      {members.length > 0 && <div className="gh-village" aria-hidden />}
     </>
   )
 }
-

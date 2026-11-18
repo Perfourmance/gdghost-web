@@ -1,0 +1,1384 @@
+/* 부원 묶음 (members · profile · find · coffee · cofreq · pedit) — 화면 전용 모양. 공통 부품은 story.css */
+
+/* JS가 불러와 index.css보다 먼저 들어갈 수 있다 — 층 순서를 먼저 못 박는다 */
+@layer theme, base, components, utilities;
+
+@layer components {
+  .gh-msky {
+    position: relative;
+    background: url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-msky .gh-big {
+    padding-top: 16px;
+  }
+  .gh-mdesc {
+    padding: 8px 22px 0;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  /* 선배 찾기 막대 (위에 붙음) */
+  .gh-findbar {
+    position: sticky;
+    top: 8px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 62px;
+    margin: 16px 14px 0;
+    padding: 0 8px 0 18px;
+    border-radius: 31px;
+    background: rgba(27, 37, 58, 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line), 0 12px 24px -14px rgba(0, 0, 0, 0.8);
+  }
+  .gh-findbar span {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--color-gh-sub);
+  }
+  .gh-findbar span b {
+    display: block;
+    font: 400 14.5px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-findbar em {
+    display: flex;
+    align-items: center;
+    height: 46px;
+    padding: 0 18px;
+    border-radius: 23px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 14px var(--font-title);
+    font-style: normal;
+  }
+  .gh-mstates {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 16px 14px;
+  }
+  .gh-mmore {
+    display: block;
+    width: calc(100% - 28px);
+    margin: 14px 14px 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-mskel {
+    height: 180px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: gh-m-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes gh-m-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ── 부원 프로필 (profile-final '불 켜진 집') ── */
+@layer components {
+  .gh-pf {
+    padding-bottom: 110px;
+  }
+  .gh-pf-sky {
+    position: relative;
+    background: url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-pf-scene {
+    position: relative;
+    height: 330px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .gh-pf-glow {
+    position: absolute;
+    left: 50%;
+    top: 70px;
+    width: 340px;
+    height: 300px;
+    transform: translateX(-50%);
+    background: radial-gradient(closest-side, rgba(245, 185, 82, 0.32), rgba(245, 185, 82, 0));
+  }
+  .gh-pf-scene.is-off .gh-pf-glow {
+    opacity: 0.3;
+  }
+  .gh-pf-ground {
+    position: absolute;
+    left: -30px;
+    right: -30px;
+    bottom: 0;
+    height: 70px;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    background: linear-gradient(#24314e, #171f31);
+  }
+  .gh-pf-house {
+    position: absolute;
+    left: 50%;
+    bottom: 44px;
+    width: 220px;
+    transform: translateX(-50%);
+  }
+  .gh-pf-chim {
+    position: absolute;
+    right: 38px;
+    top: 14px;
+    width: 22px;
+    height: 40px;
+    border-radius: 4px 4px 0 0;
+    background: var(--r);
+    filter: brightness(0.8);
+  }
+  .gh-pf-roof {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 96px;
+    padding-bottom: 8px;
+    background: var(--r);
+    clip-path: polygon(50% 0, 100% 80%, 100% 100%, 0 100%, 0 80%);
+  }
+  .gh-pf-roof span {
+    font: 400 12px var(--font-title);
+    letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.9);
+  }
+  .gh-pf-wall {
+    position: relative;
+    height: 150px;
+    border-radius: 0 0 18px 18px;
+    background: #f3ecda;
+    box-shadow: 0 18px 40px -12px rgba(245, 185, 82, 0.5);
+  }
+  .gh-pf-win {
+    position: absolute;
+    left: 22px;
+    top: 18px;
+    width: 104px;
+    height: 112px;
+    overflow: hidden;
+    border-radius: 52px 52px 12px 12px;
+    background: radial-gradient(circle at 50% 60%, #ffe6a6, #ffc966);
+    box-shadow: inset 0 0 0 5px #c9963a, 0 0 30px 8px rgba(245, 185, 82, 0.6);
+  }
+  .gh-pf-win img {
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 104px;
+    transform: translateX(-50%);
+  }
+  .gh-pf-win::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 58%;
+    height: 5px;
+    background: #c9963a;
+    opacity: 0.55;
+  }
+  .gh-pf-scene.is-off .gh-pf-win {
+    background: radial-gradient(circle at 50% 60%, #3a4560, #232d46);
+    box-shadow: inset 0 0 0 5px #6f5536;
+  }
+  .gh-pf-scene.is-off .gh-pf-win img {
+    opacity: 0.55;
+  }
+  .gh-pf-door {
+    position: absolute;
+    right: 22px;
+    bottom: 0;
+    width: 56px;
+    height: 96px;
+    border-radius: 28px 28px 0 0;
+    background: #8a6b45;
+    box-shadow: inset 0 0 0 4px #6f5536;
+  }
+  .gh-pf-door::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 52px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-gh-sky);
+  }
+  .gh-pf-mail {
+    position: absolute;
+    left: 28px;
+    bottom: 44px;
+    width: 44px;
+  }
+  .gh-pf-mail > div {
+    position: relative;
+    height: 30px;
+    border-radius: 15px 15px 4px 4px;
+    background: #e0705a;
+  }
+  .gh-pf-mail > div::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 12px;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .gh-pf-mail > i {
+    display: block;
+    width: 6px;
+    height: 40px;
+    margin: 0 auto;
+    background: #5a5f6e;
+  }
+  .gh-pf-mail b {
+    position: absolute;
+    right: -6px;
+    top: -14px;
+    width: 5px;
+    height: 22px;
+    background: #5a5f6e;
+  }
+  .gh-pf-mail b::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 0;
+    width: 14px;
+    height: 9px;
+    border-radius: 0 3px 3px 0;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 10px rgba(245, 185, 82, 0.8);
+  }
+  .gh-pf-tag {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 11.5px var(--font-title);
+    white-space: nowrap;
+    box-shadow: 0 4px 14px -4px rgba(245, 185, 82, 0.8);
+  }
+  .gh-pf-tag svg {
+    width: 13px;
+    height: 13px;
+  }
+  .gh-pf-tag::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    transform: rotate(45deg);
+  }
+  .gh-pf-tag.is-q {
+    left: 14px;
+    bottom: 126px;
+  }
+  .gh-pf-tag.is-q::after {
+    left: 26px;
+    bottom: -3px;
+  }
+  .gh-pf-tag.is-c {
+    right: 14px;
+    top: 100px;
+  }
+  .gh-pf-tag.is-c::after {
+    left: -3px;
+    top: 10px;
+  }
+
+  .gh-pf-who {
+    padding: 14px 22px 0;
+    text-align: center;
+  }
+  .gh-pf-who h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 400 34px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-pf-who .gh-staff {
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 11px var(--font-title);
+    letter-spacing: 0;
+  }
+  .gh-pf-who .gh-m1 {
+    margin-top: 6px;
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-pf-who .gh-m2 {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--color-gh-sub);
+  }
+  .gh-pf-mine {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* 문 앞 쪽지 = 근황 */
+  .gh-pf-note {
+    position: relative;
+    margin: 22px 40px 0;
+    padding: 16px 18px 14px;
+    border-radius: 4px 4px 14px 4px;
+    background: #ffe9a8;
+    color: var(--color-gh-d-ink);
+    transform: rotate(-1.5deg);
+    box-shadow: 0 14px 24px -14px rgba(0, 0, 0, 0.8);
+  }
+  .gh-pf-note::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    width: 56px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateX(-50%) rotate(2deg);
+  }
+  .gh-pf-note small {
+    font: 400 11.5px var(--font-title);
+    color: #b07a12;
+  }
+  .gh-pf-note b {
+    display: block;
+    margin-top: 4px;
+    font: 400 16px var(--font-title);
+  }
+  .gh-pf-note span {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #8c7448;
+  }
+
+  /* 방 = 소개 · 관심 분야 · 경험 · 연락 수단 */
+  .gh-rooms {
+    margin: 26px 16px 0;
+    padding: 6px 20px;
+    border-radius: 22px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-room {
+    padding: 16px 0;
+    border-bottom: 1.5px dashed var(--color-gh-paper-line);
+  }
+  .gh-room:last-child {
+    border: 0;
+  }
+  .gh-room h2 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-pine);
+  }
+  .gh-room h2 svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-room > p,
+  .gh-room .gh-rp {
+    margin-top: 8px;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  .gh-room .gh-rp a {
+    color: var(--color-gh-pine);
+    text-decoration: underline;
+  }
+  .gh-room small {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-rchips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .gh-rchips span {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 15px;
+    background: rgba(47, 110, 115, 0.12);
+    color: var(--color-gh-pine);
+    font: 400 12.5px var(--font-title);
+  }
+  .gh-rchips span.is-sub {
+    height: 26px;
+    padding: 0 10px;
+    background: transparent;
+    box-shadow: inset 0 0 0 1.2px rgba(47, 110, 115, 0.35);
+    font-size: 11.5px;
+  }
+  .gh-rchips.is-ex span {
+    background: #fff3d6;
+    color: #b07a12;
+    box-shadow: inset 0 0 0 1.5px #ebcb85;
+  }
+  .gh-contacts {
+    margin-top: 8px;
+  }
+  .gh-contacts li {
+    display: flex;
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 14px;
+  }
+  .gh-contacts li > span {
+    flex: none;
+    width: 70px;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-d-sub);
+  }
+  .gh-contacts a,
+  .gh-contacts p {
+    min-width: 0;
+    word-break: break-all;
+  }
+  .gh-contacts a {
+    color: var(--color-gh-pine);
+    text-decoration: underline;
+  }
+
+  /* 활동 큰 글자 탭 + 별빛 타임라인 */
+  .gh-pf-tabs {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 40px 22px 0;
+  }
+  .gh-pf-tabs button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font: 400 21px var(--font-title);
+    color: #4d5a76;
+  }
+  .gh-pf-tabs sup {
+    margin-left: 2px;
+    font-size: 13px;
+    vertical-align: top;
+  }
+  .gh-pf-tabs button[aria-selected='true'] {
+    color: var(--color-gh-ink);
+  }
+  .gh-pf-tabs button[aria-selected='true'] sup {
+    color: var(--color-gh-amber);
+  }
+  .gh-pf-tabs button[aria-selected='true']::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.6);
+  }
+  .gh-pf-anon {
+    margin: 12px 22px 0;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-tl {
+    position: relative;
+    margin: 20px 16px 0 30px;
+    padding-left: 22px;
+  }
+  .gh-tl::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 20px;
+    width: 2px;
+    background: linear-gradient(rgba(169, 199, 255, 0.45), rgba(169, 199, 255, 0.05));
+  }
+  .gh-tl > * {
+    position: relative;
+    display: block;
+    padding: 4px 0 26px;
+  }
+  .gh-tl > *::before {
+    content: '';
+    position: absolute;
+    left: -28px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    background: #e6edfa;
+    clip-path: polygon(50% 0, 63% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 37% 36%);
+  }
+  .gh-tl > .is-pick {
+    margin: 0 0 22px -8px;
+    padding: 14px 14px 16px;
+    border-radius: 16px;
+    background: linear-gradient(100deg, rgba(245, 185, 82, 0.16), rgba(245, 185, 82, 0));
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.3);
+  }
+  .gh-tl > .is-pick::before {
+    left: -20px;
+    top: 16px;
+    background: var(--color-gh-amber);
+    filter: drop-shadow(0 0 6px rgba(245, 185, 82, 0.9));
+  }
+  .gh-tl .gh-st {
+    margin-bottom: 5px;
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-tl .gh-st.is-anon {
+    color: var(--color-gh-sub);
+  }
+  .gh-tl h4 {
+    font: 400 15px/1.45 var(--font-title);
+  }
+  .gh-tl p {
+    display: -webkit-box;
+    margin-top: 7px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #c9d3e6;
+  }
+  .gh-tl .gh-d {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+
+  /* 아래 커피챗 막대 */
+  .gh-dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px 14px max(22px, env(safe-area-inset-bottom)) 22px;
+    border-top: 1px solid var(--color-gh-line);
+    background: rgba(18, 26, 45, 0.95);
+    backdrop-filter: blur(12px);
+  }
+  .gh-dock > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 412px;
+    margin: 0 auto;
+  }
+  .gh-dock > div > div {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--color-gh-sub);
+  }
+  .gh-dock b {
+    display: block;
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-dock a {
+    color: var(--color-gh-sky);
+    text-decoration: underline;
+  }
+  .gh-dock button {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 7px;
+    height: 52px;
+    padding: 0 20px 0 16px;
+    border-radius: 26px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 15px var(--font-title);
+    box-shadow: 0 8px 18px -8px rgba(74, 124, 245, 0.9);
+  }
+  .gh-dock button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ── 선배 찾기 (find-final '불 꺼진 집 3채') + 결과(시안 없음: 불 켜진 창문 카드) ── */
+@layer components {
+  .gh-find {
+    padding-bottom: 40px;
+    background: url('../assets/scene/bg-sky.webp') center -40px / 430px auto no-repeat, var(--color-gh-night);
+  }
+  .gh-fh {
+    position: relative;
+    padding: 4px 22px 0;
+  }
+  .gh-fh h1 {
+    font: 400 32px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-fh p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-fh img {
+    position: absolute;
+    right: 6px;
+    top: -30px;
+    width: 118px;
+  }
+  .gh-frow {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    margin: 22px 22px 0;
+    padding: 14px 16px 0;
+    border-radius: 18px 18px 0 0;
+    background: linear-gradient(180deg, rgba(169, 199, 255, 0.06), rgba(169, 199, 255, 0));
+  }
+  .gh-fhs {
+    display: flex;
+    gap: 10px;
+  }
+  .gh-fhs > div {
+    width: 46px;
+  }
+  .gh-fhs .gh-r {
+    height: 20px;
+    background: #3a4560;
+    clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  }
+  .gh-fhs .gh-w {
+    display: grid;
+    place-items: center;
+    height: 30px;
+    border-radius: 0 0 4px 4px;
+    background: #2a3350;
+  }
+  .gh-fhs .gh-w i {
+    width: 14px;
+    height: 14px;
+    border-radius: 7px 7px 2px 2px;
+    background: #3a4256;
+    box-shadow: inset 0 0 0 1.5px #5a5f6e;
+    transition: background 0.4s, box-shadow 0.4s;
+  }
+  .gh-fhs .is-lit .gh-r {
+    background: var(--color-gh-blue);
+  }
+  .gh-fhs .is-lit .gh-w i {
+    background: #ffd27a;
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.7);
+  }
+  .gh-frow p {
+    flex: 1;
+    padding-bottom: 10px;
+    font: 400 13px/1.5 var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-frow p b {
+    font-weight: 400;
+    color: var(--color-gh-amber);
+  }
+  .gh-find .gh-paper {
+    box-shadow: 0 20px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .gh-find .gh-paper > .gh-k:first-child {
+    margin-top: 0;
+  }
+  .gh-go {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 28px);
+    height: 58px;
+    margin: 22px 14px 0;
+    border-radius: 29px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 16px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-go:disabled {
+    opacity: 0.6;
+  }
+  .gh-go svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-cap2 {
+    margin: 12px 22px 0;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cap2.is-err {
+    color: var(--color-gh-error-night);
+  }
+
+  /* 결과 — 불 켜진 창문 카드 */
+  .gh-fres {
+    margin: 34px 16px 0;
+  }
+  .gh-fres > h2 {
+    font: 400 19px var(--font-title);
+  }
+  .gh-fres > p {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cand {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 20px;
+    background: radial-gradient(120% 140% at 0 0, rgba(245, 185, 82, 0.18), rgba(245, 185, 82, 0) 55%), var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.25);
+  }
+  .gh-cand-h {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gh-cand-win {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 52px;
+    height: 58px;
+    border-radius: 26px 26px 8px 8px;
+    background: radial-gradient(circle at 50% 60%, #ffe6a6, #ffc966);
+    box-shadow: inset 0 0 0 4px #c9963a, 0 0 18px 4px rgba(245, 185, 82, 0.45);
+    color: #8c6512;
+    font: 400 20px var(--font-title);
+  }
+  .gh-cand-h > div {
+    min-width: 0;
+  }
+  .gh-cand-h small {
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-cand-h h3 {
+    font: 400 18px var(--font-title);
+  }
+  .gh-cand > p {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #c9d3e6;
+  }
+  .gh-cand ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .gh-cand li {
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: rgba(199, 178, 255, 0.13);
+    font-size: 11.5px;
+    color: #c7b2ff;
+  }
+  .gh-cand-acts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+}
+
+/* ── 내 커피챗 (coffee-final '찻잔 타일') + 신청 카드(시안 없음) ── */
+@layer components {
+  .gh-coffee {
+    min-height: 100dvh;
+    padding-bottom: 150px;
+    background: url('../assets/scene/bg-village.webp') center bottom / 390px auto no-repeat, var(--color-gh-night);
+  }
+  .gh-ch {
+    padding: 4px 22px 0;
+  }
+  .gh-ch h1 {
+    font: 400 32px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-ch p {
+    margin-top: 8px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cups {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 16px 0;
+  }
+  .gh-cups button {
+    height: 84px;
+    padding: 14px 16px;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    text-align: left;
+    color: #7d89a3;
+  }
+  .gh-cups svg {
+    width: 26px;
+    height: 26px;
+  }
+  .gh-cups b {
+    display: block;
+    margin-top: 6px;
+    font: 400 15px var(--font-title);
+  }
+  .gh-cups button[aria-selected='true'] {
+    background: linear-gradient(160deg, rgba(245, 185, 82, 0.22), rgba(245, 185, 82, 0.06));
+    box-shadow: inset 0 0 0 1.5px rgba(245, 185, 82, 0.6), 0 0 24px -6px rgba(245, 185, 82, 0.5);
+    color: var(--color-gh-ink);
+  }
+  .gh-cups button[aria-selected='true'] svg {
+    color: var(--color-gh-amber);
+    filter: drop-shadow(0 0 6px rgba(245, 185, 82, 0.7));
+  }
+  .gh-cempty {
+    position: relative;
+    margin: 30px 16px 0;
+    padding: 0 20px 26px;
+    border: 2px dashed rgba(169, 199, 255, 0.18);
+    border-radius: 22px;
+    text-align: center;
+  }
+  .gh-cempty .gh-pic {
+    position: relative;
+    height: 150px;
+    margin-top: -6px;
+  }
+  .gh-cempty .gh-win {
+    position: absolute;
+    left: 50%;
+    top: 22px;
+    width: 92px;
+    height: 110px;
+    margin-left: -46px;
+    border-radius: 46px 46px 10px 10px;
+    background: #232c45;
+    box-shadow: inset 0 0 0 4px #39425c;
+  }
+  .gh-cempty .gh-win::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    margin-left: -1.5px;
+    background: #39425c;
+  }
+  .gh-cempty .gh-win::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 56px;
+    height: 3px;
+    background: #39425c;
+  }
+  .gh-cempty .gh-pic img {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    width: 150px;
+    margin-left: -75px;
+  }
+  .gh-cempty .gh-pic.is-recv img {
+    top: 40px;
+    width: 110px;
+    margin-left: -55px;
+  }
+  .gh-cempty h2 {
+    font: 400 19px/1.45 var(--font-title);
+  }
+  .gh-cempty p {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-cempty .gh-fbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 46px;
+    margin-top: 16px;
+    padding: 0 20px 0 16px;
+    border-radius: 23px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 14.5px var(--font-title);
+    box-shadow: 0 10px 20px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-cempty .gh-fbtn svg {
+    width: 18px;
+    height: 18px;
+  }
+  .gh-clist {
+    margin: 22px 16px 0;
+  }
+  .gh-cc {
+    margin-bottom: 12px;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-cc.is-open {
+    background: radial-gradient(120% 140% at 100% 0, rgba(245, 185, 82, 0.2), rgba(245, 185, 82, 0) 55%), var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.3);
+  }
+  .gh-cc-h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gh-cc-h b {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 16px var(--font-title);
+  }
+  .gh-cc-h b.is-gone {
+    color: var(--color-gh-sub);
+  }
+  .gh-cc-h small {
+    flex: none;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cc-h .gh-st {
+    margin-left: auto;
+    flex: none;
+    padding: 4px 9px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-cc-h .gh-st.is-wait {
+    background: rgba(169, 199, 255, 0.12);
+    color: var(--color-gh-sky);
+  }
+  .gh-cc-h .gh-st.is-ok {
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+  }
+  .gh-cc .gh-cc-note {
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cc .gh-cc-body {
+    position: relative;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 4px 4px 14px 4px;
+    background: #ffe9a8;
+    color: var(--color-gh-d-ink);
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-line;
+    transform: rotate(-0.5deg);
+  }
+  .gh-cc .gh-cc-d {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cc .gh-memo {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(245, 185, 82, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.35);
+    font-size: 14px;
+  }
+  .gh-cc .gh-memo b {
+    display: block;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-cc .gh-memo p {
+    margin-top: 4px;
+    word-break: break-all;
+  }
+  .gh-cc .gh-memo small {
+    display: block;
+    margin-top: 4px;
+    font-size: 11.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-cc-acts {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .gh-cc-acts > * {
+    flex: 1;
+    justify-content: center;
+  }
+  .gh-cc .gh-err-line {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--color-gh-error-night);
+  }
+  .gh-cc .gh-err-line a {
+    text-decoration: underline;
+  }
+
+  /* 커피챗 신청 시트 (cofreq-final '불 켜진 창문 + 노란 쪽지') */
+  .gh-sheet:has(.gh-cofwin) {
+    overflow: visible;
+    background: #1a2338;
+    box-shadow: 0 -1px 0 rgba(245, 185, 82, 0.3), 0 -20px 50px -10px rgba(245, 185, 82, 0.25);
+  }
+  .gh-sheet:has(.gh-cofwin) h2 {
+    margin-top: 44px;
+  }
+  .gh-sheet h2 em {
+    font-style: normal;
+    color: var(--color-gh-amber);
+  }
+  .gh-sheet .gh-sheet-sub b {
+    font-weight: 700;
+    color: var(--color-gh-amber);
+  }
+  .gh-cofwin {
+    position: absolute;
+    left: 20px;
+    top: -58px;
+    width: 84px;
+    height: 96px;
+    overflow: hidden;
+    border-radius: 42px 42px 10px 10px;
+    background: radial-gradient(circle at 50% 60%, #ffe3a6, #f5b952 75%);
+    box-shadow: inset 0 0 0 4px #c9963a, 0 0 34px 8px rgba(245, 185, 82, 0.55);
+  }
+  .gh-cofwin img {
+    position: absolute;
+    left: 50%;
+    bottom: -22px;
+    width: 92px;
+    margin-left: -46px;
+  }
+  .gh-cofwin::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    margin-left: -1.5px;
+    background: rgba(201, 150, 58, 0.8);
+  }
+  .gh-knock {
+    position: absolute;
+    left: 112px;
+    top: -30px;
+    padding: 7px 12px;
+    border-radius: 14px 14px 14px 4px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    font: 400 13px var(--font-title);
+  }
+  .gh-cofnote {
+    position: relative;
+    margin-top: 18px;
+    padding: 18px 16px 12px;
+    border-radius: 6px 6px 18px 6px;
+    background: #ffe9a8;
+    color: var(--color-gh-d-ink);
+    transform: rotate(-0.8deg);
+    box-shadow: 0 10px 18px -10px rgba(0, 0, 0, 0.7);
+  }
+  .gh-cofnote::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    width: 60px;
+    height: 16px;
+    margin-left: -30px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.55);
+    transform: rotate(-3deg);
+  }
+  .gh-cofnote textarea {
+    display: block;
+    width: 100%;
+    height: 90px;
+    resize: none;
+    background: repeating-linear-gradient(180deg, transparent 0 29px, rgba(176, 122, 18, 0.18) 29px 30px);
+    font: 400 15px/30px var(--font-body);
+    outline: none;
+  }
+  .gh-cofnote textarea::placeholder {
+    color: #a88f55;
+  }
+  .gh-cofsend {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-cofsend button {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-gh-blue);
+    color: #fff;
+    box-shadow: 0 8px 18px -8px rgba(74, 124, 245, 0.9);
+  }
+  .gh-cofsend button:disabled {
+    background: #2c3650;
+    color: #66728c;
+    box-shadow: none;
+  }
+  .gh-cofsend svg {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+/* ── 프로필 수정 (pedit-final '한 장 접어 두기 + 6항목 등불') ── */
+@layer components {
+  .gh-pedit {
+    padding-bottom: 120px;
+    background: url('../assets/scene/bg-sky.webp') center -60px / 430px auto no-repeat, var(--color-gh-night);
+  }
+  .gh-pe-ttl {
+    padding: 4px 22px 0;
+  }
+  .gh-pe-ttl h1 {
+    font: 400 30px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-pe-ttl p {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-meter {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    margin-top: 12px;
+    padding: 10px 16px 12px;
+    border-bottom: 1px solid var(--color-gh-line);
+    background: rgba(18, 26, 45, 0.94);
+    backdrop-filter: blur(10px);
+  }
+  .gh-meter-t {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font: 400 13.5px var(--font-title);
+  }
+  .gh-meter-t em {
+    font-style: normal;
+    color: var(--color-gh-amber);
+  }
+  .gh-meter-t small {
+    margin-left: auto;
+    font: 400 11.5px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-meter .gh-lrow {
+    margin-top: 12px;
+  }
+  .gh-miss {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-miss b {
+    font-weight: 700;
+    color: var(--color-gh-amber);
+  }
+  .gh-fold {
+    margin: 12px 14px 0;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    scroll-margin-top: 150px;
+  }
+  .gh-fold.is-open {
+    overflow: visible;
+    background: none;
+    box-shadow: none;
+  }
+  .gh-fold-h {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    text-align: left;
+  }
+  .gh-fold.is-open .gh-fold-h {
+    padding: 16px 6px 12px;
+  }
+  .gh-fold-h b {
+    font: 400 16px var(--font-title);
+  }
+  .gh-fold-h small {
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-fold-h > svg {
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    flex: none;
+    color: #5e6a84;
+    transition: transform 0.2s;
+  }
+  .gh-fold.is-open .gh-fold-h > svg {
+    transform: rotate(180deg);
+  }
+  .gh-fold-h .gh-lps {
+    display: flex;
+    gap: 3px;
+  }
+  .gh-fold-h .gh-lps i {
+    display: block;
+    width: 10px;
+    height: 14px;
+    border-radius: 5px 5px 3px 3px;
+    background: radial-gradient(circle at 50% 60%, #ffe3a6, #f5b952 75%);
+    box-shadow: 0 0 8px 2px rgba(245, 185, 82, 0.5);
+  }
+  .gh-fold-h .gh-lps i.is-off {
+    background: #3a4256;
+    box-shadow: inset 0 0 0 1.5px rgba(245, 185, 82, 0.7);
+  }
+  .gh-fold-h .gh-err-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-gh-error-night);
+  }
+  .gh-sum {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: -6px;
+    padding: 0 16px 16px;
+  }
+  .gh-sum span {
+    padding: 5px 9px;
+    border-radius: 9px;
+    background: rgba(169, 199, 255, 0.1);
+    font: 400 12px var(--font-title);
+    color: #c9d2e3;
+  }
+  .gh-sum span.is-empty {
+    background: rgba(245, 185, 82, 0.12);
+    color: var(--color-gh-amber);
+  }
+  .gh-fold.is-open .gh-paper {
+    margin: 0;
+    box-shadow: 0 20px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .gh-fold .gh-paper > .gh-k:first-child,
+  .gh-fold .gh-paper > .gh-hint:first-child {
+    margin-top: 0;
+  }
+  .gh-pe-msg {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8a8370;
+  }
+  .gh-pe-msg.is-good {
+    color: var(--color-gh-pine);
+  }
+  .gh-pe-msg.is-bad {
+    color: var(--color-gh-error);
+  }
+  .gh-cbox {
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #fbf7ec;
+    box-shadow: inset 0 0 0 1.5px #ede6d3;
+  }
+  .gh-cbox .gh-field {
+    background: #fff;
+  }
+  .gh-ct {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .gh-ct label {
+    font: 400 13.5px var(--font-title);
+  }
+  .gh-ct span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 400 12px var(--font-title);
+    color: #a9a391;
+  }
+  .gh-pe-fail {
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-gh-error-night);
+  }
+}

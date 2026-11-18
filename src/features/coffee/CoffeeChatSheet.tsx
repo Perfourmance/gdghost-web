@@ -1,34 +1,73 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { FieldError, Ghost, Hint, IconSend, Pill, PillLink, StorySheet } from '@/components/story'
 import { PURPOSE_MAX, PURPOSE_MIN, requestErrorMessage, useRequestCoffeeChat } from '@/features/coffee/api'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { toApiError } from '@/lib/api'
+import '@/styles/members.css'
 
 export interface CoffeeTarget {
   id: number
   nickname: string
 }
 
-/** 커피챗 신청 시트 — 궁금한 점을 적어 보낸다 (F3-06). target이 null이면 닫힘 */
+/** 커피챗 신청 시트 — 시안 cofreq-final '불 켜진 창문 + 노란 쪽지'. 궁금한 점을 적어 보낸다 (F3-06). target이 null이면 닫힘 */
 export function CoffeeChatSheet({ target, onClose }: { target: CoffeeTarget | null; onClose: () => void }) {
+  const [done, setDone] = useState(false)
+  const name = target?.nickname ?? ''
+
+  function close() {
+    setDone(false)
+    onClose()
+  }
+
   return (
-    <Sheet open={target != null} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[90dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
-        {target && <RequestForm key={target.id} target={target} onClose={onClose} />}
-      </SheetContent>
-    </Sheet>
+    <StorySheet
+      open={target != null}
+      onOpenChange={(next) => !next && close()}
+      title={
+        done ? (
+          '쪽지를 창문에 붙였어요'
+        ) : (
+          <>
+            <em>{name}</em>님 창문에 커피챗 신청
+          </>
+        )
+      }
+      description={
+        done ? (
+          `${name}님이 7일 안에 수락하면 연락 방법을 볼 수 있어요.`
+        ) : (
+          <>
+            궁금한 점을 적어 주세요. {name}님이 수락하면 <b>14일 동안</b> 연락 방법을 볼 수 있어요.
+          </>
+        )
+      }
+    >
+      <div className="gh-cofwin" aria-hidden>
+        <Ghost pose="b" />
+      </div>
+      <span className="gh-knock" aria-hidden>
+        {done ? '쪽지 붙였어요!' : '똑똑, 커피 한잔 어때요?'}
+      </span>
+      {done ? (
+        <div className="mt-6 flex gap-2">
+          <PillLink to="/coffee-chats?tab=sent" soft className="flex-1 justify-center">
+            보낸 신청 보기
+          </PillLink>
+          <Pill className="flex-1 justify-center" onClick={close}>
+            닫기
+          </Pill>
+        </div>
+      ) : (
+        target && <RequestForm key={target.id} target={target} onDone={() => setDone(true)} />
+      )}
+    </StorySheet>
   )
 }
 
-function RequestForm({ target, onClose }: { target: CoffeeTarget; onClose: () => void }) {
+function RequestForm({ target, onDone }: { target: CoffeeTarget; onDone: () => void }) {
   const [purpose, setPurpose] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [done, setDone] = useState(false)
   const request = useRequestCoffeeChat()
   const keyFor = useIdempotencyKey()
   const trimmed = purpose.trim()
@@ -39,63 +78,34 @@ function RequestForm({ target, onClose }: { target: CoffeeTarget; onClose: () =>
     if (tooShort || request.isPending) return
     setError(null)
     const input = { receiverId: target.id, purpose: trimmed }
-    request.mutate(
-      { input, key: keyFor(input) },
-      { onSuccess: () => setDone(true), onError: (err) => setError(requestErrorMessage(toApiError(err))) },
-    )
-  }
-
-  if (done) {
-    return (
-      <div className="py-2 text-center">
-        <SheetTitle className="text-lg font-bold text-title">신청을 보냈어요</SheetTitle>
-        <SheetDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {target.nickname}님이 7일 안에 수락하면 연락 방법을 볼 수 있어요.
-        </SheetDescription>
-        <Link
-          to="/coffee-chats?tab=sent"
-          className={buttonVariants({ variant: 'secondary', size: 'lg', className: 'mt-6 h-12 w-full' })}
-        >
-          보낸 신청 보기
-        </Link>
-        <Button size="lg" className="mt-2 h-12 w-full" onClick={onClose}>
-          닫기
-        </Button>
-      </div>
-    )
+    request.mutate({ input, key: keyFor(input) }, { onSuccess: onDone, onError: (err) => setError(requestErrorMessage(toApiError(err))) })
   }
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <SheetTitle className="text-lg font-bold text-title">{target.nickname}님에게 커피챗 신청</SheetTitle>
-      <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        궁금한 점을 적어 주세요. 상대가 수락하면 14일 동안 연락 방법을 볼 수 있어요.
-      </SheetDescription>
-      <div className="mt-5">
+      <div className="gh-cofnote">
         <textarea
           aria-label="궁금한 점"
-          rows={4}
+          autoFocus
           maxLength={PURPOSE_MAX}
           placeholder="예: 프론트엔드 인턴 준비, 30분 정도 이야기 나눌 수 있을까요?"
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
-          className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
         />
-        <div className="mt-1 flex justify-between text-xs text-muted-foreground tabular-nums">
-          <span>{tooShort && trimmed.length > 0 ? `${PURPOSE_MIN}자 이상 적어 주세요.` : ''}</span>
-          <span>
-            {purpose.length} / {PURPOSE_MAX}
-          </span>
-        </div>
       </div>
-      {error && (
-        <p className="mt-3 text-center text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
-      <Button type="submit" size="lg" className="mt-5 h-12 w-full" disabled={tooShort || request.isPending}>
-        {request.isPending ? '보내는 중…' : '신청 보내기'}
-      </Button>
+      {tooShort && trimmed.length > 0 && <Hint>{PURPOSE_MIN}자 이상 적어 주세요.</Hint>}
+      <FieldError>{error}</FieldError>
+      <div className="gh-foot">
+        <small>
+          {purpose.length} / {PURPOSE_MAX}
+        </small>
+        <span className="gh-cofsend">
+          {request.isPending ? '보내는 중…' : '신청 보내기'}
+          <button type="submit" aria-label="신청 보내기" disabled={tooShort || request.isPending}>
+            <IconSend />
+          </button>
+        </span>
+      </div>
     </form>
   )
 }

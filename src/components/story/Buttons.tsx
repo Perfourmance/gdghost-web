@@ -31,9 +31,9 @@ export function Pill({ soft, className, type = 'button', ...props }: ButtonHTMLA
   return <button type={type} className={cn('gh-pill', soft && 'is-soft', className)} {...props} />
 }
 
-export function PillLink({ to, soft, className, children }: { to: string; soft?: boolean; className?: string; children: ReactNode }) {
+export function PillLink({ to, state, soft, className, children }: { to: string; state?: unknown; soft?: boolean; className?: string; children: ReactNode }) {
   return (
-    <Link to={to} className={cn('gh-pill', soft && 'is-soft', className)}>
+    <Link to={to} state={state} className={cn('gh-pill', soft && 'is-soft', className)}>
       {children}
     </Link>
   )
