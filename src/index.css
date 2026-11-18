@@ -2,9 +2,74 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/noto-sans-kr";
+@import "./styles/story.css";
 
 /* 비회원 = 라이트(기본), 로그인한 회원 = <html class="dark"> */
 @custom-variant dark (&:is(.dark *));
+
+/* 리디자인 글꼴 (temp/design/gdghost) — 라이선스는 src/assets/fonts/LICENSE.md */
+@font-face {
+    font-family: 'Cafe24Ssurround';
+    src: url('./assets/fonts/Cafe24Ssurround.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'NanumSquareRound';
+    src: url('./assets/fonts/NanumSquareRoundR.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'NanumSquareRound';
+    src: url('./assets/fonts/NanumSquareRoundB.woff2') format('woff2');
+    font-weight: 700;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'NanumSquareRound';
+    src: url('./assets/fonts/NanumSquareRoundEB.woff2') format('woff2');
+    font-weight: 800;
+    font-display: swap;
+}
+
+/* 리디자인 토큰 (시안 base.css). 낮 · 밤이 정해진 값이라 테마 변수가 아닌 고정 색으로 둔다.
+   화면을 하나씩 옮기는 동안 아래 옛 토큰과 함께 쓰고, 마지막 정리 PR에서 옛 토큰을 지운다.
+   story.css가 var(--color-gh-*)로 직접 읽으므로 static(안 쓰여도 항상 내보냄) */
+@theme static {
+    --font-title: 'Cafe24Ssurround', 'NanumSquareRound', sans-serif;
+    --font-body: 'NanumSquareRound', 'Apple SD Gothic Neo', sans-serif;
+
+    /* 밤 */
+    --color-gh-night-deep: #060D1D;
+    --color-gh-night: #121A2D;
+    --color-gh-night-low: #171F31;
+    --color-gh-surface: rgba(27, 37, 58, 0.78);
+    --color-gh-line: rgba(169, 199, 255, 0.14);
+    --color-gh-ink: #F2F6FD;
+    --color-gh-sub: #93A1BC;
+    --color-gh-blue: #4A7CF5;
+    --color-gh-sky: #A9C7FF;
+    --color-gh-amber: #F5B952;
+    --color-gh-dim: #66728C;
+    /* 낮 */
+    --color-gh-day-top: #E4EFEF;
+    --color-gh-day-mid: #F6F4E8;
+    --color-gh-day-glow: #FCF7E4;
+    --color-gh-paper: #FFFDF6;
+    --color-gh-paper-line: #E6DFCB;
+    --color-gh-hill: #788F56;
+    --color-gh-pine: #2F6E73;
+    --color-gh-d-ink: #121A2D;
+    --color-gh-d-sub: #6B7385;
+    --color-gh-ticket: #FFF3D6;
+    --color-gh-ticket-ink: #B07A12;
+    /* 기타 */
+    --color-gh-like: #E25C7A;
+    --color-gh-error: #C2452B;
+    --color-gh-error-night: #F08A7A;
+    --color-gh-mint: #7FD1C0;
+}
 
 @theme inline {
     --font-heading: var(--font-sans);
