@@ -1,0 +1,2425 @@
+/* 리디자인 공통 부품 (temp/design/gdghost/DESIGN-GUIDE.md 5장).
+   시안 HTML의 CSS를 옮긴 것 — 클래스는 모두 gh- 로 시작한다. 컴포넌트는 src/components/story/ */
+
+@layer components {
+  /* ── 바탕 ───────────────────────────── */
+  .gh-night {
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    font-family: var(--font-body);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    -webkit-font-smoothing: antialiased;
+  }
+  .gh-day {
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    font-family: var(--font-body);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    -webkit-font-smoothing: antialiased;
+  }
+  .gh-sky {
+    position: relative;
+    background: linear-gradient(rgba(18, 26, 45, 0) 55%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-village {
+    height: 120px;
+    margin-top: 16px;
+    background: url('../assets/scene/bg-village.webp') center bottom / 390px auto no-repeat;
+    -webkit-mask: linear-gradient(transparent, #000 60%);
+    mask: linear-gradient(transparent, #000 60%);
+  }
+  .gh-peek {
+    position: absolute;
+    right: 6px;
+    top: 52px;
+    width: 112px;
+    z-index: 4;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+  }
+
+  /* ── 글자 부품 ───────────────────────── */
+  .gh-lab {
+    display: inline-block;
+    font: 400 11px var(--font-title);
+    color: var(--color-gh-sky);
+    background: rgba(169, 199, 255, 0.12);
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  .gh-lab.is-day {
+    color: var(--color-gh-pine);
+    background: #E3EFEA;
+  }
+  .gh-lab.is-amber {
+    color: var(--color-gh-night);
+    background: var(--color-gh-amber);
+  }
+  .gh-lab.is-tint {
+    color: var(--color-gh-d-ink);
+    background: color-mix(in srgb, var(--c) 35%, #fff);
+  }
+  .gh-sh {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 30px 22px 12px;
+    font: 400 17px var(--font-title);
+  }
+  .gh-sh small {
+    font: 400 12.5px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-sh em {
+    font-style: normal;
+    color: var(--color-gh-sky);
+  }
+  .gh-sh em.is-amber {
+    color: var(--color-gh-amber);
+  }
+  .gh-sh.is-line::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-gh-line);
+  }
+  .gh-bubble {
+    position: relative;
+    padding: 8px 12px;
+    border-radius: 14px 14px 14px 4px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    font: 400 13px var(--font-title);
+    white-space: nowrap;
+  }
+
+  /* ── 상단 ───────────────────────────── */
+  .gh-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    padding: 16px 16px 0 20px;
+  }
+  .gh-logo {
+    font: 400 16px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-logo b {
+    font-weight: 400;
+    color: var(--color-gh-sky);
+  }
+  .gh-day .gh-logo {
+    font-size: 17px;
+    color: var(--color-gh-pine);
+  }
+  .gh-day .gh-logo b {
+    color: var(--color-gh-blue);
+  }
+  .gh-cap {
+    display: flex;
+    height: 42px;
+    border-radius: 21px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    backdrop-filter: blur(8px);
+  }
+  .gh-cap > a,
+  .gh-cap > button {
+    position: relative;
+    width: 46px;
+    display: grid;
+    place-items: center;
+    color: var(--color-gh-ink);
+  }
+  .gh-cap > * + * {
+    border-left: 1px solid var(--color-gh-line);
+  }
+  .gh-cap svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-cap .gh-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 8px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 10px/16px var(--font-title);
+    text-align: center;
+    box-shadow: 0 0 8px rgba(245, 185, 82, 0.7);
+  }
+  .gh-login-pill {
+    height: 34px;
+    padding: 0 15px;
+    border-radius: 17px;
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    font: 400 13px var(--font-title);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gh-login-pill i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+  }
+  .gh-subbar {
+    display: grid;
+    grid-template-columns: 42px 1fr 42px;
+    align-items: center;
+    height: 60px;
+    padding: 8px 10px 0;
+    text-align: center;
+  }
+  .gh-nb {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--color-gh-ink);
+  }
+  .gh-day .gh-nb {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-nb svg {
+    width: 22px;
+    height: 22px;
+  }
+  .gh-nb[aria-expanded='true'],
+  .gh-nb[data-popup-open] {
+    background: rgba(169, 199, 255, 0.14);
+  }
+
+  /* ── 아래 탭 (밤 / 낮) ────────────────── */
+  .gh-tabs {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    height: calc(76px + env(safe-area-inset-bottom));
+    padding: 12px 0 env(safe-area-inset-bottom);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    background: rgba(18, 26, 45, 0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--color-gh-line);
+  }
+  .gh-tabs a {
+    position: relative;
+    width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font: 400 11px var(--font-title);
+    color: #6F7C96;
+  }
+  .gh-tabs svg {
+    width: 22px;
+    height: 22px;
+  }
+  .gh-tabs a.is-on {
+    color: var(--color-gh-ink);
+  }
+  .gh-tabs a.is-on::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.7);
+  }
+  .gh-tabs.is-day {
+    background: rgba(255, 253, 246, 0.94);
+    border-top: 1.5px solid var(--color-gh-paper-line);
+  }
+  .gh-tabs.is-day a {
+    color: #A2A69E;
+  }
+  .gh-tabs.is-day a.is-on {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-tabs.is-day a.is-on::before {
+    box-shadow: 0 0 8px 2px rgba(245, 185, 82, 0.6);
+  }
+
+  /* ── 큰 제목 · 탭 ──────────────────────── */
+  .gh-big {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 22px 0;
+  }
+  .gh-big > * {
+    font: 400 34px var(--font-title);
+    letter-spacing: -0.03em;
+    color: #4D5A76;
+  }
+  .gh-day .gh-big > * {
+    color: #B9B6AA;
+  }
+  .gh-big > .is-on,
+  .gh-day .gh-big > .is-on {
+    color: inherit;
+  }
+  .gh-big > .is-on {
+    color: var(--color-gh-ink);
+  }
+  .gh-day .gh-big > .is-on {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-big > .is-on::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    margin: 4px auto 0;
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.6);
+  }
+  .gh-big.is-single > .is-on::after {
+    margin-left: 22px;
+  }
+  .gh-desc {
+    padding: 8px 22px 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--color-gh-sub);
+  }
+  .gh-day .gh-desc {
+    color: var(--color-gh-d-sub);
+  }
+  .gh-texttabs {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 22px 22px 0;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--color-gh-line);
+  }
+  .gh-day .gh-texttabs {
+    border-bottom-color: var(--color-gh-paper-line);
+  }
+  .gh-texttabs > * {
+    flex: none;
+    position: relative;
+    padding-bottom: 12px;
+    font: 400 15px var(--font-title);
+    color: #66728C;
+  }
+  .gh-day .gh-texttabs > * {
+    color: #A2A69E;
+  }
+  .gh-texttabs > .is-on {
+    color: var(--color-gh-ink);
+  }
+  .gh-day .gh-texttabs > .is-on {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-texttabs > .is-on::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--color-gh-amber);
+  }
+
+  /* 색 점 둥근 칩 (분류) */
+  .gh-dotchips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 16px 16px 0;
+    scrollbar-width: none;
+  }
+  .gh-dotchips > * {
+    flex: none;
+    height: 34px;
+    padding: 0 13px;
+    border-radius: 17px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-sub);
+    box-shadow: inset 0 0 0 1.2px var(--color-gh-line);
+  }
+  .gh-dotchips i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c);
+  }
+  .gh-dotchips > .is-on {
+    background: var(--color-gh-ink);
+    color: var(--color-gh-night);
+    box-shadow: none;
+  }
+  /* 작은 테두리 칩 (부원 상태 필터) */
+  .gh-linechips {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 12px 16px 14px;
+  }
+  .gh-linechips > * {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sub);
+    box-shadow: inset 0 0 0 1.2px var(--color-gh-line);
+  }
+  .gh-linechips > .is-on {
+    background: var(--color-gh-ink);
+    color: var(--color-gh-night);
+    box-shadow: none;
+  }
+  /* 글자 정렬 (선택 = 앞에 앰버 점) */
+  .gh-sort {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 14px 22px 0;
+    font: 400 12.5px var(--font-title);
+    color: #66728C;
+  }
+  .gh-sort > .is-on {
+    color: var(--color-gh-ink);
+  }
+  .gh-sort > .is-on::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 5px;
+    vertical-align: 2px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+  }
+  /* 작은 스위치 필터 (질문 목록) */
+  .gh-filters {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 12px 18px 6px;
+  }
+  .gh-filters > * {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-filters i {
+    position: relative;
+    width: 30px;
+    height: 18px;
+    border-radius: 9px;
+    background: #2A3550;
+    transition: background 0.15s;
+  }
+  .gh-filters i::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #7C88A2;
+    transition: left 0.15s;
+  }
+  .gh-filters [aria-pressed='true'] {
+    color: var(--color-gh-ink);
+  }
+  .gh-filters [aria-pressed='true'] i {
+    background: var(--color-gh-amber);
+  }
+  .gh-filters [aria-pressed='true'] i::after {
+    left: 15px;
+    background: #fff;
+  }
+
+  /* ── 버튼 ───────────────────────────── */
+  .gh-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 56px;
+    border-radius: 28px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 16px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-btn.is-night {
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    box-shadow: 0 10px 20px -10px rgba(18, 26, 45, 0.8);
+  }
+  .gh-btn.is-night::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 8px 2px rgba(245, 185, 82, 0.7);
+  }
+  .gh-btn.is-amber {
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    box-shadow: 0 10px 22px -10px rgba(245, 185, 82, 0.9);
+  }
+  .gh-btn.is-glass {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--color-gh-ink);
+    box-shadow: none;
+  }
+  .gh-btn:disabled,
+  .gh-btn[aria-disabled='true'] {
+    background: #2C3650;
+    color: #66728C;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  .gh-btn.is-night:disabled {
+    background: #E7E3D6;
+    color: #A8A08A;
+  }
+  .gh-btn.is-night:disabled::before {
+    background: #C9C2AE;
+    box-shadow: none;
+  }
+  .gh-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 46px;
+    padding: 0 20px 0 16px;
+    border-radius: 23px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 14.5px var(--font-title);
+    white-space: nowrap;
+    box-shadow: 0 10px 20px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-pill svg {
+    width: 18px;
+    height: 18px;
+  }
+  .gh-pill.is-soft {
+    height: 36px;
+    padding: 0 13px;
+    font-size: 12.5px;
+    color: var(--color-gh-sky);
+    background: rgba(74, 124, 245, 0.14);
+    box-shadow: none;
+  }
+  .gh-pill:disabled {
+    background: #2C3650;
+    color: #66728C;
+    box-shadow: none;
+  }
+  .gh-fab {
+    position: fixed;
+    right: 16px;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    z-index: 21;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 52px;
+    padding: 0 20px 0 16px;
+    border-radius: 26px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 15px var(--font-title);
+    box-shadow: 0 10px 22px -8px rgba(74, 124, 245, 0.9);
+  }
+  .gh-fab svg {
+    width: 19px;
+    height: 19px;
+  }
+  .gh-fab.is-night {
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    box-shadow: 0 10px 22px -8px rgba(18, 26, 45, 0.7);
+  }
+  .gh-fab .gh-fab-tag {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    background: var(--color-gh-ticket);
+    color: var(--color-gh-ticket-ink);
+    font-size: 11px;
+  }
+  .gh-fab .gh-fab-tag svg {
+    width: 11px;
+    height: 11px;
+  }
+  .gh-send {
+    flex: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-gh-blue);
+    color: #fff;
+    box-shadow: 0 8px 18px -8px rgba(74, 124, 245, 0.9);
+  }
+  .gh-send svg {
+    width: 21px;
+    height: 21px;
+  }
+  .gh-send:disabled {
+    background: #2A3554;
+    color: #6F7C96;
+    box-shadow: none;
+  }
+  .gh-send.is-big {
+    width: 58px;
+    height: 58px;
+  }
+  .gh-send.is-big svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* ── 카드 ───────────────────────────── */
+  .gh-glass {
+    border-radius: 18px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-glow {
+    border-radius: 20px;
+    background: linear-gradient(120deg, rgba(245, 185, 82, 0.14), rgba(27, 37, 58, 0.85) 60%);
+    box-shadow: inset 0 0 0 1.2px rgba(245, 185, 82, 0.35);
+  }
+  .gh-glow.is-strong {
+    background: linear-gradient(180deg, rgba(245, 185, 82, 0.14), rgba(245, 185, 82, 0.04));
+    box-shadow: inset 0 0 0 1.5px rgba(245, 185, 82, 0.6), 0 0 28px -6px rgba(245, 185, 82, 0.45);
+  }
+  /* 답장 · 댓글 (밤 유리) */
+  .gh-ans {
+    position: relative;
+    padding: 16px 16px 12px;
+    border-radius: 18px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-ans + .gh-ans {
+    margin-top: 10px;
+  }
+  .gh-ans .gh-who {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .gh-ans .gh-who b {
+    font: 400 15px var(--font-title);
+  }
+  .gh-ans .gh-who span {
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-ans .gh-to {
+    margin-top: 4px;
+    font-size: 12.5px;
+    color: var(--color-gh-sky);
+  }
+  .gh-ans > p {
+    margin-top: 8px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #E3E9F5;
+    white-space: pre-wrap;
+  }
+  .gh-acts {
+    display: flex;
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .gh-acts > * {
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-acts > .is-dim {
+    color: #5E6A84;
+  }
+  .gh-acts > .is-amber {
+    color: var(--color-gh-amber);
+  }
+  .gh-acts > .is-danger {
+    color: var(--color-gh-error-night);
+  }
+  .gh-ans.is-reply {
+    margin-left: 30px;
+    background: rgba(74, 124, 245, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(74, 124, 245, 0.25);
+  }
+  .gh-ans.is-reply::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: -10px;
+    width: 14px;
+    height: 34px;
+    border-left: 2px solid rgba(169, 199, 255, 0.3);
+    border-bottom: 2px solid rgba(169, 199, 255, 0.3);
+    border-bottom-left-radius: 12px;
+  }
+  .gh-ans.is-pick {
+    background: linear-gradient(180deg, rgba(245, 185, 82, 0.14), rgba(245, 185, 82, 0.04));
+    box-shadow: inset 0 0 0 1.5px rgba(245, 185, 82, 0.6), 0 0 28px -6px rgba(245, 185, 82, 0.45);
+  }
+  .gh-ans .gh-pick-tag {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 9px;
+    border-radius: 9px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 11.5px var(--font-title);
+  }
+  .gh-ans .gh-pick-tag svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* 질문 줄 = 별빛 타임라인 */
+  .gh-starline {
+    position: relative;
+    list-style: none;
+    padding: 8px 18px 0 16px;
+  }
+  .gh-starline::before {
+    content: '';
+    position: absolute;
+    left: 29px;
+    top: 20px;
+    bottom: 40px;
+    width: 1px;
+    background: linear-gradient(var(--color-gh-line), rgba(169, 199, 255, 0.25), var(--color-gh-line));
+  }
+  .gh-starline > li {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0 18px;
+    border-bottom: 1px solid rgba(169, 199, 255, 0.07);
+  }
+  .gh-starline > li.is-pick {
+    margin: 0 -10px 0 -12px;
+    padding: 14px 10px 18px 12px;
+    border-radius: 18px;
+    border-bottom-color: transparent;
+    background: radial-gradient(120% 90% at 0 0, rgba(245, 185, 82, 0.2), rgba(245, 185, 82, 0) 65%), rgba(245, 185, 82, 0.04);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.28);
+  }
+  .gh-star {
+    position: relative;
+    flex: none;
+    width: 28px;
+    display: flex;
+    justify-content: center;
+    padding-top: 6px;
+  }
+  .gh-star::before {
+    content: '';
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #DCE6FA;
+    box-shadow: 0 0 8px 2px rgba(169, 199, 255, 0.45);
+  }
+  .gh-star.is-wait::before {
+    width: 11px;
+    height: 11px;
+    background: transparent;
+    box-shadow: 0 0 0 2px var(--color-gh-amber);
+    animation: gh-wait 1.6s infinite;
+  }
+  .gh-star.is-pick::before {
+    display: none;
+  }
+  .gh-star.is-pick svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-gh-amber);
+    filter: drop-shadow(0 0 6px rgba(245, 185, 82, 0.8));
+  }
+  .gh-star.is-off::before {
+    background: var(--color-gh-paper);
+    box-shadow: 0 0 0 2px #D9CFB4;
+    width: 13px;
+    height: 13px;
+  }
+  @keyframes gh-wait {
+    50% {
+      box-shadow: 0 0 0 2px var(--color-gh-amber), 0 0 12px 4px rgba(245, 185, 82, 0.6);
+    }
+  }
+  .gh-starbody {
+    flex: 1;
+    min-width: 0;
+  }
+  .gh-starbody h3 {
+    margin: 8px 0 6px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.45;
+  }
+  .gh-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-nums {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+  .gh-nums > * {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font: 400 12px var(--font-title);
+    color: #B9C3D6;
+  }
+  .gh-nums svg {
+    width: 14px;
+    height: 14px;
+    color: var(--color-gh-sky);
+  }
+  .gh-state {
+    font: 400 11.5px var(--font-title);
+  }
+  .gh-state.is-wait {
+    color: var(--color-gh-amber);
+  }
+  .gh-state.is-pick {
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+  }
+  .gh-rep {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 7px 11px;
+    border-radius: 12px 12px 12px 4px;
+    background: rgba(74, 124, 245, 0.14);
+    font-size: 12.5px;
+    color: #C9D6F6;
+  }
+  .gh-rep svg {
+    width: 13px;
+    height: 13px;
+    color: var(--color-gh-sky);
+  }
+  .gh-rep b {
+    color: #fff;
+    font-weight: 700;
+  }
+  .gh-rep.is-none {
+    background: rgba(245, 185, 82, 0.1);
+    color: var(--color-gh-amber);
+    font-family: var(--font-title);
+  }
+
+  /* 부원 = 집 */
+  .gh-town {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 4px 14px 0;
+  }
+  .gh-town > div {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .gh-house {
+    display: block;
+    color: var(--color-gh-d-ink);
+  }
+  .gh-roof {
+    position: relative;
+    height: 46px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+    background: var(--r);
+    clip-path: polygon(50% 0, 100% 72%, 100% 100%, 0 100%, 0 72%);
+  }
+  .gh-roof .gh-trk {
+    font: 400 10px var(--font-title);
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .gh-roof .gh-flag {
+    position: absolute;
+    left: 14px;
+    bottom: 4px;
+    padding: 2px 6px;
+    border-radius: 5px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 10px var(--font-title);
+  }
+  .gh-wall {
+    position: relative;
+    padding: 14px 13px 13px;
+    border-radius: 0 0 16px 16px;
+    background: #E9E2D0;
+    filter: brightness(0.82) saturate(0.9);
+  }
+  .gh-house.is-lit .gh-wall {
+    filter: none;
+    background: #F3ECDA;
+    box-shadow: 0 10px 30px -10px rgba(245, 185, 82, 0.45);
+  }
+  .gh-win {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: #3A4256;
+    box-shadow: inset 0 0 0 2px #5A5F6E;
+  }
+  .gh-win::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 2px;
+    bottom: 2px;
+    width: 2px;
+    background: #5A5F6E;
+    transform: translateX(-50%);
+  }
+  .gh-house.is-lit .gh-win {
+    background: #FFD27A;
+    box-shadow: inset 0 0 0 2px #C9963A, 0 0 16px 4px rgba(245, 185, 82, 0.7);
+  }
+  .gh-house.is-lit .gh-win::after {
+    background: #C9963A;
+  }
+  .gh-wall .gh-g {
+    font: 400 11px var(--font-title);
+    color: #7A7262;
+  }
+  .gh-wall h3 {
+    margin: 4px 0;
+    font: 400 19px var(--font-title);
+  }
+  .gh-wall p {
+    min-height: 37px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #5B5A55;
+  }
+  .gh-wall .gh-f {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .gh-wall .gh-f .gh-lab {
+    background: rgba(47, 110, 115, 0.14);
+    color: var(--color-gh-pine);
+  }
+  .gh-wall .gh-n {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font: 400 12px var(--font-title);
+    color: #5B5A55;
+  }
+  .gh-wall .gh-n svg {
+    width: 13px;
+    height: 13px;
+  }
+  .gh-wall .gh-cof {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding-top: 9px;
+    border-top: 1.5px dashed #D9CFB4;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-ticket-ink);
+  }
+  .gh-wall .gh-cof svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* 공유 = 책갈피 + 선반 */
+  .gh-shelf {
+    padding: 0 14px;
+  }
+  .gh-shelf-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: end;
+    padding: 22px 4px 0;
+    margin-bottom: 12px;
+  }
+  .gh-shelf-row::after {
+    content: '';
+    position: absolute;
+    left: -6px;
+    right: -6px;
+    bottom: -12px;
+    height: 12px;
+    border-radius: 3px;
+    background: linear-gradient(#6B4E33, #4A3524);
+    box-shadow: 0 10px 18px -6px #000;
+  }
+  .gh-bk {
+    position: relative;
+    display: block;
+    padding: 16px 14px 30px;
+    border-radius: 14px 14px 0 0;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 16px), 0 100%);
+  }
+  .gh-bk::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 7px;
+    background: var(--c);
+  }
+  .gh-bk .gh-cat {
+    display: inline-block;
+    margin-top: 2px;
+    padding: 3px 7px;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--c) 35%, #fff);
+    font: 400 11px var(--font-title);
+  }
+  .gh-bk .gh-sv {
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    width: 22px;
+    height: 22px;
+    color: #C5BBA2;
+  }
+  .gh-bk .gh-sv.is-on {
+    color: #3B57C9;
+  }
+  .gh-bk .gh-ph {
+    position: absolute;
+    right: 36px;
+    top: 16px;
+    width: 18px;
+    height: 18px;
+    color: #8C8775;
+  }
+  .gh-bk h3 {
+    margin-top: 9px;
+    font: 400 15px/1.4 var(--font-title);
+  }
+  .gh-bk .gh-tg {
+    margin-top: 6px;
+    font-size: 11.5px;
+    color: #4A6FB0;
+  }
+  .gh-bk .gh-by {
+    margin-top: 8px;
+    font-size: 11.5px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-bk .gh-bn {
+    display: flex;
+    gap: 9px;
+    margin-top: 6px;
+    font: 400 12px var(--font-title);
+    color: #5B5A55;
+  }
+  .gh-bk .gh-bn span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .gh-bk .gh-bn svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* 피드 = 빨랫줄 쪽지 */
+  .gh-rope {
+    position: relative;
+    height: 30px;
+    margin-top: 22px;
+  }
+  .gh-rope svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 30px;
+  }
+  .gh-hang {
+    position: relative;
+    display: block;
+    margin: -16px 22px 0;
+    padding: 14px;
+    border-radius: 4px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    box-shadow: 0 18px 26px -16px #000;
+    transform: rotate(-1.6deg);
+  }
+  .gh-hang.is-r {
+    transform: rotate(1.4deg);
+  }
+  .gh-hang.is-note {
+    background: color-mix(in srgb, var(--c) 28%, #fff);
+  }
+  .gh-pin {
+    position: absolute;
+    top: -12px;
+    width: 12px;
+    height: 26px;
+    border-radius: 3px;
+    background: #C9A57A;
+    box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.15);
+  }
+  .gh-pin.is-a {
+    left: 30%;
+  }
+  .gh-pin.is-b {
+    right: 30%;
+  }
+  .gh-hang .gh-photo {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 0.92;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+  .gh-hang .gh-cp {
+    margin-top: 12px;
+    font: 400 15px/1.5 var(--font-title);
+    white-space: pre-wrap;
+  }
+  .gh-hang.is-note .gh-cp {
+    margin-top: 4px;
+    font-size: 16px;
+  }
+  .gh-hang .gh-hmeta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-hang .gh-hmeta b {
+    font: 400 13px var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-hang .gh-ic {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    font: 400 13px var(--font-title);
+    color: #5B5A55;
+  }
+  .gh-hang .gh-ic span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .gh-hang .gh-ic svg {
+    width: 17px;
+    height: 17px;
+  }
+  .gh-hang .gh-ic .is-liked {
+    color: var(--color-gh-like);
+  }
+
+  /* 쪽지 댓글 (피드 · 공지) */
+  .gh-scrap {
+    position: relative;
+    margin-top: 16px;
+    padding: 14px 16px 12px;
+    border-radius: 3px 14px 14px 14px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    box-shadow: 0 12px 20px -14px #000;
+  }
+  .gh-scrap::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: -8px;
+    width: 44px;
+    height: 14px;
+    background: rgba(255, 255, 255, 0.5);
+    transform: rotate(-3deg);
+  }
+  .gh-scrap .gh-who {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-scrap .gh-who b {
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-scrap .gh-who .gh-me {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #FBE1EA;
+    color: #B44C72;
+    font: 400 10.5px var(--font-title);
+  }
+  .gh-scrap .gh-who > :last-child.gh-right {
+    margin-left: auto;
+  }
+  .gh-scrap .gh-to {
+    margin-top: 3px;
+    font-size: 12px;
+    color: #B44C72;
+  }
+  .gh-scrap > p {
+    margin-top: 6px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .gh-scrap .gh-acts > * {
+    color: var(--color-gh-pine);
+  }
+  .gh-scrap .gh-acts > .is-dim {
+    color: #A8A08A;
+  }
+  .gh-scrap.is-reply {
+    margin-left: 34px;
+    background: #FFE9E1;
+  }
+  .gh-scrap.is-reply::after {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: -14px;
+    width: 14px;
+    height: 36px;
+    border-left: 2px solid rgba(169, 199, 255, 0.3);
+    border-bottom: 2px solid rgba(169, 199, 255, 0.3);
+    border-bottom-left-radius: 12px;
+  }
+
+  /* 일정 = 크림 티켓 + D-day 그루터기 */
+  .gh-ticket {
+    position: relative;
+    display: flex;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    box-shadow: 0 14px 24px -14px #000;
+  }
+  .gh-ticket .gh-tbody {
+    flex: 1;
+    min-width: 0;
+    padding: 14px 14px 13px;
+    border-top: 6px solid var(--c);
+  }
+  .gh-ticket .gh-tt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 400 11.5px var(--font-title);
+    color: #5B5A55;
+  }
+  .gh-ticket .gh-tt .gh-chip {
+    padding: 3px 7px;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--c) 30%, #fff);
+  }
+  .gh-ticket .gh-tt .gh-off {
+    color: var(--color-gh-ticket-ink);
+  }
+  .gh-ticket h3 {
+    margin-top: 7px;
+    font: 400 16.5px/1.35 var(--font-title);
+  }
+  .gh-ticket .gh-tw {
+    margin-top: 6px;
+    font-size: 12.5px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-stub {
+    position: relative;
+    flex: none;
+    width: 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background: var(--color-gh-ticket);
+    border-left: 2px dashed #E3CF9E;
+  }
+  .gh-stub b {
+    font: 400 22px var(--font-title);
+    color: var(--color-gh-ticket-ink);
+  }
+  .gh-stub span {
+    font-size: 10.5px;
+    color: #8C7448;
+  }
+  .gh-stub::before,
+  .gh-stub::after {
+    content: '';
+    position: absolute;
+    left: -8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gh-hole, var(--color-gh-night));
+  }
+  .gh-stub::before {
+    top: -7px;
+  }
+  .gh-stub::after {
+    bottom: -7px;
+  }
+
+  /* 공지 = 포스트잇 */
+  .gh-board {
+    padding: 22px 12px 20px;
+    border-radius: 22px;
+    background: #3B3426;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.18) 1px, transparent 1.5px);
+    background-size: 9px 9px;
+    box-shadow: inset 0 0 0 2px #4A4130;
+  }
+  .gh-board.is-day {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 20px 14px 16px;
+    border-radius: 18px;
+    background-color: #E9DFC6;
+    background-image: radial-gradient(rgba(150, 120, 70, 0.12) 1px, transparent 1.5px);
+    box-shadow: inset 0 0 0 2px #DCCFAF;
+  }
+  .gh-postit {
+    position: relative;
+    display: block;
+    padding: 24px 18px 18px;
+    border-radius: 6px 6px 22px 6px;
+    background: #FFE9A8;
+    color: var(--color-gh-d-ink);
+    transform: rotate(-0.6deg);
+    box-shadow: 0 18px 26px -14px #000;
+  }
+  .gh-postit.is-mint {
+    background: #CFE8E0;
+  }
+  .gh-postit.is-small {
+    min-height: 92px;
+    padding: 14px 12px 12px;
+    border-radius: 6px 6px 16px 6px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.45;
+    box-shadow: 0 5px 9px -5px rgba(60, 40, 10, 0.35);
+    transform: rotate(-2deg);
+  }
+  .gh-postit.is-small.is-mint {
+    transform: rotate(1.8deg);
+    margin-top: 8px;
+  }
+  .gh-postit::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    width: 70px;
+    height: 18px;
+    margin-left: -35px;
+    transform: rotate(-3deg);
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+  }
+  .gh-postit.is-small::before {
+    top: -7px;
+    width: 38px;
+    height: 13px;
+    margin-left: -19px;
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .gh-seal {
+    position: absolute;
+    right: 14px;
+    top: -14px;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 13px var(--font-title);
+    transform: rotate(8deg);
+    box-shadow: 0 0 18px rgba(245, 185, 82, 0.7), inset 0 0 0 3px rgba(255, 255, 255, 0.35);
+  }
+  .gh-tack {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    background: rgba(176, 122, 18, 0.14);
+    color: #7A5A1A;
+    font: 400 11.5px var(--font-title);
+  }
+  .gh-tack svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* ── 크림 종이 폼 ─────────────────────── */
+  .gh-paper {
+    position: relative;
+    margin: 0 14px;
+    padding: 20px 18px 22px;
+    border-radius: 8px 8px 24px 24px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    box-shadow: 0 0 50px -8px rgba(245, 185, 82, 0.35), 0 20px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .gh-paper.is-flat {
+    box-shadow: 0 20px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .gh-k {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin: 18px 0 8px;
+    font: 400 13px var(--font-title);
+    color: #8C7448;
+  }
+  .gh-k:first-child {
+    margin-top: 0;
+  }
+  .gh-k .gh-aside {
+    font: 400 12px var(--font-body);
+    color: #A9A391;
+  }
+  .gh-hint {
+    margin: 8px 0 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #8C7448;
+  }
+  .gh-hint b {
+    color: #B0502E;
+    font-weight: 700;
+  }
+  .gh-field {
+    display: block;
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #F3EFE2;
+    font: 400 15px var(--font-body);
+    color: var(--color-gh-d-ink);
+    outline: none;
+  }
+  .gh-field::placeholder {
+    color: #A9A391;
+  }
+  textarea.gh-field {
+    height: auto;
+    min-height: 84px;
+    padding: 12px 14px;
+    line-height: 1.6;
+    resize: none;
+  }
+  select.gh-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23A9A391' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 18px;
+  }
+  .gh-field:focus-visible {
+    box-shadow: inset 0 0 0 1.5px #C9A24A;
+  }
+  .gh-field[aria-invalid='true'] {
+    box-shadow: inset 0 0 0 1.5px #D9694F;
+    background-color: #FCEEE6;
+  }
+  .gh-title-input {
+    display: block;
+    width: 100%;
+    min-height: 68px;
+    padding: 6px 0 10px;
+    resize: none;
+    border-bottom: 2px solid var(--color-gh-paper-line);
+    background: none;
+    outline: none;
+    font: 400 19px/1.45 var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-title-input::placeholder {
+    color: #C1BBA8;
+  }
+  .gh-title-input[aria-invalid='true'] {
+    border-bottom-color: #D9694F;
+  }
+  .gh-lined {
+    display: block;
+    width: 100%;
+    min-height: 180px;
+    resize: none;
+    outline: none;
+    font: 400 15px/30px var(--font-body);
+    color: var(--color-gh-d-ink);
+    background: repeating-linear-gradient(180deg, transparent 0 29px, #EDE6D3 29px 30px);
+    background-attachment: local;
+  }
+  .gh-lined::placeholder {
+    color: #B5AE9B;
+  }
+  /* 밤 위 줄 그은 상자 (신고 이유 등) */
+  .gh-linedbox {
+    border-radius: 18px;
+    padding: 14px 16px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-linedbox label {
+    display: block;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-linedbox textarea {
+    display: block;
+    width: 100%;
+    height: 96px;
+    margin-top: 6px;
+    resize: none;
+    outline: none;
+    font: 400 15px/30px var(--font-body);
+    color: var(--color-gh-ink);
+    background: repeating-linear-gradient(180deg, transparent 0 29px, rgba(169, 199, 255, 0.1) 29px 30px);
+  }
+  .gh-linedbox textarea::placeholder {
+    color: #66728C;
+  }
+  /* 종이 위 선택 칩 */
+  .gh-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .gh-chips > button {
+    height: 36px;
+    padding: 0 13px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    font: 400 13px var(--font-title);
+    color: #6E6A5E;
+    background: #F3EFE2;
+  }
+  .gh-chips > button[aria-pressed='true'] {
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+  }
+  .gh-chips > button[aria-pressed='true']::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 6px 2px rgba(245, 185, 82, 0.6);
+  }
+  .gh-chips > button:disabled {
+    opacity: 0.4;
+  }
+  .gh-grp {
+    margin-top: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #FBF7EC;
+    box-shadow: inset 0 0 0 1.5px #EDE6D3;
+  }
+  .gh-grp h4 {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font: 400 12.5px var(--font-title);
+  }
+  .gh-grp h4 .gh-aside {
+    font: 400 12px var(--font-body);
+    color: #A9A391;
+  }
+  /* 분류 우표 */
+  .gh-stamps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .gh-stamps > button {
+    padding: 9px 11px;
+    border: 2px dashed #DCCFAF;
+    border-radius: 6px;
+    background: #FBF6E8;
+    font: 400 12.5px var(--font-title);
+    color: #9C907A;
+    transition: transform 0.15s;
+  }
+  .gh-stamps > button[aria-pressed='true'] {
+    border-color: #C9A24A;
+    background: #FFF3D6;
+    color: #8C6512;
+    transform: rotate(-3deg);
+    box-shadow: 0 4px 8px -4px rgba(140, 101, 18, 0.5);
+  }
+  .gh-stamps.is-error {
+    margin: -8px -8px 0;
+    padding: 8px;
+    border-radius: 12px;
+    background: #FCEEE6;
+    box-shadow: inset 0 0 0 1.5px #EBB49E;
+  }
+  /* 오류 문구 */
+  .gh-err {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-error);
+  }
+  .gh-err::before {
+    content: '!';
+    flex: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--color-gh-error);
+    color: #fff;
+    font-size: 11px;
+  }
+  .gh-night .gh-err:not(.gh-paper *) {
+    color: var(--color-gh-error-night);
+  }
+  .gh-night .gh-err:not(.gh-paper *)::before {
+    background: var(--color-gh-error-night);
+    color: var(--color-gh-night);
+  }
+  /* 바꿀 수 없는 정보 */
+  .gh-fixed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1.5px dashed #DCCFAF;
+    font-size: 14px;
+  }
+  .gh-fixed svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    color: #A9A391;
+  }
+  .gh-fixed small {
+    display: block;
+    margin-top: 2px;
+    font-size: 11.5px;
+    color: #A9A391;
+  }
+  /* 둘 중 하나 (보낸 사람 등) */
+  .gh-seg {
+    display: flex;
+    gap: 6px;
+  }
+  .gh-seg > button {
+    flex: 1;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #F3EFE2;
+    font: 400 14px var(--font-title);
+    color: #9C998D;
+    overflow: hidden;
+  }
+  .gh-seg > button[aria-pressed='true'] {
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+  }
+  .gh-seg img {
+    width: 40px;
+    margin: 4px -6px 0 -10px;
+  }
+
+  /* 아래 고정: 입력줄 · 저장 */
+  .gh-inputbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px calc(22px + env(safe-area-inset-bottom));
+    background: rgba(18, 26, 45, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--color-gh-line);
+  }
+  .gh-inputbar .gh-in {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-inputbar .gh-in:focus-within {
+    box-shadow: inset 0 0 0 1.5px var(--color-gh-sky);
+  }
+  .gh-inputbar input,
+  .gh-inputbar textarea {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    outline: none;
+    font: 400 14.5px var(--font-body);
+    color: var(--color-gh-ink);
+  }
+  .gh-inputbar textarea {
+    resize: none;
+    padding: 13px 0;
+    line-height: 1.5;
+    max-height: 120px;
+  }
+  .gh-inputbar input::placeholder,
+  .gh-inputbar textarea::placeholder {
+    color: #7D89A3;
+  }
+  .gh-inputbar .gh-count.is-below {
+    position: absolute;
+    right: 86px;
+    bottom: calc(2px + env(safe-area-inset-bottom));
+  }
+  .gh-inputbar .gh-count {
+    flex: none;
+    font-size: 11.5px;
+    color: #5E6A84;
+  }
+  .gh-inputbar .gh-in.is-note {
+    border-radius: 14px;
+    background: #FFE9A8;
+    box-shadow: none;
+    color: var(--color-gh-d-ink);
+  }
+  .gh-inputbar .gh-in.is-note input,
+  .gh-inputbar .gh-in.is-note textarea {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-inputbar .gh-in.is-note input::placeholder,
+  .gh-inputbar .gh-in.is-note textarea::placeholder {
+    color: #A08A55;
+  }
+  .gh-inputbar .gh-in.is-note svg {
+    width: 16px;
+    height: 16px;
+    color: #A08A55;
+  }
+  .gh-inputbar .gh-replying {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    border-radius: 12px 12px 0 0;
+    background: rgba(27, 37, 58, 0.96);
+    font-size: 12.5px;
+    color: var(--color-gh-sky);
+  }
+  .gh-savebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px 16px calc(22px + env(safe-area-inset-bottom));
+    background: linear-gradient(rgba(18, 26, 45, 0), var(--color-gh-night) 30%);
+  }
+  .gh-savebar.is-day {
+    background: linear-gradient(rgba(255, 253, 246, 0), var(--color-gh-paper) 30%);
+  }
+
+  /* 검색창 */
+  .gh-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 54px;
+    padding: 0 10px 0 18px;
+    border-radius: 27px;
+    background: rgba(27, 37, 58, 0.92);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-search:focus-within {
+    box-shadow: inset 0 0 0 1.5px var(--color-gh-sky);
+  }
+  .gh-search > svg {
+    flex: none;
+    width: 19px;
+    height: 19px;
+    color: var(--color-gh-sub);
+  }
+  .gh-search input {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    outline: none;
+    font: 400 15px var(--font-body);
+    color: var(--color-gh-ink);
+  }
+  .gh-search input::placeholder {
+    color: #7D89A3;
+  }
+  .gh-search input::-webkit-search-cancel-button {
+    display: none;
+  }
+  .gh-search .gh-clear {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-gh-ink);
+  }
+  .gh-search .gh-clear svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* ── 상태 ───────────────────────────── */
+  .gh-calm {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1.5px dashed var(--color-gh-line);
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-calm i {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(127, 209, 192, 0.12);
+    color: var(--color-gh-mint);
+  }
+  .gh-calm i svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-empty {
+    position: relative;
+    padding: 18px 20px 26px;
+    border-radius: 22px;
+    border: 2px dashed rgba(169, 199, 255, 0.18);
+    text-align: center;
+  }
+  .gh-empty.is-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    text-align: left;
+  }
+  .gh-empty img {
+    display: block;
+    width: 130px;
+    margin: 0 auto 6px;
+  }
+  .gh-empty.is-row img {
+    width: 64px;
+    margin: 0;
+  }
+  .gh-empty h2 {
+    font: 400 19px/1.45 var(--font-title);
+  }
+  .gh-empty.is-row h2 {
+    font-size: 15px;
+  }
+  .gh-empty p {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-empty.is-row p {
+    margin-top: 3px;
+    font-size: 12.5px;
+  }
+  .gh-empty .gh-pill {
+    margin-top: 16px;
+  }
+  .gh-day .gh-empty {
+    border: 0;
+    background: #F3EFE2;
+  }
+  .gh-day .gh-empty p {
+    color: var(--color-gh-d-sub);
+  }
+  .gh-loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .gh-loading-dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 8px 2px rgba(245, 185, 82, 0.6);
+  }
+
+  /* ── 시트 · 메뉴 ──────────────────────── */
+  .gh-sheet {
+    padding: 26px 20px calc(30px + env(safe-area-inset-bottom));
+    border-radius: 28px 28px 0 0;
+    background: #1A2338;
+    color: var(--color-gh-ink);
+    box-shadow: 0 -1px 0 var(--color-gh-line), 0 -20px 40px rgba(0, 0, 0, 0.4);
+    font-family: var(--font-body);
+  }
+  .gh-sheet .gh-grab {
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    width: 40px;
+    height: 4px;
+    margin-left: -20px;
+    border-radius: 2px;
+    background: rgba(169, 199, 255, 0.25);
+  }
+  .gh-sheet .gh-x {
+    position: absolute;
+    right: 14px;
+    top: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--color-gh-sub);
+  }
+  .gh-sheet .gh-x svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-sheet-head {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .gh-sheet-head img {
+    width: 86px;
+    margin: -46px -6px -6px -12px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+  }
+  .gh-sheet-head .gh-bubble {
+    margin-bottom: 28px;
+  }
+  .gh-sheet h2 {
+    margin-top: 14px;
+    font: 400 22px/1.35 var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  .gh-sheet .gh-sheet-sub {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-sheet .gh-sheet-sub b {
+    color: var(--color-gh-ink);
+  }
+  .gh-sheet .gh-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  .gh-sheet .gh-foot small {
+    font-size: 12.5px;
+    color: #66728C;
+  }
+  .gh-sheet-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 22px;
+  }
+  .gh-sheet-actions > * {
+    flex: 1;
+  }
+  .gh-sheet .gh-danger {
+    color: var(--color-gh-error-night);
+  }
+  /* 낮 시트: 노을 띠 + 물결 종이 */
+  .gh-sheet.is-day {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--color-gh-d-ink);
+  }
+  .gh-sheet.is-day .gh-dusk {
+    position: relative;
+    height: 120px;
+    border-radius: 28px 28px 0 0;
+    overflow: hidden;
+    background: linear-gradient(180deg, #2B3557 0%, #7A6C8E 45%, #F0B98A 100%);
+  }
+  .gh-sheet.is-day .gh-dusk .gh-sun {
+    position: absolute;
+    left: 46px;
+    bottom: -26px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #FFD79A;
+    box-shadow: 0 0 40px 10px rgba(255, 200, 130, 0.6);
+  }
+  .gh-sheet.is-day .gh-x {
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+  .gh-sheet.is-day .gh-wave {
+    position: relative;
+    margin-top: -24px;
+    padding: 34px 22px calc(30px + env(safe-area-inset-bottom));
+    background: var(--color-gh-paper);
+  }
+  .gh-sheet.is-day .gh-wave::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    height: 16px;
+    background: radial-gradient(circle at 13px 16px, var(--color-gh-paper) 13px, transparent 13.5px) 0 0 / 26px 16px repeat-x;
+  }
+  .gh-sheet.is-day .gh-door {
+    position: absolute;
+    right: 58px;
+    top: -108px;
+    width: 140px;
+    z-index: 2;
+    filter: drop-shadow(0 8px 10px rgba(20, 20, 40, 0.3));
+  }
+  .gh-sheet.is-day h2 {
+    font-size: 27px;
+    line-height: 1.32;
+    letter-spacing: -0.03em;
+  }
+  .gh-sheet.is-day .gh-sheet-sub {
+    font-size: 14px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-sheet.is-day .gh-sheet-sub b {
+    color: var(--color-gh-d-ink);
+  }
+  .gh-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: var(--color-gh-ticket);
+    color: var(--color-gh-ticket-ink);
+    font: 400 12px var(--font-title);
+  }
+  .gh-kicker svg {
+    width: 12px;
+    height: 12px;
+  }
+  .gh-invite {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--color-gh-ticket);
+    color: var(--color-gh-ticket-ink);
+    box-shadow: 0 3px 0 #EBD7A8;
+  }
+  .gh-invite span {
+    flex: 1;
+    padding-left: 18px;
+    font: 400 15px var(--font-title);
+    text-align: left;
+  }
+  .gh-invite em {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    border-left: 2px dashed #E3C988;
+    font: 400 13px var(--font-title);
+    font-style: normal;
+  }
+  /* 메뉴(⋮) 유리 팝업 */
+  .gh-menu {
+    min-width: 150px;
+    padding: 6px;
+    border-radius: 16px;
+    background: #232D46;
+    color: var(--color-gh-ink);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line), 0 16px 30px -10px rgba(0, 0, 0, 0.7);
+    outline: none;
+  }
+  .gh-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 11px;
+    font: 400 14.5px var(--font-title);
+    cursor: pointer;
+    outline: none;
+  }
+  .gh-menu-item[data-highlighted] {
+    background: rgba(169, 199, 255, 0.08);
+  }
+  .gh-menu-item.is-danger {
+    color: var(--color-gh-error-night);
+  }
+  .gh-menu-item svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* ── 등불 ───────────────────────────── */
+  .gh-switchrow {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    width: 100%;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    text-align: left;
+  }
+  .gh-switchrow.is-on {
+    background: linear-gradient(120deg, rgba(245, 185, 82, 0.14), rgba(27, 37, 58, 0.85) 60%);
+    box-shadow: inset 0 0 0 1.2px rgba(245, 185, 82, 0.4);
+  }
+  .gh-lamp {
+    position: relative;
+    flex: none;
+    width: 30px;
+    height: 40px;
+    margin-top: 2px;
+  }
+  .gh-lamp::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    right: 9px;
+    top: 0;
+    height: 5px;
+    border-radius: 3px;
+    background: #3A4256;
+  }
+  .gh-lamp::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    top: 4px;
+    bottom: 0;
+    border-radius: 12px 12px 8px 8px;
+    background: #2A3554;
+    box-shadow: inset 0 0 0 2px #3A4256;
+  }
+  .is-on > .gh-lamp::after {
+    background: radial-gradient(circle at 50% 40%, #FFE7B0, var(--color-gh-amber));
+    box-shadow: 0 0 16px 3px rgba(245, 185, 82, 0.55);
+  }
+  .gh-switchrow .gh-st {
+    flex: 1;
+    min-width: 0;
+  }
+  .gh-switchrow .gh-st b {
+    display: block;
+    font: 400 15px var(--font-title);
+  }
+  .gh-switchrow .gh-st span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--color-gh-sub);
+  }
+  .gh-switchrow .gh-st .gh-warn {
+    color: #E8A0A0;
+  }
+  .gh-toggle {
+    position: relative;
+    flex: none;
+    width: 50px;
+    height: 30px;
+    margin-top: 4px;
+    border-radius: 15px;
+    background: #2A3554;
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    transition: background 0.15s;
+  }
+  .gh-toggle::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #7D89A3;
+    transition: left 0.15s;
+  }
+  .gh-toggle[aria-checked='true'] {
+    background: var(--color-gh-amber);
+    box-shadow: none;
+  }
+  .gh-toggle[aria-checked='true']::after {
+    left: 24px;
+    background: #fff;
+  }
+  .gh-toggle:disabled {
+    opacity: 0.4;
+  }
+  .gh-toggle.is-small {
+    width: 34px;
+    height: 20px;
+    margin: 0;
+    border-radius: 10px;
+  }
+  .gh-toggle.is-small::after {
+    left: 3px;
+    top: 3px;
+    width: 14px;
+    height: 14px;
+  }
+  .gh-toggle.is-small[aria-checked='true']::after {
+    left: 17px;
+  }
+  .gh-day .gh-toggle,
+  .gh-paper .gh-toggle {
+    background: #DCD5C2;
+    box-shadow: none;
+  }
+  .gh-day .gh-toggle::after,
+  .gh-paper .gh-toggle::after {
+    background: #fff;
+  }
+  .gh-day .gh-toggle[aria-checked='true'] {
+    background: var(--color-gh-pine);
+  }
+  .gh-paper .gh-toggle[aria-checked='true'] {
+    background: var(--color-gh-amber);
+  }
+  /* 등불 줄 (완성도 미터) */
+  .gh-lrow {
+    display: grid;
+    grid-template-columns: repeat(var(--n, 6), 1fr);
+    gap: 4px;
+  }
+  .gh-lrow > * {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 0 7px;
+    border-radius: 12px;
+    font: 400 10.5px/1.2 var(--font-title);
+    color: var(--color-gh-sub);
+    text-align: center;
+  }
+  .gh-lrow i {
+    position: relative;
+    width: 18px;
+    height: 24px;
+    border-radius: 9px 9px 4px 4px;
+    background: radial-gradient(circle at 50% 60%, #FFE3A6, #F5B952 75%);
+    box-shadow: 0 0 12px 3px rgba(245, 185, 82, 0.55);
+  }
+  .gh-lrow i::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: -5px;
+    height: 4px;
+    border-radius: 2px;
+    background: #C9963A;
+  }
+  .gh-lrow > .is-off {
+    color: var(--color-gh-amber);
+  }
+  .gh-lrow > .is-off i {
+    background: #2A3350;
+    box-shadow: inset 0 0 0 1.5px rgba(245, 185, 82, 0.8);
+  }
+  .gh-lrow > .is-off i::before {
+    background: #4D566E;
+  }
+  .gh-lrow > .is-current {
+    background: rgba(169, 199, 255, 0.1);
+    color: var(--color-gh-ink);
+  }
+  /* 등불 지표 칸 (운영) */
+  .gh-lamps {
+    display: grid;
+    grid-template-columns: repeat(var(--n, 3), 1fr);
+    gap: 10px;
+  }
+  .gh-lp {
+    position: relative;
+    display: block;
+    padding: 22px 10px 14px;
+    border-radius: 26px 26px 16px 16px;
+    text-align: center;
+    background: var(--color-gh-surface);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-lp::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    width: 34px;
+    height: 8px;
+    border-radius: 4px;
+    transform: translateX(-50%);
+    background: #3A4256;
+  }
+  .gh-lp small {
+    display: block;
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-lp b {
+    display: block;
+    margin-top: 6px;
+    font: 400 26px var(--font-title);
+    color: #A4B0C7;
+  }
+  .gh-lp b span {
+    margin-left: 1px;
+    font-size: 13px;
+  }
+  .gh-lp.is-lit {
+    background: radial-gradient(120% 90% at 50% 30%, #FFE7B0, #F5B952 75%);
+    box-shadow: 0 0 30px -4px rgba(245, 185, 82, 0.6);
+  }
+  .gh-lp.is-lit small {
+    color: #6E4E14;
+  }
+  .gh-lp.is-lit b {
+    color: var(--color-gh-night);
+  }
+  .gh-lp.is-lit::before {
+    background: #C9963A;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gh-star.is-wait::before {
+    animation: none;
+  }
+}

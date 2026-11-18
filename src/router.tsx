@@ -149,6 +149,10 @@ export const router = createBrowserRouter([
       { path: 'password-reset', element: <PasswordResetPage /> },
       // 메일 링크 착지 (백엔드 StaffEmailChangeService가 만드는 주소)
       { path: 'email-change/confirm', element: <EmailChangeConfirmPage /> },
+      // 개발용 견본 — 리디자인 공통 부품 (빌드 때는 import.meta.env.DEV가 false라 통째로 빠진다)
+      ...(import.meta.env.DEV
+        ? [{ path: 'dev/story', lazy: async () => ({ Component: (await import('@/dev/StoryGallery')).StoryGallery }) }]
+        : []),
       { path: '*', element: <NotFoundPage /> },
     ],
   },
