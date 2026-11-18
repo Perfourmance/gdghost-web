@@ -1,26 +1,25 @@
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import {
-  Award,
-  Bell,
-  Bookmark,
-  CalendarDays,
-  Coffee,
-  Megaphone,
-  MessageCircle,
-  MessagesSquare,
-  Settings,
-  UserRound,
-  Users,
-  type LucideIcon,
-} from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  EmptyState,
+  IconBell,
+  IconBookmark,
+  IconCalendar,
+  IconChat,
+  IconCheck,
+  IconCup,
+  IconFeed,
+  IconPeople,
+  IconStar,
+  IconTack,
+  IconUser,
+  Pill,
+  StorySubPage,
+} from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
-import { EmptyCard } from '@/features/content/Cards'
 import {
   refreshUnreadCount,
   useNotificationList,
@@ -30,19 +29,19 @@ import {
 import { notificationPath } from '@/features/notifications/targetPath'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
-import { cn } from '@/lib/utils'
+import '@/styles/common.css'
 
-const TARGET_ICONS: Record<string, LucideIcon> = {
-  QUESTION: MessageCircle,
-  NOTICE: Megaphone,
-  SHARE: Bookmark,
-  FEED_POST: MessagesSquare,
-  SCHEDULE: CalendarDays,
-  RECRUIT: Users,
-  EVENT: Award,
-  COFFEE_CHAT: Coffee,
-  MEMBER: UserRound,
-  SETTINGS: Settings,
+const TARGET_ICONS: Record<string, (p: { className?: string }) => ReactNode> = {
+  QUESTION: IconChat,
+  NOTICE: IconTack,
+  SHARE: IconBookmark,
+  FEED_POST: IconFeed,
+  SCHEDULE: IconCalendar,
+  RECRUIT: IconPeople,
+  EVENT: IconStar,
+  COFFEE_CHAT: IconCup,
+  MEMBER: IconUser,
+  SETTINGS: IconBell,
 }
 
 /** 알림 (S61) — 최신순, 누른 것만 읽음. 누르면 그 글 · 화면으로 (IA 5장) */
@@ -83,59 +82,82 @@ function NotificationList({ myId, staff, unreadCount }: { myId: number; staff: b
     if (path) navigate(path)
   }
 
-  const readAll = hasUnread ? (
-    <button
-      type="button"
-      disabled={read.isPending}
-      onClick={() => read.mutate({ all: true })}
-      className="px-2 py-1 text-sm font-bold text-brand-text disabled:opacity-50"
-    >
-      모두 읽은 상태로 표시
-    </button>
-  ) : null
+  const unread = notifications.filter((n) => !n.read)
+  const seen = notifications.filter((n) => n.read)
 
   return (
-    <SubPageLayout actions={readAll}>
-      <h1 className="text-[22px] font-bold text-title">알림</h1>
-
-      <div className="mt-5 space-y-2 pb-6">
-        {list.isPending && [0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-[72px] w-full rounded-xl" />)}
-
-        {list.isError && (
-          <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-            <p className="text-sm">알림을 불러오지 못했어요.</p>
-            <Button variant="secondary" onClick={() => list.refetch()}>
-              다시 시도
-            </Button>
-          </div>
-        )}
-
-        {list.isSuccess && notifications.length === 0 && (
-          <EmptyCard>아직 알림이 없어요.</EmptyCard>
-        )}
-
-        {notifications.map((n) => (
-          <NotificationRow key={n.id} notification={n} now={now} onOpen={() => handleOpen(n)} />
-        ))}
-
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {isFetchingNextPage && <Skeleton className="h-[72px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더보기
-          </Button>
-        )}
-        {list.isFetchNextPageError && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더 불러오지 못했어요. 다시 시도
-          </Button>
-        )}
-
-        {list.isSuccess && notifications.length > 0 && !list.hasNextPage && (
-          <p className="pt-2 text-center text-xs text-muted-foreground">알림 보관 기간 90일</p>
+    <StorySubPage>
+      <div className="gh-cttl">
+        <h1>알림</h1>
+        {hasUnread && (
+          <button type="button" disabled={read.isPending} onClick={() => read.mutate({ all: true })}>
+            <IconCheck />
+            모두 읽은 상태로 표시
+          </button>
         )}
       </div>
-    </SubPageLayout>
+
+      {list.isPending && [0, 1, 2].map((i) => <div key={i} className="gh-cskel" />)}
+
+      {list.isError && (
+        <div className="px-4 pt-6">
+          <EmptyState
+            row
+            pose="shh"
+            title="알림을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
+      )}
+
+      {list.isSuccess && notifications.length === 0 && (
+        <div className="px-4 pt-6">
+          <EmptyState pose="b" title="아직 켜진 창문이 없어요">
+            답장이나 공지가 오면 여기 불이 켜져요.
+          </EmptyState>
+        </div>
+      )}
+
+      {unread.length > 0 && (
+        <>
+          <h2 className="gh-nsh">
+            <i aria-hidden />불 켜진 창문<b>{unread.length}</b>
+          </h2>
+          <div className="gh-nrows">
+            {unread.map((n) => (
+              <NotificationRow key={n.id} notification={n} now={now} onOpen={() => handleOpen(n)} />
+            ))}
+          </div>
+        </>
+      )}
+      {seen.length > 0 && (
+        <>
+          <h2 className="gh-nsh">
+            <i className="is-off" aria-hidden />불 끈 창문<b>{seen.length}</b>
+          </h2>
+          <div className="gh-nrows is-off">
+            {seen.map((n) => (
+              <NotificationRow key={n.id} notification={n} now={now} onOpen={() => handleOpen(n)} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {isFetchingNextPage && <div className="gh-cskel" />}
+      {(showMoreButton || list.isFetchNextPageError) && (
+        <button type="button" className="gh-cmore" onClick={() => fetchNextPage()}>
+          {list.isFetchNextPageError ? '더 불러오지 못했어요. 다시 시도' : '더보기'}
+        </button>
+      )}
+
+      {list.isSuccess && notifications.length > 0 && !list.hasNextPage && <p className="gh-nfoot-t">알림은 90일 동안 보관해요</p>}
+      <div className="gh-nfoot" aria-hidden />
+    </StorySubPage>
   )
 }
 
@@ -148,37 +170,20 @@ function NotificationRow({
   now: number
   onOpen: () => void
 }) {
-  const Icon = TARGET_ICONS[notification.target.type] ?? Bell
-  const unread = !notification.read
+  const Icon = TARGET_ICONS[notification.target.type] ?? IconBell
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className={cn(
-        'flex w-full items-start gap-3 rounded-xl px-4 py-3.5 text-left transition-colors hover:bg-accent',
-        unread ? 'bg-card' : 'bg-transparent',
-      )}
-    >
-      <span
-        className={cn(
-          'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full',
-          unread ? 'bg-brand-soft text-brand-text' : 'bg-muted text-muted-foreground',
-        )}
-      >
-        <Icon className="size-[18px]" aria-hidden />
+    <button type="button" onClick={onOpen} className="gh-nr">
+      <span className="gh-nw" aria-hidden>
+        <Icon />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className={cn('block text-sm leading-snug', unread ? 'font-bold text-title' : 'text-muted-foreground')}>
+      <div>
+        <b>
           {notification.title}
-        </span>
-        {notification.body && (
-          <span className={cn('mt-0.5 line-clamp-2 block text-sm', unread ? 'text-foreground' : 'text-muted-foreground')}>
-            {notification.body}
-          </span>
-        )}
-        <span className="mt-1 block text-xs text-muted-foreground">{formatRelative(notification.createdAt, now)}</span>
-      </span>
-      {unread && <span className="mt-2 size-2 shrink-0 rounded-full bg-brand" aria-label="읽지 않은 알림" />}
+          {!notification.read && <span className="sr-only"> (읽지 않음)</span>}
+        </b>
+        {notification.body && <p>{notification.body}</p>}
+        <small>{formatRelative(notification.createdAt, now)}</small>
+      </div>
     </button>
   )
 }
