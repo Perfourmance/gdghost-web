@@ -7,10 +7,11 @@ import {
   useSubmitCertification,
   type CertificationItem,
 } from '@/features/events/api'
-import { PhotoPicker } from '@/features/uploads/PhotoPicker'
+import { PolaroidPicker } from '@/features/uploads/PolaroidPicker'
 import { usePhotoUploads } from '@/features/uploads/usePhotoUploads'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { toApiError } from '@/lib/api'
+import '@/styles/feed.css'
 
 /** 무엇을 올리나 — 새 인증, 또는 반려된 인증 다시 올리기(사유 · 지금 글이 있으면 채운다) */
 export type CertificationTarget =
@@ -123,7 +124,7 @@ function CertificationForm({
   return (
     <form onSubmit={handleSubmit} noValidate className="mt-5">
       <p className="mb-2 font-title text-[13px] text-gh-sky">사진 {!photoRequired && <span className="text-gh-sub">· 선택</span>}</p>
-      <PhotoPicker uploads={uploads} disabled={pending} />
+      <PolaroidPicker uploads={uploads} disabled={pending} />
       {triedSubmit && noPhoto && <FieldError>사진을 한 장 이상 골라 주세요.</FieldError>}
 
       <div className="mt-5">

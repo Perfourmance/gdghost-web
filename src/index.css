@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/noto-sans-kr";
 @import "./styles/story.css";
 
 /* 비회원 = 라이트(기본), 로그인한 회원 = <html class="dark"> */
@@ -72,8 +71,8 @@
 }
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Noto Sans KR Variable', 'Apple SD Gothic Neo', system-ui, sans-serif;
+    --font-heading: var(--font-title);
+    --font-sans: 'NanumSquareRound', 'Apple SD Gothic Neo', system-ui, sans-serif;
 
     /* GDGhost 고유 색 — 시안 04 */
     --color-brand: var(--brand);

@@ -513,3 +513,12 @@
     color: #a8a08a;
   }
 }
+@layer components {
+  .gh-sheet .gh-slots {
+    margin-top: 14px;
+    padding: 0;
+  }
+  .gh-sheet .gh-phn {
+    margin: 10px 0 0;
+  }
+}
