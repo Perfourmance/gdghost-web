@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
+import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { QuestionForm, type QuestionFormValues } from '@/features/questions/QuestionForm'
@@ -72,9 +73,10 @@ export function QuestionWritePage() {
   const error = create.error ? toApiError(create.error) : null
 
   return (
-    <SubPageLayout fallback={target ? '/find-senior' : '/questions'}>
+    <StorySubPage fallback={target ? '/find-senior' : '/questions'} className="gh-qwrite">
       <QuestionForm
         mode="create"
+        nickname={me.nickname}
         initial={initialFrom(ask)}
         pending={create.isPending}
         error={error}
@@ -82,15 +84,13 @@ export function QuestionWritePage() {
         onSubmit={handleSubmit}
         notice={
           target && (
-            <p className="rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-              <b className="font-bold">{target.nickname}</b> 선배에게 알림
-              <span className="mt-0.5 block text-xs text-brand-text/80">
-                밤 10시~오전 8시에 올리면 오전 8시에 알림이 가요.
-              </span>
+            <p className="gh-qnote !m-0">
+              <b>{target.nickname} 선배에게 바로 전해요</b>
+              밤 10시~오전 8시에 올리면 오전 8시에 알림이 가요.
             </p>
           )
         }
       />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }

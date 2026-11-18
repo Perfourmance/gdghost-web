@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { FieldError, IconFlag, LinedBox, Pill, StoryButton, StorySheet } from '@/components/story'
 import { REASON_MAX, reportErrorMessage, useCreateReport, type ReportTarget } from '@/features/reports/api'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { toApiError } from '@/lib/api'
@@ -16,29 +15,51 @@ const TARGET_NAMES: Record<ReportTarget['type'], string> = {
   NOTICE_COMMENT: '댓글을',
 }
 
-/** 신고 시트 — 이유를 적어 운영진에게 보낸다 (F2-10). target이 null이면 닫힘 */
+/** 신고 시트 — 이유를 적어 운영진에게 보낸다 (F2-10). 시안 report-final '쉿 유령 + 줄 그은 상자'. target이 null이면 닫힘 */
 export function ReportSheet({ target, onClose }: { target: ReportTarget | null; onClose: () => void }) {
+  const [done, setDone] = useState<'sent' | 'already' | null>(null)
+  const name = target ? TARGET_NAMES[target.type] : ''
+
+  function close() {
+    setDone(null)
+    onClose()
+  }
+
   return (
-    <Sheet open={target != null} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[90dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
-        {/* 대상이 바뀌면 입력을 새로 */}
-        {target && <ReportForm key={`${target.type}-${target.id}`} target={target} onClose={onClose} />}
-      </SheetContent>
-    </Sheet>
+    <StorySheet
+      open={target != null}
+      onOpenChange={(next) => !next && close()}
+      ghost="shh"
+      bubble={done ? '전해 둘게요' : '쉿, 운영진에게만 전할게요'}
+      title={done === 'sent' ? '신고했어요' : done === 'already' ? '이미 신고했어요' : `이 ${name} 신고할까요?`}
+      description={
+        done ? (
+          '운영진이 살펴보고 필요하면 숨겨요. 쓴 사람에게는 신고 사실을 알리지 않아요.'
+        ) : (
+          <>
+            신고는 <b>운영진만</b> 볼 수 있어요. 쓴 사람에게는 알림이 가지 않아요.
+          </>
+        )
+      }
+    >
+      {done ? (
+        <StoryButton tone="blue" className="mt-6" onClick={close}>
+          확인
+        </StoryButton>
+      ) : (
+        // 대상이 바뀌면 입력을 새로
+        target && <ReportForm key={`${target.type}-${target.id}`} target={target} onDone={setDone} />
+      )}
+    </StorySheet>
   )
 }
 
-function ReportForm({ target, onClose }: { target: ReportTarget; onClose: () => void }) {
+function ReportForm({ target, onDone }: { target: ReportTarget; onDone: (done: 'sent' | 'already') => void }) {
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [done, setDone] = useState<'sent' | 'already' | null>(null)
   const create = useCreateReport()
   const keyFor = useIdempotencyKey()
   const trimmed = reason.trim()
-  const name = TARGET_NAMES[target.type]
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -47,59 +68,39 @@ function ReportForm({ target, onClose }: { target: ReportTarget; onClose: () => 
     create.mutate(
       { target, reason: trimmed, key: keyFor({ target, reason: trimmed }) },
       {
-        onSuccess: () => setDone('sent'),
+        onSuccess: () => onDone('sent'),
         onError: (err) => {
           const apiError = toApiError(err)
-          if (apiError.code === 'ALREADY_REPORTED') setDone('already')
+          if (apiError.code === 'ALREADY_REPORTED') onDone('already')
           else setError(reportErrorMessage(apiError))
         },
       },
     )
   }
 
-  if (done) {
-    return (
-      <div role="status">
-        <SheetTitle className="text-lg font-bold text-title">
-          {done === 'sent' ? '신고했어요' : '이미 신고했어요'}
-        </SheetTitle>
-        <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-          운영진 검토 후 필요시 숨김 처리. 작성자에게는 신고 사실을 알리지 않아요.
-        </SheetDescription>
-        <Button size="lg" className="mt-6 h-12 w-full font-bold" onClick={onClose}>
-          확인
-        </Button>
-      </div>
-    )
-  }
-
   return (
     <form onSubmit={handleSubmit}>
-      <SheetTitle className="text-lg font-bold text-title">이 {name} 신고할까요?</SheetTitle>
-      <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">
-        운영진만 볼 수 있어요. 작성자에게는 알림이 가지 않아요.
-      </SheetDescription>
-      <textarea
-        autoFocus
-        aria-label="신고 이유"
-        rows={4}
-        maxLength={REASON_MAX}
-        placeholder="신고 이유"
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-        className="mt-5 w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-      />
-      <div className="mt-1 flex justify-between gap-2 text-xs tabular-nums">
-        <span className="text-destructive" role={error ? 'alert' : undefined}>
-          {error ?? ''}
-        </span>
-        <span className="shrink-0 text-muted-foreground">
-          {reason.length} / {REASON_MAX}
-        </span>
+      <div className="mt-[18px]">
+        <LinedBox
+          id="report-reason"
+          label="신고 이유"
+          autoFocus
+          maxLength={REASON_MAX}
+          placeholder="어떤 점이 불편했는지 적어 주세요."
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
       </div>
-      <Button type="submit" size="lg" className="mt-4 h-12 w-full font-bold" disabled={!trimmed || create.isPending}>
-        {create.isPending ? '보내는 중…' : '신고하기'}
-      </Button>
+      <FieldError>{error}</FieldError>
+      <div className="gh-foot">
+        <small>
+          {reason.length} / {REASON_MAX}
+        </small>
+        <Pill type="submit" disabled={!trimmed || create.isPending}>
+          <IconFlag />
+          {create.isPending ? '보내는 중…' : '신고 보내기'}
+        </Pill>
+      </div>
     </form>
   )
 }

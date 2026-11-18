@@ -1,7 +1,6 @@
-import { MoreVertical } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { IconPencil, IconTrash, PopMenu } from '@/components/story'
 import { questionSubmitError, useDeleteQuestion } from '@/features/questions/write'
 import { toApiError } from '@/lib/api'
 
@@ -32,20 +31,12 @@ export function QuestionOwnerMenu({ questionId, onError }: { questionId: number;
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
-        aria-label="질문 메뉴 열기"
-        disabled={remove.isPending}
-      >
-        <MoreVertical className="size-5" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem onClick={() => navigate(`/questions/${questionId}/edit`)}>수정</DropdownMenuItem>
-        <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-          삭제
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <PopMenu
+      label="질문 메뉴 열기"
+      actions={[
+        { label: '편지 고치기', icon: <IconPencil />, onSelect: () => navigate(`/questions/${questionId}/edit`) },
+        { label: '삭제', icon: <IconTrash />, danger: true, onSelect: () => !remove.isPending && handleDelete() },
+      ]}
+    />
   )
 }

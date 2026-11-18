@@ -1,7 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { FieldError, Hint, IconSend, LinedBox, Pill, StorySheet, Toggle } from '@/components/story'
 import { authorName } from '@/features/member/author'
 import type { AnswerNode } from '@/features/questions/api'
 import {
@@ -44,26 +42,28 @@ export function AnswerSheet({ target, onClose, ...rest }: Props) {
   }
 
   return (
-    <Sheet open={target != null} onOpenChange={handleOpenChange}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[90dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
-        {target && (
-          <AnswerForm
-            // 대상이 바뀌면 입력 상태를 새로
-            key={formKey(target)}
-            target={target}
-            onDirtyChange={setDirty}
-            onDone={() => {
-              setDirty(false)
-              onClose()
-            }}
-            {...rest}
-          />
-        )}
-      </SheetContent>
-    </Sheet>
+    <StorySheet
+      open={target != null}
+      onOpenChange={handleOpenChange}
+      ghost="b"
+      bubble={target?.kind === 'answer' ? '후배에게 빛을 보내 줘요' : undefined}
+      title={target ? sheetTitle(target) : ''}
+      description={target ? sheetDescription(target) : undefined}
+    >
+      {target && (
+        <AnswerForm
+          // 대상이 바뀌면 입력 상태를 새로
+          key={formKey(target)}
+          target={target}
+          onDirtyChange={setDirty}
+          onDone={() => {
+            setDirty(false)
+            onClose()
+          }}
+          {...rest}
+        />
+      )}
+    </StorySheet>
   )
 }
 
@@ -128,62 +128,52 @@ function AnswerForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <SheetTitle className="text-base font-bold text-title">{sheetTitle(target)}</SheetTitle>
-      <SheetDescription className="mt-1 text-xs text-muted-foreground">
-        {target.kind === 'reply' && target.parent.body ? (
-          <span className="line-clamp-2">{target.parent.body}</span>
-        ) : isReply ? (
-          '추가 질문이나 감사 인사'
-        ) : (
-          `직접 해 본 방법이나 팁을 ${ANSWER_MIN}자 이상 남겨 주세요.`
-        )}
-      </SheetDescription>
-
-      <textarea
-        // 시트가 열리면 바로 쓸 수 있게
-        autoFocus
-        aria-label={isReply ? '답글 내용' : '답변 내용'}
-        maxLength={ANSWER_MAX}
-        rows={isReply ? 3 : 6}
-        placeholder={isReply ? '답글을 남겨 주세요' : '답변을 남겨 주세요'}
-        className="mt-4 w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-        value={body}
-        onChange={(e) => handleChange(e.target.value)}
-      />
-      <div className="mt-1 flex justify-between text-xs text-muted-foreground tabular-nums">
-        <span>{trimmed.length > 0 && trimmed.length < min ? `${min}자 이상 적어 주세요.` : ''}</span>
-        <span>
-          {body.length} / {ANSWER_MAX}
-        </span>
+      <div className="mt-[18px]">
+        <LinedBox
+          id="answer-body"
+          // 시트가 열리면 바로 쓸 수 있게
+          autoFocus
+          label={isReply ? '답글' : '답장'}
+          maxLength={ANSWER_MAX}
+          rows={isReply ? 3 : 6}
+          placeholder={isReply ? '답글을 남겨 주세요' : '선배의 경험을 나눠 주세요'}
+          value={body}
+          onChange={(e) => handleChange(e.target.value)}
+        />
       </div>
+      {trimmed.length > 0 && trimmed.length < min && <Hint>{min}자 이상 적어 주세요.</Hint>}
 
       {showAnonymous && (
-        <label className="mt-3 flex items-center gap-2.5 text-sm text-title">
-          <Checkbox checked={anonymous} onCheckedChange={(on) => setAnonymous(on === true)} />
-          익명으로 남기기
-        </label>
+        <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+          <span>익명으로 남기기</span>
+          <Toggle small label="익명으로 남기기" checked={anonymous} onChange={setAnonymous} />
+        </div>
       )}
 
-      {error && (
-        <p className="mt-3 text-sm text-destructive" role="alert">
-          {answerErrorMessage(toApiError(error))}
-        </p>
-      )}
+      <FieldError>{error ? answerErrorMessage(toApiError(error)) : null}</FieldError>
 
-      <Button
-        type="submit"
-        size="lg"
-        className="mt-4 h-12 w-full"
-        disabled={pending || trimmed.length < min || (target.kind === 'edit' && !dirty)}
-      >
-        {pending ? '저장하는 중…' : target.kind === 'edit' ? '수정 완료' : '등록'}
-      </Button>
+      <div className="gh-foot">
+        <small>
+          {body.length} / {ANSWER_MAX}
+        </small>
+        <Pill type="submit" disabled={pending || trimmed.length < min || (target.kind === 'edit' && !dirty)}>
+          <IconSend />
+          {pending ? '보내는 중…' : target.kind === 'edit' ? '고치기' : '보내기'}
+        </Pill>
+      </div>
     </form>
   )
 }
 
+function sheetDescription(target: AnswerSheetTarget) {
+  if (target.kind === 'reply' && target.parent.body) return <span className="line-clamp-2">{target.parent.body}</span>
+  if (target.kind === 'reply' || (target.kind === 'edit' && target.answer.parentId != null)) return '추가 질문이나 감사 인사'
+  if (target.kind === 'edit') return undefined
+  return `직접 해 본 방법이나 팁을 ${ANSWER_MIN}자 이상 남겨 주세요.`
+}
+
 function sheetTitle(target: AnswerSheetTarget) {
-  if (target.kind === 'answer') return '답변 달기'
+  if (target.kind === 'answer') return '답장 보내기'
   if (target.kind === 'reply') return `${authorName(target.parent.author)}님에게 답글`
-  return target.answer.parentId != null ? '답글 수정' : '답변 수정'
+  return target.answer.parentId != null ? '답글 고치기' : '답장 고치기'
 }

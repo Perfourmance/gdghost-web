@@ -1,13 +1,13 @@
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, Pill, PillLink, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { useQuestionDetail, type QuestionDetail } from '@/features/questions/api'
 import { QuestionForm, type QuestionFormValues } from '@/features/questions/QuestionForm'
 import { questionSubmitError, useUpdateQuestion, type QuestionUpdateInput } from '@/features/questions/write'
 import { toApiError } from '@/lib/api'
+import '@/styles/questions.css'
 
 /** 질문 수정 — 본인 질문만. 바꾼 필드만 보낸다 (F2-07) */
 export function QuestionEditPage() {
@@ -30,38 +30,37 @@ export function QuestionEditPage() {
   const back = validId ? `/questions/${id}` : '/questions'
 
   return (
-    <SubPageLayout fallback={back}>
-      {notFound && <Notice title="글을 찾을 수가 없어요." text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
+    <StorySubPage fallback={back} className="gh-qwrite">
+      {notFound && <Notice title="편지를 찾을 수 없어요" text="삭제됐거나 운영진이 숨긴 글이에요." to="/questions" link="질문 목록으로" />}
 
-      {!notFound && detail.isPending && (
-        <div className="space-y-4">
-          <Skeleton className="h-7 w-1/3" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-40 w-full" />
-        </div>
-      )}
+      {!notFound && detail.isPending && <div className="gh-qskel !ml-4 !h-80" aria-label="불러오는 중" />}
 
       {!notFound && detail.isError && (
-        <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-          <p className="text-sm">질문을 불러오지 못했어요.</p>
-          <Button variant="secondary" onClick={() => detail.refetch()}>
-            다시 시도
-          </Button>
+        <div className="px-4 pt-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="질문을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => detail.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
         </div>
       )}
 
       {detail.data && !detail.data.mine && (
-        <Notice title="본인 질문만 고칠 수 있어요" text="내 질문만 수정할 수 있어요." to={back} link="질문으로 돌아가기" />
+        <Notice title="내 질문만 고칠 수 있어요" text="다른 사람이 보낸 편지예요." to={back} link="질문으로 돌아가기" />
       )}
 
       {/* key: 다른 질문으로 바뀌면 입력 상태를 새로 */}
-      {detail.data?.mine && <EditForm key={detail.data.id} question={detail.data} />}
-    </SubPageLayout>
+      {detail.data?.mine && <EditForm key={detail.data.id} question={detail.data} nickname={me.nickname} />}
+    </StorySubPage>
   )
 }
 
-function EditForm({ question }: { question: QuestionDetail }) {
+function EditForm({ question, nickname }: { question: QuestionDetail; nickname: string }) {
   const navigate = useNavigate()
   const update = useUpdateQuestion(question.id)
   const initial: QuestionFormValues = {
@@ -95,6 +94,7 @@ function EditForm({ question }: { question: QuestionDetail }) {
   return (
     <QuestionForm
       mode="edit"
+      nickname={nickname}
       initial={initial}
       pending={update.isPending}
       error={error}
@@ -106,12 +106,10 @@ function EditForm({ question }: { question: QuestionDetail }) {
 
 function Notice({ title, text, to, link }: { title: string; text: string; to: string; link: string }) {
   return (
-    <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">{title}</p>
-      <p className="mt-1 text-sm text-muted-foreground">{text}</p>
-      <Link to={to} replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
-        {link}
-      </Link>
+    <div className="px-4 pt-6">
+      <EmptyState pose="shh" title={title} action={<PillLink to={to} className="mt-3">{link}</PillLink>}>
+        {text}
+      </EmptyState>
     </div>
   )
 }
