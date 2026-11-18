@@ -1,3 +1,4 @@
+import { useConfirm } from '@/components/story'
 import { useState, type FormEvent } from 'react'
 import { Copy } from 'lucide-react'
 import { LoadError } from '@/components/PageStates'
@@ -34,8 +35,9 @@ export function OpsInviteCodesPage() {
   const [membersOf, setMembersOf] = useState<InviteCode | null>(null)
   const [copied, setCopied] = useState<number | null>(null)
 
-  function handleRevoke(code: InviteCode) {
-    if (!window.confirm(`${code.generation}기 코드 ${code.code} 폐기? 기존 가입 부원에게는 영향 없어요.`)) return
+  const confirm = useConfirm()
+  async function handleRevoke(code: InviteCode) {
+    if (!(await confirm({ title: `${code.generation}기 코드 ${code.code} 폐기? 기존 가입 부원에게는 영향 없어요.`, confirmLabel: '확인' }))) return
     revoke.mutate(code.id)
   }
 
@@ -110,10 +112,11 @@ function IssueForm() {
   const d = Number(days)
   const valid = g >= 1 && g <= 99 && m >= 1 && m <= 200 && d >= 1 && d <= 90
 
-  function submit(e: FormEvent) {
+  const confirm = useConfirm()
+  async function submit(e: FormEvent) {
     e.preventDefault()
     if (!valid || issue.isPending) return
-    if (!window.confirm(`${g}기 코드 재발급? 기존 ${g}기 코드는 폐기돼요.`)) return
+    if (!(await confirm({ title: `${g}기 코드 재발급? 기존 ${g}기 코드는 폐기돼요.`, confirmLabel: '확인' }))) return
     issue.mutate({ generation: g, maxUses: m, expiresInDays: d }, { onSuccess: setIssued })
   }
 

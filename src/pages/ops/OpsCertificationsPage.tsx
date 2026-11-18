@@ -1,18 +1,14 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
-import { LoadError } from '@/components/PageStates'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyCard } from '@/features/content/Cards'
+import { Calm, DotChips, EmptyState, IconStar, IconX, Pill } from '@/components/story'
 import { useEventList, type CertificationState } from '@/features/events/api'
-import { CertificationStateBadge } from '@/features/events/EventBits'
 import { authorName } from '@/features/member/author'
 import { contentErrorMessage, useOpsCertifications, useReviewCertification, type OpsCertification } from '@/features/ops/content'
 import { Pager } from '@/features/ops/OpsBits'
 import { formatDate } from '@/lib/time'
 import { PhotoGrid } from '@/features/uploads/PhotoGrid'
 import { toApiError } from '@/lib/api'
+import { REVIEW_COLORS } from '@/lib/categoryColors'
 import { cn } from '@/lib/utils'
 
 const STATES: { value: CertificationState; label: string }[] = [
@@ -39,33 +35,42 @@ export function OpsCertificationsPage() {
   }
 
   return (
-    <div>
-      <div className="flex flex-wrap items-center gap-2">
-        {STATES.map((s) => (
-          <Chip key={s.value} selected={state === s.value} onClick={() => set('state', s.value === 'PENDING' ? null : s.value)}>
-            {s.label}
-          </Chip>
+    <div className="gh-av">
+      <DotChips
+        label="상태"
+        value={state}
+        onChange={(v) => set('state', v === 'PENDING' ? null : v)}
+        options={STATES.map((st) => ({ value: st.value, label: st.label, color: REVIEW_COLORS[st.value] }))}
+      />
+      <select aria-label="이벤트" className="gh-osel" value={eventId ?? ''} onChange={(e) => set('eventId', e.target.value || null)}>
+        <option value="">모든 이벤트</option>
+        {events.data?.map((e) => (
+          <option key={e.id} value={e.id}>
+            {e.name}
+          </option>
         ))}
-        <select
-          aria-label="이벤트"
-          value={eventId ?? ''}
-          onChange={(e) => set('eventId', e.target.value || null)}
-          className="h-9 max-w-full rounded-md border bg-card px-2 text-base md:text-sm"
-        >
-          <option value="">모든 이벤트</option>
-          {events.data?.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      {list.data && <p className="mt-3 text-xs text-muted-foreground">{list.data.total}건 · 오래된 순</p>}
-      <div className={cn('mt-2 space-y-3', list.isPlaceholderData && 'opacity-60')}>
-        {list.isPending && <Skeleton className="h-48 w-full rounded-xl" />}
-        {list.isError && <LoadError text="인증을 불러오지 못했어요." onRetry={() => list.refetch()} />}
+      </select>
+      {list.data && (
+        <p className="gh-ocnt">
+          <b>{list.data.total}</b>건 {state === 'PENDING' ? '기다리는 중' : ''} · 오래된 순
+        </p>
+      )}
+      <div className={cn(list.isPlaceholderData && 'opacity-60')}>
+        {list.isPending && <div className="gh-ops-skel !h-72" />}
+        {list.isError && (
+          <EmptyState
+            row
+            pose="shh"
+            title="인증을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        )}
         {list.isSuccess && list.data.items.length === 0 && (
-          <EmptyCard>{state === 'PENDING' ? '확인 대기 중인 인증이 없어요.' : '해당하는 인증이 없어요.'}</EmptyCard>
+          <Calm>{state === 'PENDING' ? '확인을 기다리는 인증이 없어요.' : '해당하는 인증이 없어요.'}</Calm>
         )}
         {list.data?.items.map((c) => (
           <CertCard key={c.id} cert={c} />
@@ -75,6 +80,8 @@ export function OpsCertificationsPage() {
     </div>
   )
 }
+
+const STATE_TEXT: Record<CertificationState, string> = { PENDING: '확인 대기', APPROVED: '승인', REJECTED: '반려' }
 
 function CertCard({ cert: c }: { cert: OpsCertification }) {
   const review = useReviewCertification()
@@ -95,52 +102,62 @@ function CertCard({ cert: c }: { cert: OpsCertification }) {
   }
 
   return (
-    <article className="rounded-xl bg-card px-4 py-3.5">
-      <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-xs font-bold text-brand-text">{c.event.name}</p>
-        <CertificationStateBadge state={c.state} />
+    <article className={cn('gh-acard', c.state === 'PENDING' && 'is-wait')}>
+      <div className="gh-ev">
+        <IconStar />
+        <span>{c.event.name}</span>
+        <em className={cn(c.state === 'APPROVED' && 'is-ok', c.state === 'REJECTED' && 'is-bad')}>{STATE_TEXT[c.state]}</em>
       </div>
-      <p className="mt-1 text-sm">
-        <b className="text-title">{authorName(c.author)}</b>
-        {c.mine && <span className="ml-1 text-xs text-brand-text">(나)</span>}
-        <span className="ml-1.5 text-xs text-muted-foreground">{formatDate(c.createdAt)}</span>
-      </p>
-      <PhotoGrid photos={c.photos} alt="인증 사진" className="mt-2.5" />
-      <p className="mt-2 text-[15px] leading-relaxed">{c.body}</p>
-      {c.rejectReason && <p className="mt-2 rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">반려 사유: {c.rejectReason}</p>}
+      <div className="gh-pol">
+        {c.photos.length > 0 && <PhotoGrid photos={c.photos} alt="인증 사진" />}
+        <p>{c.body}</p>
+        <div className="gh-by">
+          <b>{authorName(c.author)}</b>
+          {c.mine && '(나)'}
+          {formatDate(c.createdAt)}
+        </div>
+        {c.rejectReason && <p className="gh-rej">반려 사유: {c.rejectReason}</p>}
+      </div>
 
       {c.state === 'PENDING' &&
         (rejecting ? (
-          <div className="mt-3">
-            <input
-              aria-label="반려 사유"
-              autoFocus
-              maxLength={100}
-              placeholder="사유 (부원에게 보여요, 2자 이상)"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="h-10 w-full rounded-lg border border-input bg-background px-3 text-base outline-none md:text-sm"
-            />
-            <div className="mt-2 flex gap-2">
-              <Button variant="destructive" size="sm" disabled={review.isPending || reason.trim().length < 2} onClick={reject}>
-                반려하기
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setRejecting(false)}>
-                취소
-              </Button>
+          <>
+            <div className="gh-rej-in">
+              <input
+                aria-label="반려 사유"
+                autoFocus
+                maxLength={100}
+                placeholder="사유 (부원에게 보여요, 2자 이상)"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
             </div>
-          </div>
+            <div className="gh-do">
+              <button type="button" className="is-no" onClick={() => setRejecting(false)}>
+                취소
+              </button>
+              <button type="button" className="is-reject" disabled={review.isPending || reason.trim().length < 2} onClick={reject}>
+                반려하기
+              </button>
+            </div>
+          </>
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Button variant="secondary" className="h-10" disabled={review.isPending} onClick={() => setRejecting(true)}>
+          <div className="gh-do">
+            <button type="button" className="is-no" disabled={review.isPending} onClick={() => setRejecting(true)}>
+              <IconX />
               반려
-            </Button>
-            <Button className="h-10" disabled={review.isPending} onClick={approve}>
-              승인
-            </Button>
+            </button>
+            <button type="button" className="is-yes" disabled={review.isPending} onClick={approve}>
+              <IconStar />
+              승인 · 별 켜기
+            </button>
           </div>
         ))}
-      {error && <p className="mt-2 text-sm text-destructive" role="alert">{error}</p>}
+      {error && (
+        <p className="mt-2 text-sm text-gh-error-night" role="alert">
+          {error}
+        </p>
+      )}
     </article>
   )
 }

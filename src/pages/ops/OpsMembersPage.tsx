@@ -1,3 +1,4 @@
+import { useConfirm } from '@/components/story'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { GraduationCap, Search } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
@@ -240,14 +241,15 @@ function MemberDetail({ member }: { member: OpsMember }) {
     assign.mutate(t, { onSuccess: ok(isStaff ? '직함을 바꿨어요.' : '운영진으로 지정했어요.'), onError })
   }
 
-  function handleRevoke() {
+  const confirm = useConfirm()
+  async function handleRevoke() {
     const message = self ? '내 운영진 권한을 해제할까요? 운영 페이지 접근이 즉시 막혀요.' : `${member.nickname}님의 운영진 권한을 해제할까요?`
-    if (!window.confirm(message)) return
+    if (!(await confirm({ title: message, confirmLabel: '확인' }))) return
     revoke.mutate(undefined, { onSuccess: ok('운영진에서 해제했어요.'), onError })
   }
 
-  function handleUnsuspend() {
-    if (!window.confirm(`${member.nickname}님의 정지를 풀까요?`)) return
+  async function handleUnsuspend() {
+    if (!(await confirm({ title: `${member.nickname}님의 정지를 풀까요?`, confirmLabel: '확인' }))) return
     unsuspend.mutate(undefined, { onSuccess: ok('정지를 해제했어요. 다시 로그인할 수 있어요.'), onError })
   }
 

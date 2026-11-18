@@ -10,6 +10,7 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { toApiError } from '@/lib/api'
 import { formatDateTime } from '@/lib/time'
 import { cn } from '@/lib/utils'
+import { useConfirm } from '@/components/story'
 
 /** 내보내기 · 계정 도구 — 라우팅 CSV, 비상용 운영진 지정, 부원 이메일 변경 요청 */
 export function AdminToolsPage() {
@@ -46,8 +47,9 @@ function ExportSection() {
   const [to, setTo] = useState(today)
   const exporter = useRoutingExport()
 
-  function download() {
-    if (!window.confirm('라우팅 데이터 다운로드? 받을 때마다 운영 기록과 개발자 디스코드에 남아요.')) return
+  const confirm = useConfirm()
+  async function download() {
+    if (!(await confirm({ title: '라우팅 데이터 다운로드? 받을 때마다 운영 기록과 개발자 디스코드에 남아요.', confirmLabel: '확인' }))) return
     exporter.mutate({ from, to })
   }
 
@@ -166,11 +168,12 @@ function StaffForm({ member }: { member: PickedMember }) {
   const assign = useAdminAssignStaff()
   const [title, setTitle] = useState('')
 
-  function submit(e: FormEvent) {
+  const confirm = useConfirm()
+  async function submit(e: FormEvent) {
     e.preventDefault()
     const t = title.trim()
     if (t.length < 2) return
-    if (!window.confirm(`${member.label}님을 운영진(${t})으로 지정할까요? 운영진 디스코드로 알림이 전송돼요.`)) return
+    if (!(await confirm({ title: `${member.label}님을 운영진(${t})으로 지정할까요? 운영진 디스코드로 알림이 전송돼요.`, confirmLabel: '확인' }))) return
     assign.mutate({ memberId: member.id, staffTitle: t })
   }
 
