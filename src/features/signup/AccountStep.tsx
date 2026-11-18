@@ -1,17 +1,14 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { NewPasswordFields } from '@/components/form/NewPasswordFields'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { switchSession } from '@/features/auth/session'
 import { completeSignup, type SignupRequest } from '@/features/signup/api'
 import { SIGNUP_STEP_LABELS, type SignupDraft, type SignupStep } from '@/features/signup/draft'
-import { isPasswordValid } from '@/lib/passwordRules'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
+import { hasWhitespace, isPasswordValid } from '@/lib/passwordRules'
+import { IconTick, PasswordRuleDots, SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 import { useLoginIdCheck } from '@/features/signup/useLoginIdCheck'
 import { toApiError, type ApiError } from '@/lib/api'
 import { commonErrorMessage } from '@/lib/errorMessage'
+import { cn } from '@/lib/utils'
 
 interface Props {
   draft: SignupDraft
@@ -130,62 +127,86 @@ export function AccountStep({ draft, onRedirect, onRestart, onFinished }: Props)
     signup.mutate(request)
   }
 
+  const loginIdMessage = {
+    empty: <span className="gh-su-hint">영문 · 숫자 4-16자</span>,
+    checking: <span className="gh-su-hint">확인하는 중…</span>,
+    available: (
+      <span className="gh-su-msg is-good">
+        <IconTick />
+        쓸 수 있어요
+      </span>
+    ),
+    invalid: <span className="gh-su-msg is-bad">{loginIdCheck.state === 'invalid' ? loginIdCheck.message : ''}</span>,
+    error: <span className="gh-su-msg is-bad">확인하지 못했어요. 잠시 뒤 다시 입력해 주세요.</span>,
+  }[loginIdCheck.state]
+  const confirmMismatch = passwordConfirm !== '' && passwordConfirm !== password
+
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow={SIGNUP_STEP_LABELS.account}
-        title="아이디와 비밀번호 설정"
-        description="로그인에 쓸 아이디를 정해 주세요."
-      />
+      <SignupHead eye={SIGNUP_STEP_LABELS.account} title="마지막으로, 열쇠를 만들어요">
+        로그인에 쓸 아이디와 비밀번호예요.
+      </SignupHead>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="loginId">
-            아이디
-          </Label>
-          <Input
-            id="loginId"
-            name="username"
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            maxLength={16}
-            className="h-12 bg-card"
-            aria-describedby="loginId-help"
-            aria-invalid={loginIdCheck.state === 'invalid'}
-            value={loginId}
-            onChange={(e) => setLoginId(e.target.value.replace(/\s/g, ''))}
-          />
-          <p id="loginId-help" className="text-sm" aria-live="polite">
-            {loginIdCheck.state === 'empty' && <span className="text-muted-foreground">영문 · 숫자 4–16자</span>}
-            {loginIdCheck.state === 'checking' && <span className="text-muted-foreground">확인 중…</span>}
-            {loginIdCheck.state === 'available' && <span className="text-brand-text">사용할 수 있어요.</span>}
-            {loginIdCheck.state === 'invalid' && <span className="text-destructive">{loginIdCheck.message}</span>}
-            {loginIdCheck.state === 'error' && (
-              <span className="text-destructive">확인 실패. 잠시 뒤 다시 입력해 주세요.</span>
-            )}
-          </p>
-        </div>
-
-        <NewPasswordFields
-          password={password}
-          confirm={passwordConfirm}
-          onPasswordChange={setPassword}
-          onConfirmChange={setPasswordConfirm}
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="loginId">아이디</SignupLabel>
+        <input
+          id="loginId"
+          name="username"
+          autoComplete="username"
+          autoCapitalize="none"
+          spellCheck={false}
+          maxLength={16}
+          className={cn('gh-su-in', loginIdCheck.state === 'available' && 'is-good')}
+          aria-describedby="loginId-help"
+          aria-invalid={loginIdCheck.state === 'invalid'}
+          value={loginId}
+          onChange={(e) => setLoginId(e.target.value.replace(/\s/g, ''))}
         />
-
-        {errorMessage && (
-          <p className="text-sm text-destructive" role="alert">
-            {errorMessage}
-          </p>
-        )}
+        <div id="loginId-help" aria-live="polite">
+          {loginIdMessage}
+        </div>
       </div>
 
-      <StepFooter>
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canSubmit}>
-          {signup.isPending ? '가입하는 중…' : '가입하기'}
-        </Button>
-      </StepFooter>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="newPassword">비밀번호</SignupLabel>
+        <input
+          id="newPassword"
+          name="new-password"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-su-in"
+          aria-describedby="password-rules"
+          aria-invalid={hasWhitespace(password)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <PasswordRuleDots id="password-rules" password={password} />
+        {hasWhitespace(password) && <p className="gh-su-msg is-bad">공백은 넣을 수 없어요.</p>}
+      </div>
+
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="newPasswordConfirm">비밀번호 확인</SignupLabel>
+        <input
+          id="newPasswordConfirm"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-su-in"
+          aria-invalid={confirmMismatch}
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+        />
+        {confirmMismatch && <p className="gh-su-msg is-bad">두 비밀번호가 달라요. 같은 비밀번호를 입력해 주세요.</p>}
+      </div>
+
+      {errorMessage && (
+        <p className="gh-su-msg is-bad" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      <SignupCta disabled={!canSubmit}>{signup.isPending ? '가입하는 중…' : '가입하기'}</SignupCta>
     </form>
   )
 }

@@ -10,11 +10,14 @@ export interface LoginRequest {
   remember: boolean
 }
 
-export function useLogin() {
+/** deferSession이면 성공해도 세션을 바로 바꾸지 않는다 — 로그인 화면이 낮 → 밤 전환을 마친 뒤 직접 switchSession을 부른다 */
+export function useLogin({ deferSession = false }: { deferSession?: boolean } = {}) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (request: LoginRequest) => (await api.post<Me>('/auth/login', request)).data,
-    onSuccess: (me) => switchSession(queryClient, me),
+    onSuccess: (me) => {
+      if (!deferSession) switchSession(queryClient, me)
+    },
   })
 }
 

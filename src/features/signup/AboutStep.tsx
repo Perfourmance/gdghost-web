@@ -1,9 +1,7 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { BIO_MAX, STATUS_NOTE_MAX } from '@/features/signup/answerableRules'
 import { EMPTY_ANSWERABLE, SIGNUP_STEP_LABELS, type AnswerableInfo, type SignupDraft } from '@/features/signup/draft'
-import { FieldLabel, StepFooter, StepHeader } from '@/components/form/StepLayout'
+import { SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 
 // 노션 AI 매칭 설계 부록 C
 const STATUS_NOTE_PLACEHOLDERS = [
@@ -39,52 +37,47 @@ export function AboutStep({ draft, onUpdate }: Props) {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow={SIGNUP_STEP_LABELS.about}
-        title="요즘 어떻게 지내세요?"
-        description="두 항목 모두 선택이에요. 프로필에서 나중에 바꿀 수 있어요."
-      />
+      <SignupHead eye={SIGNUP_STEP_LABELS.about} title="요즘 어떻게 지내세요?">
+        둘 다 선택이에요. 프로필에서 나중에 바꿀 수 있어요.
+      </SignupHead>
 
-      <div className="space-y-8">
-        <section>
-          <FieldLabel htmlFor="statusNote" aside={`${info.statusNote.length} / ${STATUS_NOTE_MAX}`}>
-            근황
-          </FieldLabel>
-          <p className="mb-3 text-xs text-muted-foreground">지금 하는 일을 한 줄로 적어 주세요. 재학생도 쓸 수 있어요.</p>
-          <Input
-            id="statusNote"
-            maxLength={STATUS_NOTE_MAX}
-            placeholder={statusNotePlaceholder}
-            className="h-12 bg-card"
-            value={info.statusNote}
-            onChange={(e) => set({ statusNote: e.target.value })}
-          />
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="bio" aside={`${info.bio.length} / ${BIO_MAX}`}>
-            자기소개
-          </FieldLabel>
-          <p className="mb-3 text-xs text-muted-foreground">
-            <b className="font-bold text-brand-text">어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배에게 보여요.
-          </p>
-          <textarea
-            id="bio"
-            maxLength={BIO_MAX}
-            rows={4}
-            placeholder={BIO_PLACEHOLDER}
-            className="w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            value={info.bio}
-            onChange={(e) => set({ bio: e.target.value })}
-          />
-        </section>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="statusNote" count={`${info.statusNote.length} / ${STATUS_NOTE_MAX}`}>
+          근황
+        </SignupLabel>
+        <p id="statusNote-help" className="gh-su-hint">
+          지금 하는 일을 한 줄로. 재학생도 쓸 수 있어요.
+        </p>
+        <input
+          id="statusNote"
+          maxLength={STATUS_NOTE_MAX}
+          placeholder={statusNotePlaceholder}
+          className="gh-su-in"
+          aria-describedby="statusNote-help"
+          value={info.statusNote}
+          onChange={(e) => set({ statusNote: e.target.value })}
+        />
       </div>
 
-      <StepFooter>
-        <Button type="submit" size="lg" variant={empty ? 'secondary' : 'default'} className="h-12 w-full">
-          {empty ? '건너뛰기' : '아이디·비밀번호 설정'}
-        </Button>
-      </StepFooter>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="bio" count={`${info.bio.length} / ${BIO_MAX}`}>
+          자기소개
+        </SignupLabel>
+        <p id="bio-help" className="gh-su-hint">
+          <b>어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배에게 보여요.
+        </p>
+        <textarea
+          id="bio"
+          maxLength={BIO_MAX}
+          placeholder={BIO_PLACEHOLDER}
+          className="gh-su-in is-ta"
+          aria-describedby="bio-help"
+          value={info.bio}
+          onChange={(e) => set({ bio: e.target.value })}
+        />
+      </div>
+
+      <SignupCta skip={empty}>{empty ? '건너뛰기' : '아이디·비밀번호 만들기'}</SignupCta>
     </form>
   )
 }

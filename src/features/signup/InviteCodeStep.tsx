@@ -1,11 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { checkInviteCode } from '@/features/signup/api'
 import { SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
+import { SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 import { toApiError } from '@/lib/api'
 import { commonErrorMessage, formatWait } from '@/lib/errorMessage'
 
@@ -14,7 +11,7 @@ function inviteErrorMessage(error: unknown): string {
   switch (e.code) {
     case 'INVITE_CODE_INVALID':
     case 'VALIDATION_FAILED':
-      return '사용할 수 없는 초대 코드. 운영진에게 받은 코드를 확인해 주세요.'
+      return '사용할 수 없는 코드예요. 운영진에게 받은 코드를 다시 확인해 주세요.'
     case 'INVITE_CODE_LOCKED':
       return `시도 횟수를 넘었어요. ${formatWait(e.retryAfter ?? 600)} 뒤 다시 시도해 주세요.`
     default:
@@ -48,34 +45,34 @@ export function InviteCodeStep({ onDone }: { onDone: (patch: Partial<SignupDraft
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow={SIGNUP_STEP_LABELS.invite}
-        title="초대 코드 입력"
-        description="운영진에게 받은 코드를 입력해 주세요. 기수는 코드로 정해져요."
-      />
-      <div className="space-y-2">
-        <Label className="font-bold text-title" htmlFor="inviteCode">초대 코드</Label>
-        <Input
+      <SignupHead eye={SIGNUP_STEP_LABELS.invite} title="초대 코드를 보여 주세요">
+        운영진에게 받은 코드예요. 기수는 코드로 정해져요.
+      </SignupHead>
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="inviteCode">초대 코드</SignupLabel>
+        <input
           id="inviteCode"
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
           maxLength={40}
-          className="h-12 bg-card text-base tracking-wider uppercase"
+          placeholder="코드 입력"
+          className="gh-su-in is-big"
+          aria-invalid={check.isError}
+          aria-describedby={check.isError ? 'inviteCode-error' : undefined}
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => {
+            setCode(e.target.value)
+            if (check.isError) check.reset()
+          }}
         />
       </div>
       {check.isError && (
-        <p className="mt-3 text-sm text-destructive" role="alert">
+        <p id="inviteCode-error" className="gh-su-msg is-bad" role="alert">
           {inviteErrorMessage(check.error)}
         </p>
       )}
-      <StepFooter>
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={code.trim() === '' || check.isPending}>
-          {check.isPending ? '확인 중…' : '초대 코드 확인'}
-        </Button>
-      </StepFooter>
+      <SignupCta disabled={code.trim() === '' || check.isPending}>{check.isPending ? '확인하는 중…' : '코드 확인'}</SignupCta>
     </form>
   )
 }

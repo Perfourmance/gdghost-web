@@ -1,14 +1,13 @@
-import { useState, type FormEvent } from 'react'
-import { ChevronLeft } from 'lucide-react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router'
-import { Logo } from '@/components/Logo'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useMe } from '@/features/auth/session'
+import { Ghost, IconBack, LoadingDots, Toggle } from '@/components/story'
+import '@/styles/day.css'
+import { switchSession, useMe, type Me } from '@/features/auth/session'
 import { safeNextPath, useLogin } from '@/features/auth/useAuthActions'
+import { fetchHome, homeQueryKey, type HomeResponse } from '@/features/home/useHome'
 import { NETWORK_ERROR, toApiError } from '@/lib/api'
+import { cn } from '@/lib/utils'
 
 /** 에러 code → 화면 문구 (S01) */
 function loginErrorMessage(error: unknown): string {
@@ -32,101 +31,175 @@ function loginErrorMessage(error: unknown): string {
   }
 }
 
+/** 낮 → 밤 전환: 해 질 녘 1.5초 → 밤(쉿 유령)에서 홈 데이터가 오면 들어간다 */
+type Phase = 'day' | 'dusk' | 'night'
+const DUSK_MS = 1500
+const NIGHT_MIN_MS = 700
+
+const prefersReducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+
+/** 로그인 (S01) — 시안 login-final '동화책 한 장' */
 export function LoginPage() {
   const { data: me } = useMe()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const login = useLogin()
+  const queryClient = useQueryClient()
+  const login = useLogin({ deferSession: true })
   const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
+  const [phase, setPhase] = useState<Phase>('day')
+  const timers = useRef<number[]>([])
+  // 전환 중에 화면을 떠나도 로그인은 된 상태라 세션은 꼭 바꾼다
+  const pending = useRef<Me | null>(null)
 
   const next = safeNextPath(searchParams.get('next'))
 
-  // 이미 로그인했으면 로그인 화면을 보여 주지 않는다 (로그인 성공 직후도 여기로 이동)
+  useEffect(
+    () => () => {
+      timers.current.forEach((t) => window.clearTimeout(t))
+      if (pending.current) switchSession(queryClient, pending.current)
+    },
+    [queryClient],
+  )
+
+  // 이미 로그인했으면(자동 로그인 포함) 전환 없이 바로 보낸다. 로그인 성공 뒤엔 전환이 끝나고 여기로 온다
   if (me) return <Navigate to={next} replace />
+
+  /** 전환이 끝나면 세션을 바꾼다. 홈으로 가면 미리 받아 둔 홈 데이터를 넣어 바로 보이게 한다 */
+  function enter(user: Me, home: HomeResponse | null) {
+    pending.current = null
+    switchSession(queryClient, user)
+    if (home) queryClient.setQueryData(homeQueryKey, home)
+  }
+
+  function startNightfall(user: Me) {
+    if (prefersReducedMotion()) {
+      enter(user, null)
+      return
+    }
+    pending.current = user
+    setPhase('dusk')
+    // 쿠키가 이미 회원이라 회원 홈을 받는다. 실패해도 홈 화면이 다시 부른다
+    const home = next === '/' ? fetchHome().catch(() => null) : Promise.resolve(null)
+    const nightAt = Date.now() + DUSK_MS
+    timers.current.push(window.setTimeout(() => setPhase('night'), DUSK_MS))
+    void home.then((data) => {
+      const wait = Math.max(0, nightAt + NIGHT_MIN_MS - Date.now())
+      timers.current.push(window.setTimeout(() => enter(user, data), wait))
+    })
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (login.isPending) return
-    login.mutate({ loginId: loginId.trim(), password, remember })
+    if (login.isPending || phase !== 'day') return
+    login.mutate({ loginId: loginId.trim(), password, remember }, { onSuccess: startNightfall })
   }
 
-  const canSubmit = loginId.trim() !== '' && password !== '' && !login.isPending
+  const canSubmit = loginId.trim() !== '' && password !== '' && !login.isPending && phase === 'day'
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="mx-auto flex h-14 max-w-md items-center px-2">
-        <button
-          type="button"
-          className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
-          aria-label="뒤로"
-          onClick={() => navigate(-1)}
-        >
-          <ChevronLeft className="size-6" />
+    <div className={cn('gh-day gh-login', phase !== 'day' && 'is-dusk', phase === 'night' && 'is-night')}>
+      <section className="gh-login-scene">
+        <button type="button" className="gh-login-back" aria-label="뒤로" onClick={() => navigate(-1)}>
+          <IconBack />
         </button>
-      </header>
+        <Link to="/" className="gh-login-mark" aria-label="홈으로">
+          <b>GDG</b>host
+        </Link>
+        <div className="gh-login-title">
+          <p className="gh-login-eye">부원 입구</p>
+          <h1>
+            해가 지면
+            <br />
+            <em>문이 열려요</em>
+          </h1>
+          <p>들어오는 순간, 마을에 별이 떠요.</p>
+        </div>
+        <span className="gh-login-glow" aria-hidden />
+        <Ghost pose="lantern" className="gh-login-walker" />
+      </section>
 
-      <main className="mx-auto max-w-md px-4 pt-6 pb-10">
-        <h1 className="text-center">
-          <Logo className="text-3xl" />
-        </h1>
-
-        <form className="mt-10 space-y-4" onSubmit={handleSubmit} noValidate>
-          <div className="space-y-2">
-            <Label htmlFor="loginId">아이디</Label>
-            <Input
-              id="loginId"
+      <form className="gh-login-page" onSubmit={handleSubmit} noValidate>
+        <div className="gh-login-pair">
+          <label>
+            <span className="gh-login-ic" aria-hidden>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="8.5" r="3.5" />
+                <path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5" />
+              </svg>
+            </span>
+            <input
               name="username"
               autoComplete="username"
               autoCapitalize="none"
-              className="h-11 bg-card"
+              placeholder="아이디"
+              aria-label="아이디"
               value={loginId}
               onChange={(e) => setLoginId(e.target.value)}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">비밀번호</Label>
-            <Input
-              id="password"
+          </label>
+          <label>
+            <span className="gh-login-ic" aria-hidden>
+              <svg viewBox="0 0 24 24" fill="none" strokeWidth="2" strokeLinecap="round">
+                <circle cx="8" cy="12" r="3.5" />
+                <path d="M11.5 12H20M17 12v3M20 12v2" />
+              </svg>
+            </span>
+            <input
               name="password"
               type="password"
               autoComplete="current-password"
-              className="h-11 bg-card"
+              placeholder="비밀번호"
+              aria-label="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-          </div>
+          </label>
+        </div>
 
-          <Label className="flex items-center gap-2 font-normal">
-            <Checkbox checked={remember} onCheckedChange={(checked) => setRemember(checked)} />
-            로그인 유지
-          </Label>
+        <div className="gh-login-opts">
+          <span className="gh-login-keep">
+            <Toggle small checked={remember} onChange={setRemember} label="다음에도 바로 들어오기 (로그인 유지)" />
+            다음에도 바로 들어오기
+          </span>
+          <nav className="gh-login-find" aria-label="계정 도움">
+            <Link to="/find-login-id">아이디</Link> · <Link to="/password-reset">비밀번호</Link> 찾기
+          </nav>
+        </div>
 
-          {login.isError && (
-            <p className="text-sm text-destructive" role="alert">
-              {loginErrorMessage(login.error)}
-            </p>
-          )}
+        {login.isError && (
+          <p className="gh-err" role="alert">
+            {loginErrorMessage(login.error)}
+          </p>
+        )}
 
-          <Button type="submit" size="lg" className="h-11 w-full" disabled={!canSubmit}>
-            {login.isPending ? '로그인 중…' : '로그인'}
-          </Button>
-        </form>
+        <button type="submit" className="gh-btn is-night gh-login-go" disabled={!canSubmit}>
+          {login.isPending ? '문 여는 중…' : '밤으로 들어가기'}
+        </button>
 
-        <nav className="mt-6 flex justify-center gap-3 text-sm text-muted-foreground" aria-label="계정 도움">
-          <Link to="/find-login-id">아이디 찾기</Link>
-          <span aria-hidden>·</span>
-          <Link to="/password-reset">비밀번호를 잊으셨나요?</Link>
-        </nav>
-
-        <Link
-          to="/signup"
-          className="mt-8 block rounded-lg bg-secondary py-3 text-center text-sm font-bold text-secondary-foreground"
-        >
-          초대 코드로 가입하기
+        <Link to="/signup" className="gh-login-ticket">
+          <span className="gh-l">
+            <Ghost pose="door" />
+            <span>
+              <b>초대장을 받았나요?</b>
+              <small>운영진이 준 코드로 가입해요</small>
+            </span>
+          </span>
+          <span className="gh-r">코드 입력</span>
         </Link>
-      </main>
+      </form>
+
+      {/* 밤이 내려오는 층 */}
+      <div className="gh-login-dusk" aria-hidden />
+      <div className="gh-login-night" aria-hidden />
+      <div className="gh-login-hush" role="status" aria-live="polite" aria-hidden={phase !== 'night'}>
+        <span className="gh-halo" aria-hidden />
+        <Ghost pose="shh" />
+        <h2>쉿, 별 켜는 중이에요</h2>
+        <p>마을 불빛이 하나씩 들어와요</p>
+        <LoadingDots className="mt-[22px]" />
+      </div>
     </div>
   )
 }

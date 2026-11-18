@@ -1,12 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { confirmSignupEmail, sendSignupEmail } from '@/features/signup/api'
 import { SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
+import { IconTick, OtpInput, SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 import { useSecondsUntil } from '@/hooks/useSecondsUntil'
 import { toApiError, type ApiError } from '@/lib/api'
 import { commonErrorMessage, formatWait } from '@/lib/errorMessage'
@@ -91,77 +87,70 @@ export function EmailStep({ draft, onUpdate, onSessionExpired }: Props) {
   return (
     <form onSubmit={handleConfirm} noValidate>
       {/* 기수는 초대 코드로 정해진다 (F1-01) — 앞 단계 결과를 확인시켜 준다 */}
-      <p className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-brand-soft px-3 py-1.5 text-xs font-bold text-brand-text">
-        <Check className="size-3.5" aria-hidden />
-        {draft.generation}기 초대 코드 확인
-      </p>
-      <StepHeader
-        eyebrow={SIGNUP_STEP_LABELS.email}
-        title="이메일을 인증해 주세요"
-        description="아이디·비밀번호 찾기에 쓸 이메일"
-      />
-      <div className="space-y-6">
+      <span className="gh-su-ok">
+        <IconTick />
+        {draft.generation}기 초대장 확인
+      </span>
+      <SignupHead eye={SIGNUP_STEP_LABELS.email} title="연락받을 이메일을 알려 주세요">
+        아이디·비밀번호를 찾을 때 써요.
+      </SignupHead>
 
-      <div className="space-y-2">
-        <Label className="font-bold text-title" htmlFor="email">이메일</Label>
-        <div className="flex gap-2">
-          <Input
+      <div className="gh-su-fl">
+        <SignupLabel htmlFor="email">이메일</SignupLabel>
+        <div className="gh-su-row">
+          <input
             id="email"
             type="email"
             inputMode="email"
             autoComplete="email"
             autoCapitalize="none"
             maxLength={254}
-            className="h-12 flex-1 bg-card"
+            placeholder="name@example.com"
+            className="gh-su-in"
+            aria-invalid={sendError != null}
             value={email}
             onChange={(e) => {
               setEmail(e.target.value)
               send.reset()
             }}
           />
-          <Button type="button" variant="secondary" className="h-12 shrink-0" disabled={!canSend} onClick={handleSend}>
+          <button type="button" className="gh-su-side" disabled={!canSend} onClick={handleSend}>
             {send.isPending ? '보내는 중…' : resendWait > 0 ? `${resendWait}초` : sentToThisEmail ? '다시 받기' : '인증번호 받기'}
-          </Button>
+          </button>
         </div>
-        {sendError && (
-          <p className="text-sm text-destructive" role="alert">
-            {sendError}
-          </p>
-        )}
-        {sentToThisEmail && !sendError && (
-          <p className="rounded-lg bg-brand-soft px-3 py-2 text-xs leading-relaxed text-brand-text">
-            인증번호를 보냈어요. 10분 안에 입력해 주세요.
-          </p>
-        )}
       </div>
+      {sendError && (
+        <p className="gh-su-msg is-bad" role="alert">
+          {sendError}
+        </p>
+      )}
+      {sentToThisEmail && !sendError && (
+        <p className="gh-su-msg is-info" role="status">
+          인증번호를 보냈어요. 10분 안에 입력해 주세요.
+        </p>
+      )}
 
       {sentToThisEmail && (
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="code">인증번호 6자리</Label>
-          <Input
+        <div className="gh-su-fl">
+          <SignupLabel htmlFor="code">인증번호 6자리</SignupLabel>
+          <OtpInput
             id="code"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
-            className="h-12 bg-card text-lg tracking-[0.4em]"
             value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+            invalid={confirmError != null}
+            onChange={(v) => {
+              setCode(v)
+              if (confirm.isError) confirm.reset()
+            }}
           />
           {confirmError && (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="gh-su-msg is-bad" role="alert">
               {confirmError}
             </p>
           )}
         </div>
       )}
 
-      </div>
-
-      <StepFooter>
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canConfirm}>
-          {confirm.isPending ? '확인 중…' : '이메일 인증하기'}
-        </Button>
-      </StepFooter>
+      <SignupCta disabled={!canConfirm}>{confirm.isPending ? '확인하는 중…' : '이메일 인증하기'}</SignupCta>
     </form>
   )
 }

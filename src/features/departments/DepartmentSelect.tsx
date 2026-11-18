@@ -6,10 +6,12 @@ interface Props {
   value: string
   onChange: (name: string) => void
   invalid?: boolean
+  /** 주면 기본 모양 대신 이 클래스를 쓴다(리디자인 화면). 아직 고르지 않았으면 is-empty가 붙는다 */
+  className?: string
 }
 
 /** 단과대학별로 묶은 학과 선택. 목록에 없는 옛 값은 '골라 주세요'로 보인다 */
-export function DepartmentSelect({ id, value, onChange, invalid }: Props) {
+export function DepartmentSelect({ id, value, onChange, invalid, className }: Props) {
   const departments = useDepartments()
   const selected = isDepartment(departments.data, value) ? value : ''
 
@@ -21,11 +23,15 @@ export function DepartmentSelect({ id, value, onChange, invalid }: Props) {
         disabled={!departments.data}
         aria-invalid={invalid}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(
-          'h-12 w-full min-w-0 rounded-md border bg-card px-3 text-base text-foreground md:text-sm',
-          'aria-invalid:border-destructive disabled:opacity-60',
-          selected === '' && 'text-muted-foreground',
-        )}
+        className={
+          className
+            ? cn(className, selected === '' && 'is-empty')
+            : cn(
+                'h-12 w-full min-w-0 rounded-md border bg-card px-3 text-base text-foreground md:text-sm',
+                'aria-invalid:border-destructive disabled:opacity-60',
+                selected === '' && 'text-muted-foreground',
+              )
+        }
       >
         <option value="" disabled>
           {departments.isPending ? '불러오는 중…' : '학과를 골라 주세요'}
@@ -33,7 +39,7 @@ export function DepartmentSelect({ id, value, onChange, invalid }: Props) {
         {departments.data?.colleges.map((college) => (
           <optgroup key={college.name} label={college.name}>
             {college.departments.map((d) => (
-              <option key={d.name} value={d.name} className="text-foreground">
+              <option key={d.name} value={d.name} className={className ? undefined : 'text-foreground'}>
                 {d.division ? `${d.name} (${d.division})` : d.name}
               </option>
             ))}
