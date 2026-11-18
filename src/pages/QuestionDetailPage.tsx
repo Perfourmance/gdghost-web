@@ -2,19 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import {
-  EmptyState,
-  Ghost,
-  IconCheck,
-  IconEye,
-  IconFlag,
-  IconSparkle,
-  Pill,
-  PillLink,
-  PopMenu,
-  RoundSend,
-  StorySubPage,
-} from '@/components/story'
+import { EmptyState, Ghost, GoneSlot, IconCheck, IconEye, IconFlag, IconSparkle, Pill, PopMenu, RoundSend, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { questionCategoryLabel, questionStateLabel } from '@/features/content/labels'
@@ -167,10 +155,11 @@ function DirectResultNotice({ state }: { state: DirectResultState | null }) {
 /** 나에게 온 질문 — 답하기 어려우면 다른 선배에게 넘긴다 (F9-03). 넘겨도 답변은 달 수 있다 */
 function MyRouting({ questionId, mine }: { questionId: number; mine: { state: string; canPass: boolean } }) {
   const pass = usePassRouting(questionId)
+  const confirm = useConfirm()
   const [result, setResult] = useState<PassResult | null>(null)
 
-  function handlePass() {
-    if (!window.confirm('다른 선배에게 넘길까요? 넘긴 뒤에도 답변할 수 있어요.')) return
+  async function handlePass() {
+    if (!(await confirm({ title: '다른 선배에게 넘길까요?', description: '넘긴 뒤에도 답장할 수 있어요.', confirmLabel: '넘기기' }))) return
     pass.mutate(undefined, { onSuccess: setResult })
   }
 
@@ -290,6 +279,7 @@ function QuestionAnswers({
   const [error, setError] = useState<string | null>(null)
   const remove = useDeleteAnswer(question.id)
   const adoption = useAdoption(question.id)
+  const confirm = useConfirm()
 
   const onError = (e: unknown) => setError(answerErrorMessage(toApiError(e)))
 
@@ -298,11 +288,14 @@ function QuestionAnswers({
     disabled: remove.isPending || adoption.isPending,
     onReply: (parent) => setSheet({ kind: 'reply', parent }),
     onEdit: (answer) => setSheet({ kind: 'edit', answer }),
-    onDelete: (answer) => {
-      const message = answer.adopted
-        ? '채택된 답변을 삭제할까요? 채택도 함께 취소돼요.'
-        : '삭제할까요? 삭제는 되돌릴 수 없어요.'
-      if (!window.confirm(message)) return
+    onDelete: async (answer) => {
+      const ok = await confirm({
+        title: answer.adopted ? '채택된 답장을 삭제할까요?' : '삭제할까요?',
+        description: answer.adopted ? '채택도 함께 취소돼요.' : '되돌릴 수 없어요.',
+        confirmLabel: '삭제',
+        danger: true,
+      })
+      if (!ok) return
       setError(null)
       remove.mutate(answer.id, { onError })
     },
@@ -370,11 +363,5 @@ function countReplies(answers: QuestionDetail['answers']): number {
 
 /** 삭제 · 숨김 · 없는 글 — 안내 후 목록으로 (IA 2장) */
 function GoneNotice() {
-  return (
-    <div className="px-4 pt-6">
-      <EmptyState pose="shh" title="편지를 찾을 수 없어요" action={<PillLink to="/questions" className="mt-3">질문 목록으로</PillLink>}>
-        삭제됐거나 운영진이 숨긴 글이에요.
-      </EmptyState>
-    </div>
-  )
+  return <GoneSlot to="/questions" link="질문 목록으로" />
 }

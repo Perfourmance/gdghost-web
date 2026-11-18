@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from 'react-router'
-import { IconPencil, IconTrash, PopMenu } from '@/components/story'
+import { IconPencil, IconTrash, PopMenu, useConfirm } from '@/components/story'
 import { questionSubmitError, useDeleteQuestion } from '@/features/questions/write'
 import { toApiError } from '@/lib/api'
 
@@ -9,9 +9,10 @@ export function QuestionOwnerMenu({ questionId, onError }: { questionId: number;
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const remove = useDeleteQuestion(questionId)
+  const confirm = useConfirm()
 
-  function handleDelete() {
-    if (!window.confirm('질문을 삭제할까요? 답변도 함께 숨겨지며 삭제는 되돌릴 수 없어요.')) return
+  async function handleDelete() {
+    if (!(await confirm({ title: '질문을 삭제할까요?', description: '답장도 함께 숨겨지고, 되돌릴 수 없어요.', confirmLabel: '삭제', danger: true }))) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,

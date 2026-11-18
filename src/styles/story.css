@@ -2423,3 +2423,152 @@
     animation: none;
   }
 }
+
+/* ── 없는 글 (gone-final '편지가 있던 자리') ── */
+@layer components {
+  .gh-gone-slot {
+    position: relative;
+    height: 300px;
+    margin: 24px 22px 0;
+    border: 2px dashed rgba(169, 199, 255, 0.28);
+    border-radius: 8px 8px 22px 22px;
+    background: repeating-linear-gradient(180deg, transparent 0 29px, rgba(169, 199, 255, 0.06) 29px 30px);
+    background-position: 0 120px;
+  }
+  .gh-gone-slot .gh-stamp {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 58px;
+    height: 46px;
+    border: 2px dashed rgba(169, 199, 255, 0.25);
+    border-radius: 6px;
+    transform: rotate(4deg);
+  }
+  .gh-gone-slot .gh-l {
+    position: absolute;
+    left: 20px;
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(169, 199, 255, 0.1);
+  }
+  .gh-gone-slot img {
+    position: absolute;
+    left: 50%;
+    bottom: -40px;
+    width: 190px;
+    margin-left: -95px;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
+  }
+  .gh-gone-txt {
+    margin-top: 58px;
+    padding: 0 30px;
+    text-align: center;
+  }
+  .gh-gone-txt h1 {
+    font: 400 23px/1.4 var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  .gh-gone-txt p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-gone-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+    margin: 28px 22px 40px;
+    border-radius: 28px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 16px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-gone-back svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+/* ── 404 · 오류 (notfound-final '끊긴 길 + 등불 유령') ── */
+@layer components {
+  .gh-lostway {
+    position: relative;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: url('../assets/scene/bg-full.webp') center 120px / 390px auto no-repeat, var(--color-gh-night-deep);
+    color: var(--color-gh-ink);
+    font-family: var(--font-body);
+  }
+  .gh-lostway::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--color-gh-night-deep) 0%, rgba(6, 13, 29, 0.2) 32%, rgba(6, 13, 29, 0) 60%, rgba(6, 13, 29, 0.4));
+  }
+  .gh-lostway > div {
+    position: relative;
+    max-width: 448px;
+    min-height: 100dvh;
+    margin: 0 auto;
+  }
+  .gh-lostway .gh-top {
+    display: block;
+    height: auto;
+    padding: 72px 26px 0;
+  }
+  .gh-lostway .gh-code {
+    font: 400 13px var(--font-title);
+    letter-spacing: 0.1em;
+    color: var(--color-gh-amber);
+  }
+  .gh-lostway h1 {
+    margin-top: 10px;
+    font: 400 34px/1.28 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-lostway .gh-top p {
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-lostway .gh-path {
+    position: absolute;
+    left: 0;
+    top: 330px;
+    width: 100%;
+    height: 200px;
+  }
+  .gh-lostway .gh-walker {
+    position: absolute;
+    left: 38%;
+    top: 318px;
+    width: 150px;
+    filter: drop-shadow(0 0 30px rgba(245, 185, 82, 0.35));
+  }
+  .gh-lostway .gh-home {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: calc(40px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: 58px;
+    border-radius: 29px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 17px var(--font-title);
+    box-shadow: 0 0 30px -4px rgba(245, 185, 82, 0.6);
+  }
+  .gh-lostway .gh-home svg {
+    width: 20px;
+    height: 20px;
+  }
+}

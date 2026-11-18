@@ -1,6 +1,7 @@
 import { useLayoutEffect } from 'react'
 import { Outlet, ScrollRestoration } from 'react-router'
 import { LoadingScreen } from '@/components/LoadingScreen'
+import { ConfirmProvider } from '@/components/story'
 import { applyTheme, readLastSessionWasMember, rememberSession, useMe } from '@/features/auth/session'
 
 /** 모든 화면의 바깥 틀 — /auth/me 결과가 오기 전엔 로딩 화면, 온 뒤엔 로그인 상태로 테마를 정한다 */
@@ -20,7 +21,10 @@ export function RootLayout() {
     <>
       {/* 새 화면은 맨 위에서 시작하고, 뒤로 오면 보던 자리로 돌아간다 */}
       <ScrollRestoration />
-      <Outlet />
+      {/* 확인 창(useConfirm) — window.confirm 대신 아래에서 올라오는 시트 */}
+      <ConfirmProvider>
+        <Outlet />
+      </ConfirmProvider>
     </>
   )
 }

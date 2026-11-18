@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { EmptyState, Ghost, IconCup, IconSearch, Pill, StorySubPage } from '@/components/story'
+import { EmptyState, Ghost, IconCup, IconSearch, Pill, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import {
@@ -144,10 +144,11 @@ const STATE_LABELS: Record<CoffeeChatState, string> = {
 function ChatCard({ item, box, now }: { item: CoffeeChatItem; box: CoffeeBox; now: number }) {
   const { counterpart: who } = item
   const respond = useRespondCoffeeChat()
+  const confirm = useConfirm()
   const [error, setError] = useState<{ text: string; memo: boolean } | null>(null)
 
-  function answer(action: 'ACCEPT' | 'DECLINE') {
-    if (action === 'DECLINE' && !window.confirm('신청을 거절할까요? 상대에게 알림이 가요.')) return
+  async function answer(action: 'ACCEPT' | 'DECLINE') {
+    if (action === 'DECLINE' && !(await confirm({ title: '신청을 거절할까요?', description: '상대에게 알림이 가요.', confirmLabel: '거절', danger: true }))) return
     setError(null)
     respond.mutate(
       { id: item.id, action },

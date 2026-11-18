@@ -3,23 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import {
-  EmptyState,
-  IconChat,
-  IconFlag,
-  IconHeart,
-  IconHeartLine,
-  IconTrash,
-  IconX,
-  InputBar,
-  Pill,
-  PillLink,
-  PopMenu,
-  Rope,
-  RoundSend,
-  Scrap,
-  StorySubPage,
-} from '@/components/story'
+import { EmptyState, GoneSlot, IconChat, IconFlag, IconHeart, IconHeartLine, IconTrash, IconX, InputBar, Pill, PopMenu, Rope, RoundSend, Scrap, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import {
@@ -76,11 +60,7 @@ export function FeedDetailPage() {
     <StorySubPage fallback="/feed" right={menu} className="gh-fd">
       {actionError && <p className="gh-fd-err" role="alert">{actionError}</p>}
       {notFound && (
-        <div className="px-4 pt-6">
-          <EmptyState pose="shh" title="쪽지를 찾을 수 없어요" action={<PillLink to="/feed" className="mt-3">피드로</PillLink>}>
-            삭제됐거나 운영진이 숨긴 글이에요.
-          </EmptyState>
-        </div>
+        <GoneSlot title="쪽지가 걸려 있던 자리만 남았어요" to="/feed" link="피드로" />
       )}
       {!notFound && post.isPending && <div className="gh-fskel" aria-label="불러오는 중" />}
       {!notFound && post.isError && (
@@ -107,6 +87,7 @@ function OwnerMenu({ postId, onError }: { postId: number; onError: (message: str
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const remove = useDeleteFeedPost(postId)
+  const confirm = useConfirm()
 
   function leave() {
     queryClient.invalidateQueries({ queryKey: ['feed', 'detail', postId], refetchType: 'none' })
@@ -121,8 +102,9 @@ function OwnerMenu({ postId, onError }: { postId: number; onError: (message: str
           label: '삭제',
           icon: <IconTrash />,
           danger: true,
-          onSelect: () => {
-            if (remove.isPending || !window.confirm('글을 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
+          onSelect: async () => {
+            if (remove.isPending || !(await confirm({ title: '쪽지를 내릴까요?', description: '삭제는 되돌릴 수 없어요.', confirmLabel: '삭제', danger: true })))
+              return
             onError(null)
             remove.mutate(undefined, {
               onSuccess: leave,
@@ -144,6 +126,7 @@ function PostBody({ post, onReport }: { post: FeedPost; onReport: (target: Repor
   const location = useLocation()
   const comments = useFeedComments(post.id, true)
   const remove = useDeleteFeedComment(post.id)
+  const confirm = useConfirm()
   const [replyTo, setReplyTo] = useState<FeedComment | null>(null)
   const [error, setError] = useState<string | null>(null)
   const items = comments.data?.pages.flatMap((p) => p.items) ?? []
@@ -158,8 +141,8 @@ function PostBody({ post, onReport }: { post: FeedPost; onReport: (target: Repor
     else if (hasNextPage && !isFetchingNextPage && pageCount < 10) fetchNextPage()
   }, [comments.data, location.hash, hasNextPage, isFetchingNextPage, fetchNextPage, pageCount])
 
-  function handleDelete(comment: FeedComment) {
-    if (!window.confirm('댓글을 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
+  async function handleDelete(comment: FeedComment) {
+    if (!(await confirm({ title: '댓글을 삭제할까요?', description: '되돌릴 수 없어요.', confirmLabel: '삭제', danger: true }))) return
     setError(null)
     remove.mutate(comment.id, { onError: (e) => setError(feedErrorMessage(toApiError(e))) })
   }

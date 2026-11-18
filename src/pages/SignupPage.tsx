@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useConfirm } from '@/components/story'
 import { Navigate, useBlocker, useNavigate } from 'react-router'
 import { useMe } from '@/features/auth/session'
 import { AboutStep } from '@/features/signup/AboutStep'
@@ -33,18 +34,28 @@ export function SignupPage() {
   const inProgress = draft.signupToken != null
 
   // 입력한 내용이 있으면 화면을 나갈 때 한 번 묻는다 (IA 2장)
+  const confirm = useConfirm()
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => inProgress && !me && currentLocation.pathname !== nextLocation.pathname,
   )
   useEffect(() => {
     if (blocker.state !== 'blocked') return
-    if (window.confirm('가입을 그만둘까요? 입력한 내용은 저장되지 않아요.')) {
-      clearSignupDraft()
-      blocker.proceed()
-    } else {
-      blocker.reset()
-    }
-  }, [blocker])
+    void confirm({
+      title: '가입을 그만둘까요?',
+      description: '입력한 내용은 저장되지 않아요.',
+      confirmLabel: '그만두기',
+      cancelLabel: '계속 가입하기',
+      danger: true,
+      ghost: 'lantern',
+    }).then((ok) => {
+      if (ok) {
+        clearSignupDraft()
+        blocker.proceed()
+      } else {
+        blocker.reset()
+      }
+    })
+  }, [blocker, confirm])
 
   // 단계가 바뀌면 화면 맨 위부터 보여 준다
   useEffect(() => {

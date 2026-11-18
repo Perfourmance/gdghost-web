@@ -3,7 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { EmptyState, Ghost, IconPencil, IconPeople, IconTrash, Pill, PillLink, PopMenu, StorySubPage } from '@/components/story'
+import { EmptyState, Ghost, IconPencil, IconPeople, IconTrash, Pill, PillLink, PopMenu, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { scheduleKindLabel } from '@/features/content/labels'
@@ -224,14 +224,15 @@ function ScheduleOwnerMenu({ scheduleId, onError }: { scheduleId: number; onErro
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const remove = useDeleteSchedule(scheduleId)
+  const confirm = useConfirm()
 
   function leave() {
     queryClient.invalidateQueries({ queryKey: ['schedules', 'detail', scheduleId], refetchType: 'none' })
     navigate('/schedules', { replace: true })
   }
 
-  function handleDelete() {
-    if (remove.isPending || !window.confirm('일정을 삭제할까요? 연결된 모집은 남아요.')) return
+  async function handleDelete() {
+    if (remove.isPending || !(await confirm({ title: '일정을 삭제할까요?', description: '연결된 모집은 남아요.', confirmLabel: '삭제', danger: true }))) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,

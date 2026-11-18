@@ -3,22 +3,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import {
-  EmptyState,
-  Ghost,
-  IconBookmark,
-  IconBookmarkFill,
-  IconFlag,
-  IconPencil,
-  IconTrash,
-  InputBar,
-  Pill,
-  PillLink,
-  PopMenu,
-  RoundSend,
-  Scrap,
-  StorySubPage,
-} from '@/components/story'
+import { EmptyState, Ghost, GoneSlot, IconBookmark, IconBookmarkFill, IconFlag, IconPencil, IconTrash, InputBar, Pill, PopMenu, RoundSend, Scrap, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { shareCategoryLabel } from '@/features/content/labels'
@@ -88,11 +73,7 @@ export function ShareDetailPage() {
     >
       {actionError && <p className="gh-shd-err" role="alert">{actionError}</p>}
       {notFound && (
-        <div className="px-4 pt-6">
-          <EmptyState pose="shh" title="책갈피를 찾을 수 없어요" action={<PillLink to="/shares" className="mt-3">공유 목록으로</PillLink>}>
-            삭제됐거나 운영진이 숨긴 글이에요.
-          </EmptyState>
-        </div>
+        <GoneSlot title="책갈피가 있던 자리만 남았어요" to="/shares" link="공유 목록으로" />
       )}
       {!notFound && detail.isPending && <div className="gh-shskel !h-72" aria-label="불러오는 중" />}
       {!notFound && detail.isError && (
@@ -119,14 +100,15 @@ function OwnerMenu({ shareId, onError }: { shareId: number; onError: (message: s
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const remove = useDeleteShare(shareId)
+  const confirm = useConfirm()
 
   function leave() {
     queryClient.invalidateQueries({ queryKey: ['shares', 'detail', shareId], refetchType: 'none' })
     navigate('/shares', { replace: true })
   }
 
-  function handleDelete() {
-    if (!window.confirm('공유를 삭제할까요? 삭제는 되돌릴 수 없어요.')) return
+  async function handleDelete() {
+    if (!(await confirm({ title: '책갈피를 뺄까요?', description: '삭제는 되돌릴 수 없어요.', confirmLabel: '삭제', danger: true }))) return
     onError(null)
     remove.mutate(undefined, {
       onSuccess: leave,
@@ -213,9 +195,10 @@ function NoteSection({
 }) {
   const [error, setError] = useState<string | null>(null)
   const remove = useDeleteShareNote(share.id)
+  const confirm = useConfirm()
 
-  function handleDelete(note: ShareNote) {
-    if (!window.confirm('덧붙인 한 줄을 삭제할까요?')) return
+  async function handleDelete(note: ShareNote) {
+    if (!(await confirm({ title: '붙인 쪽지를 뗄까요?', confirmLabel: '삭제', danger: true }))) return
     setError(null)
     remove.mutate(note.id, { onError: (e) => setError(noteErrorMessage(toApiError(e))) })
   }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { FieldError, LoadingDots, Pill, StoryButton, StorySheet } from '@/components/story'
+import { FieldError, LoadingDots, Pill, StoryButton, StorySheet, useConfirm } from '@/components/story'
 import { recruitKindLabel } from '@/features/content/labels'
 import {
   recruitErrorMessage,
@@ -45,6 +45,7 @@ function RecruitBody({ recruit }: { recruit: RecruitDetail }) {
   const { join, leave, close } = useRecruitActions(recruit.id)
   const [error, setError] = useState<string | null>(null)
   const pending = join.isPending || leave.isPending || close.isPending
+  const confirm = useConfirm()
 
   const now = useNowEveryMinute()
   const timePassed = Date.parse(recruit.meetAt) <= now
@@ -52,8 +53,8 @@ function RecruitBody({ recruit }: { recruit: RecruitDetail }) {
   const closedEarly = recruit.state === 'CLOSED' && recruit.joinedCount < recruit.capacity
   const canLeave = recruit.joined && !recruit.mine && !timePassed && !closedEarly
 
-  function run(action: { mutate: (variables: void, options: { onError: (e: Error) => void }) => void }, confirmText?: string) {
-    if (confirmText && !window.confirm(confirmText)) return
+  async function run(action: { mutate: (variables: void, options: { onError: (e: Error) => void }) => void }, confirmText?: string) {
+    if (confirmText && !(await confirm({ title: confirmText, confirmLabel: '네', danger: true }))) return
     setError(null)
     action.mutate(undefined, { onError: (e) => setError(recruitErrorMessage(toApiError(e))) })
   }

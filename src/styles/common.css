@@ -401,3 +401,123 @@
     color: #e86f6f;
   }
 }
+
+/* ── 검색 (search-final '돋보기 유령') ── */
+@layer components {
+  .gh-search-pg {
+    min-height: 100dvh;
+    background: url('../assets/scene/bg-village.webp') center bottom / 390px auto no-repeat,
+      linear-gradient(180deg, var(--color-gh-night-deep), var(--color-gh-night) 40%, var(--color-gh-night-low));
+  }
+  .gh-search-pg.is-hit {
+    background: linear-gradient(180deg, var(--color-gh-night-deep), var(--color-gh-night) 40%, var(--color-gh-night-low));
+  }
+  .gh-sbar {
+    padding: 4px 16px 0;
+  }
+  .gh-sbar .gh-search {
+    box-shadow: inset 0 0 0 1.5px rgba(169, 199, 255, 0.35);
+  }
+  .gh-lost {
+    position: relative;
+    margin-top: 70px;
+    padding: 0 30px;
+    text-align: center;
+  }
+  .gh-lost .gh-beam {
+    position: absolute;
+    left: 50%;
+    top: -30px;
+    width: 260px;
+    height: 260px;
+    margin-left: -130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(169, 199, 255, 0.16), rgba(169, 199, 255, 0) 65%);
+  }
+  .gh-lost img {
+    position: relative;
+    width: 170px;
+    margin: 0 auto;
+  }
+  .gh-lost h1 {
+    position: relative;
+    margin-top: 8px;
+    font: 400 21px/1.45 var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  .gh-lost h1 q {
+    color: var(--color-gh-sky);
+  }
+  .gh-lost h1 q::before {
+    content: '‘';
+  }
+  .gh-lost h1 q::after {
+    content: '’';
+  }
+  .gh-lost p {
+    position: relative;
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-lost .gh-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .gh-lost .gh-dots i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(169, 199, 255, 0.25);
+  }
+  .gh-found {
+    padding: 6px 16px 40px;
+  }
+  .gh-gh2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 6px 12px;
+    font: 400 17px var(--font-title);
+  }
+  .gh-gh2 em {
+    font-style: normal;
+    color: var(--color-gh-sky);
+  }
+  .gh-gh2 svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-gh-sky);
+  }
+  .gh-gh2::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-gh-line);
+  }
+  .gh-gh2 button {
+    order: 3;
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-found mark {
+    border-radius: 2px;
+    background: none;
+    color: inherit;
+    box-shadow: inset 0 0 0 0 transparent, inset 0 -7px 0 rgba(169, 199, 255, 0.35);
+  }
+  .gh-found .gh-town,
+  .gh-found .gh-starline {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+  .gh-found .gh-tw {
+    margin-top: 10px;
+  }
+  .gh-found .gh-tw::before {
+    display: none;
+  }
+}

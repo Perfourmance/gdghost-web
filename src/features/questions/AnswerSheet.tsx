@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { FieldError, Hint, IconSend, LinedBox, Pill, StorySheet, Toggle } from '@/components/story'
+import { FieldError, Hint, IconSend, LinedBox, Pill, StorySheet, Toggle, useConfirm } from '@/components/story'
 import { authorName } from '@/features/member/author'
 import type { AnswerNode } from '@/features/questions/api'
 import {
@@ -33,10 +33,11 @@ interface Props {
 /** 답변 · 답글 작성 · 수정 시트 (IA 3장 시트, 기능명세 F2-04 · F2-09) */
 export function AnswerSheet({ target, onClose, ...rest }: Props) {
   const [dirty, setDirty] = useState(false)
+  const confirm = useConfirm()
 
-  function handleOpenChange(open: boolean) {
+  async function handleOpenChange(open: boolean) {
     if (open) return
-    if (dirty && !window.confirm('작성 중인 내용을 지울까요?')) return
+    if (dirty && !(await confirm({ title: '쓰던 답장을 지울까요?', confirmLabel: '지우기', cancelLabel: '계속 쓰기', danger: true }))) return
     setDirty(false)
     onClose()
   }
