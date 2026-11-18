@@ -1,9 +1,7 @@
-import type { FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { ExperiencePicker } from '@/features/member/TagPickers'
-import { MAX_EXPERIENCES } from '@/features/signup/answerableRules'
+import { useMemo, type FormEvent } from 'react'
+import { groupExperiences, MAX_EXPERIENCES, toggleId } from '@/features/signup/answerableRules'
 import { EMPTY_ANSWERABLE, SIGNUP_STEP_LABELS, type SignupDraft } from '@/features/signup/draft'
-import { StepFooter, StepHeader } from '@/components/form/StepLayout'
+import { SignupChips, SignupCta, SignupHead, SignupLabel } from '@/features/signup/SignupParts'
 import { TagsState } from '@/features/signup/TagsState'
 import { useTags } from '@/features/tags/useTags'
 
@@ -16,7 +14,9 @@ interface Props {
 export function ExperienceStep({ draft, onUpdate }: Props) {
   const tags = useTags()
   const info = draft.answerable ?? EMPTY_ANSWERABLE
-  const count = info.experienceTagIds.length
+  const ids = info.experienceTagIds
+  const count = ids.length
+  const groups = useMemo(() => (tags.data ? groupExperiences(tags.data) : []), [tags.data])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -25,27 +25,34 @@ export function ExperienceStep({ draft, onUpdate }: Props) {
 
   return (
     <form onSubmit={handleSubmit} noValidate>
-      <StepHeader
-        eyebrow={SIGNUP_STEP_LABELS.experiences}
-        title="해 본 경험이 있나요?"
-        description={`해 본 것만 ${MAX_EXPERIENCES}개까지 골라 주세요. 없으면 건너뛰어도 돼요.`}
-      />
+      <SignupHead eye={SIGNUP_STEP_LABELS.experiences} title="해 본 경험이 있나요?">
+        {MAX_EXPERIENCES}개까지 골라 주세요. 없으면 건너뛰어도 돼요.
+      </SignupHead>
 
       <TagsState tags={tags} />
 
       {tags.data && (
-        <ExperiencePicker
-          tags={tags.data}
-          value={info.experienceTagIds}
-          onChange={(ids) => onUpdate({ answerable: { ...info, experienceTagIds: ids } })}
-        />
+        <>
+          <p className="gh-su-cnt" aria-live="polite">
+            {count} / {MAX_EXPERIENCES}
+          </p>
+          {groups.map(([group, items], n) => (
+            <section key={group} className="gh-su-box">
+              <SignupLabel>
+                <span id={`exp-${n}`}>{group}</span>
+              </SignupLabel>
+              <SignupChips
+                labelledBy={`exp-${n}`}
+                options={items.map((t) => ({ value: t.id, label: t.name, disabled: count >= MAX_EXPERIENCES }))}
+                isOn={(id) => ids.includes(id)}
+                onToggle={(id) => onUpdate({ answerable: { ...info, experienceTagIds: toggleId(ids, id) } })}
+              />
+            </section>
+          ))}
+        </>
       )}
 
-      <StepFooter>
-        <Button type="submit" size="lg" variant={count === 0 ? 'secondary' : 'default'} className="h-12 w-full">
-          {count === 0 ? '건너뛰기' : '소개 쓰기'}
-        </Button>
-      </StepFooter>
+      <SignupCta skip={count === 0}>{count === 0 ? '건너뛰기' : '소개 쓰기'}</SignupCta>
     </form>
   )
 }

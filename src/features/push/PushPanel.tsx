@@ -2,25 +2,7 @@ import { useState } from 'react'
 import { Share, SquarePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { usePush, useInstall, type PushState } from '@/features/push/push'
-
-/** 켤 수 없을 때의 안내 */
-function blockedText(state: PushState, ios: boolean, installed: boolean): string | null {
-  switch (state) {
-    case 'unsupported':
-      return ios && !installed
-        ? '아이폰에서 알림을 받으려면 먼저 홈 화면에 추가해 주세요.'
-        : '이 브라우저에서는 알림을 받을 수 없어요.'
-    case 'no-worker':
-      return '이 주소에서는 알림을 켤 수 없어요. 배포 주소에서 다시 시도해 주세요.'
-    case 'no-key':
-      return '로컬 서버에서 알림을 설정하지 않았어요.'
-    case 'denied':
-      return '브라우저가 알림을 차단했어요. 사이트 설정에서 알림을 허용해 주세요.'
-    default:
-      return null
-  }
-}
+import { pushBlockedText as blockedText, usePush, useInstall } from '@/features/push/push'
 
 /**
  * 이 기기 알림 켜기 · 끄기 + 홈 화면에 추가 (F8-04). 가입 끝 알림 준비와 설정이 함께 쓴다.

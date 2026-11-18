@@ -44,9 +44,15 @@ export interface HomeResponse {
   popularShares: HomeShare[]
 }
 
+export const homeQueryKey = ['home'] as const
+
+export async function fetchHome() {
+  return (await api.get<HomeResponse>('/home')).data
+}
+
 export function useHome() {
   return useQuery({
-    queryKey: ['home'],
-    queryFn: async () => (await api.get<HomeResponse>('/home')).data,
+    queryKey: homeQueryKey,
+    queryFn: fetchHome,
   })
 }

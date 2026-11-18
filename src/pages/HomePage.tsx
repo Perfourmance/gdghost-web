@@ -1,6 +1,5 @@
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router'
-import door from '@/assets/mascot/door.png'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { LockSheet } from '@/features/auth/LockSheet'
@@ -15,11 +14,18 @@ import {
   ShareCard,
   type CardTarget,
 } from '@/features/content/Cards'
+import { GuestHome } from '@/features/home/GuestHome'
 import { useHome } from '@/features/home/useHome'
 import { useNowEveryMinute } from '@/lib/time'
 
-/** 홈 (S10) — 모든 접속의 첫 화면. 비회원은 제목까지, 부원은 전부 */
+/** 홈 (S10) — 모든 접속의 첫 화면. 비회원은 제목까지(리디자인 GuestHome), 부원은 전부 */
 export function HomePage() {
+  const { data: me } = useMe()
+  if (!me) return <GuestHome />
+  return <MemberHome />
+}
+
+function MemberHome() {
   const { data: me } = useMe()
   const home = useHome()
   const lock = useLockSheet()
@@ -29,7 +35,7 @@ export function HomePage() {
 
   return (
     <div className="space-y-8 pb-4">
-      {member ? <MustReadBanner count={home.data?.unconfirmedMustReadCount ?? 0} /> : <GuestBanner />}
+      {member && <MustReadBanner count={home.data?.unconfirmedMustReadCount ?? 0} />}
 
       {home.isPending && <HomeSkeleton />}
 
@@ -79,25 +85,6 @@ export function HomePage() {
       )}
 
       <LockSheet next={lock.next} onClose={lock.close} />
-    </div>
-  )
-}
-
-/** 비회원 — 문 여는 유령 + "둘러보는 중이에요 · 가입" 띠 (IA 2장 · 디자인 가이드 5장) */
-function GuestBanner() {
-  return (
-    <div className="flex items-center gap-3 rounded-xl bg-card p-4">
-      <img src={door} alt="" className="w-14 shrink-0" />
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-bold text-title">GDGhost 둘러보기</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">부원 로그인 후 질문과 답변을 볼 수 있어요.</p>
-      </div>
-      <Link
-        to="/signup"
-        className="shrink-0 rounded-lg bg-brand-soft px-3 py-2 text-sm font-bold text-brand-text hover:opacity-90"
-      >
-        가입
-      </Link>
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { ChevronLeft } from 'lucide-react'
 import { Navigate, useBlocker, useNavigate } from 'react-router'
 import { useMe } from '@/features/auth/session'
 import { AboutStep } from '@/features/signup/AboutStep'
@@ -9,6 +8,7 @@ import { EmailStep } from '@/features/signup/EmailStep'
 import { ExperienceStep } from '@/features/signup/ExperienceStep'
 import { InterestStep } from '@/features/signup/InterestStep'
 import { InviteCodeStep } from '@/features/signup/InviteCodeStep'
+import { SignupBand } from '@/features/signup/SignupParts'
 import {
   clearSignupDraft,
   isDraftExpired,
@@ -20,7 +20,7 @@ import {
 
 const EXPIRED_MESSAGE = '가입 시간 30분이 지났어요. 초대 코드부터 다시 입력해 주세요.'
 
-/** 가입 (S02). 한 주소 안에서 단계를 바꾼다 */
+/** 가입 (S02) — 시안 signup/final-1~7 '등불 길'. 한 주소 안에서 단계를 바꾼다 */
 export function SignupPage() {
   const { data: me } = useMe()
   const navigate = useNavigate()
@@ -83,64 +83,39 @@ export function SignupPage() {
   // 가입이 끝나 로그인됐으면 알림 준비, 이미 회원이면 홈으로
   if (me) return <Navigate to={finished ? '/welcome' : '/'} replace />
 
-  const progress = ((stepIndex + 1) / SIGNUP_STEPS.length) * 100
-
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="sticky top-0 z-10 bg-background">
-        <div className="mx-auto flex h-14 max-w-md items-center justify-between px-2">
-          <button
-            type="button"
-            className="flex size-10 items-center justify-center rounded-lg hover:bg-accent"
-            aria-label="뒤로"
-            onClick={handleBack}
-          >
-            <ChevronLeft className="size-6" />
-          </button>
-          <span className="px-3 text-xs text-muted-foreground tabular-nums">
-            {stepIndex + 1} / {SIGNUP_STEPS.length}
-          </span>
-        </div>
-        <div
-          className="mx-auto h-1 max-w-md bg-muted"
-          role="progressbar"
-          aria-label="가입 진행"
-          aria-valuemin={1}
-          aria-valuemax={SIGNUP_STEPS.length}
-          aria-valuenow={stepIndex + 1}
-        >
-          <div className="h-full rounded-r-full bg-brand transition-[width] duration-300" style={{ width: `${progress}%` }} />
-        </div>
-      </header>
+    <div className="gh-day gh-su">
+      <div className="mx-auto max-w-md">
+        <SignupBand step={stepIndex} total={SIGNUP_STEPS.length} onBack={handleBack} />
+        <main className="gh-su-page">
+          {notice && (
+            <p className="gh-su-notice" role="status">
+              {notice}
+            </p>
+          )}
 
-      <main className="mx-auto max-w-md px-4 pt-8">
-        {notice && (
-          <p className="mb-6 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
-            {notice}
-          </p>
-        )}
-
-        {draft.step === 'invite' && <InviteCodeStep onDone={goTo} />}
-        {draft.step === 'email' && (
-          <EmailStep draft={draft} onUpdate={goTo} onSessionExpired={() => restart(EXPIRED_MESSAGE)} />
-        )}
-        {draft.step === 'profile' && <BasicInfoStep draft={draft} onUpdate={goTo} />}
-        {draft.step === 'interests' && <InterestStep draft={draft} onUpdate={goTo} />}
-        {draft.step === 'experiences' && <ExperienceStep draft={draft} onUpdate={goTo} />}
-        {draft.step === 'about' && <AboutStep draft={draft} onUpdate={goTo} />}
-        {draft.step === 'account' && (
-          <AccountStep
-            draft={draft}
-            onRedirect={redirect}
-            onRestart={restart}
-            onFinished={() => {
-              setFinished(true)
-              clearSignupDraft()
-              reset()
-            }}
-          />
-        )}
-      </main>
+          {draft.step === 'invite' && <InviteCodeStep onDone={goTo} />}
+          {draft.step === 'email' && (
+            <EmailStep draft={draft} onUpdate={goTo} onSessionExpired={() => restart(EXPIRED_MESSAGE)} />
+          )}
+          {draft.step === 'profile' && <BasicInfoStep draft={draft} onUpdate={goTo} />}
+          {draft.step === 'interests' && <InterestStep draft={draft} onUpdate={goTo} />}
+          {draft.step === 'experiences' && <ExperienceStep draft={draft} onUpdate={goTo} />}
+          {draft.step === 'about' && <AboutStep draft={draft} onUpdate={goTo} />}
+          {draft.step === 'account' && (
+            <AccountStep
+              draft={draft}
+              onRedirect={redirect}
+              onRestart={restart}
+              onFinished={() => {
+                setFinished(true)
+                clearSignupDraft()
+                reset()
+              }}
+            />
+          )}
+        </main>
+      </div>
     </div>
   )
 }

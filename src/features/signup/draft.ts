@@ -9,8 +9,8 @@ export const SIGNUP_STEPS: SignupStep[] = ['invite', 'email', 'profile', 'intere
 
 /** 단계마다 제목 위에 보이는 작은 이름 */
 export const SIGNUP_STEP_LABELS: Record<SignupStep, string> = {
-  invite: '초대 코드',
-  email: '이메일 인증',
+  invite: '초대장',
+  email: '이메일',
   profile: '기본 정보',
   interests: '답할 수 있는 것 · 1/3',
   experiences: '답할 수 있는 것 · 2/3',

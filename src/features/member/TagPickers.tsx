@@ -1,7 +1,15 @@
 import { useMemo } from 'react'
 import { Chip } from '@/components/Chip'
 import { FieldLabel } from '@/components/form/StepLayout'
-import { MAX_EXPERIENCES, MAX_INTERESTS, MAX_SKILLS_PER_INTEREST, toggleId } from '@/features/signup/answerableRules'
+import {
+  groupExperiences,
+  MAX_EXPERIENCES,
+  MAX_INTERESTS,
+  MAX_SKILLS_PER_INTEREST,
+  sortedInterests,
+  toggleId,
+  toggleInterestSelection,
+} from '@/features/signup/answerableRules'
 import type { TagsResponse } from '@/features/tags/useTags'
 
 // 관심 분야 · 세부 기술 · 경험 고르기 — 가입(③-2)과 프로필 수정에서 같이 쓴다
@@ -21,18 +29,10 @@ export function InterestPicker({
   value: InterestSelection
   onChange: (next: InterestSelection) => void
 }) {
-  const interests = useMemo(() => [...tags.interests].sort((a, b) => a.sortOrder - b.sortOrder), [tags])
+  const interests = useMemo(() => sortedInterests(tags), [tags])
 
   function toggleInterest(id: number) {
-    if (value.interestTagIds.includes(id)) {
-      const skillIds = new Set(interests.find((i) => i.id === id)?.skills.map((s) => s.id))
-      onChange({
-        interestTagIds: value.interestTagIds.filter((x) => x !== id),
-        skillTagIds: value.skillTagIds.filter((x) => !skillIds.has(x)),
-      })
-    } else if (value.interestTagIds.length < MAX_INTERESTS) {
-      onChange({ ...value, interestTagIds: [...value.interestTagIds, id] })
-    }
+    onChange(toggleInterestSelection(interests, value, id))
   }
 
   const interestFull = value.interestTagIds.length >= MAX_INTERESTS
@@ -104,11 +104,7 @@ export function ExperiencePicker({
   value: number[]
   onChange: (next: number[]) => void
 }) {
-  const groups = useMemo(() => {
-    const map = new Map<string, TagsResponse['experiences']>()
-    for (const tag of tags.experiences) map.set(tag.groupName, [...(map.get(tag.groupName) ?? []), tag])
-    return [...map.entries()]
-  }, [tags])
+  const groups = useMemo(() => groupExperiences(tags), [tags])
   const full = value.length >= MAX_EXPERIENCES
 
   return (
