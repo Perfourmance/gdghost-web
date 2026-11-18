@@ -1,15 +1,15 @@
-import { Link, useLocation } from 'react-router'
-import { LoadError } from '@/components/PageStates'
+import { useLocation } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Bookmark, EmptyState, Pill, PillLink, Shelf, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
-import { EmptyCard } from '@/features/content/Cards'
+import { shareCategoryLabel } from '@/features/content/labels'
+import { authorName } from '@/features/member/author'
 import { useSavedShares } from '@/features/shares/api'
-import { ShareListCard } from '@/features/shares/ShareBits'
 import { useLoadMore } from '@/hooks/useLoadMore'
-import { useNowEveryMinute } from '@/lib/time'
+import { colorOf, SHARE_COLORS } from '@/lib/categoryColors'
+import { formatRelative, useNowEveryMinute } from '@/lib/time'
+import '@/styles/shares.css'
 
 /** 저장한 공유 (설정 · 공유 목록에서) — 최근 저장한 순 */
 export function SavedSharesPage() {
@@ -30,33 +30,62 @@ export function SavedSharesPage() {
   const items = list.data?.pages.flatMap((p) => p.items) ?? []
 
   return (
-    <SubPageLayout fallback="/settings">
-      <h1 className="text-[22px] leading-snug font-bold text-title">저장한 공유</h1>
-      <div className="mt-5 space-y-2 pb-10">
-        {list.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[92px] w-full rounded-xl" />)}
-        {list.isError && <LoadError text="저장한 공유를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-        {list.isSuccess && items.length === 0 && (
-          <EmptyCard
-            action={
-              <Link to="/shares" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
-                공유 둘러보기
-              </Link>
-            }
-          >
-            아직 저장한 글이 없어요.
-          </EmptyCard>
-        )}
-        {items.map((s) => (
-          <ShareListCard key={s.id} share={s} target={{ member: true, onLocked: () => {} }} now={now} />
-        ))}
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {list.isFetchingNextPage && <Skeleton className="h-[92px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => list.fetchNextPage()}>
-            더보기
-          </Button>
-        )}
+    <StorySubPage fallback="/settings" className="pb-16">
+      <div className="gh-shttl !pt-1">
+        <h1>저장한 공유</h1>
       </div>
-    </SubPageLayout>
+      <p className="gh-shdesc">내 책장에 꽂아 둔 책갈피 · 최근에 꽂은 순</p>
+
+      {list.isPending && <div className="gh-shskel" aria-label="불러오는 중" />}
+      {list.isError && (
+        <div className="px-4 pt-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="저장한 공유를 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
+      )}
+      {list.isSuccess && items.length === 0 && (
+        <div className="px-4 pt-6">
+          <EmptyState pose="glass" title="아직 꽂아 둔 책갈피가 없어요" action={<PillLink to="/shares" className="mt-3">공유 둘러보기</PillLink>}>
+            마음에 드는 글의 리본을 누르면 여기 모여요.
+          </EmptyState>
+        </div>
+      )}
+      {items.length > 0 && (
+        <div className="gh-shelfwrap">
+          <Shelf>
+            {items.map((s) => (
+              <Bookmark
+                key={s.id}
+                to={`/shares/${s.id}`}
+                color={colorOf(SHARE_COLORS, s.category)}
+                category={shareCategoryLabel(s.category)}
+                title={s.title}
+                tags={s.tags}
+                by={`${authorName(s.author)} · ${formatRelative(s.createdAt, now)}`}
+                saved
+                saveCount={s.saveCount}
+                noteCount={s.noteCount}
+                hasPhoto={s.hasPhoto}
+              />
+            ))}
+          </Shelf>
+        </div>
+      )}
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {list.isFetchingNextPage && <div className="gh-shskel" />}
+      {showMoreButton && (
+        <button type="button" className="gh-shmore" onClick={() => list.fetchNextPage()}>
+          더보기
+        </button>
+      )}
+    </StorySubPage>
   )
 }

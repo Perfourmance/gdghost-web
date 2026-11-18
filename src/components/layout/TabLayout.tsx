@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
  */
 const STORY_ROUTES = {
   guest: ['/', '/questions'],
-  member: ['/', '/questions', '/members', '/schedules', '/recruits', '/events'] as string[],
+  member: ['/', '/questions', '/members', '/schedules', '/recruits', '/events', '/shares'] as string[],
 }
 
 /** 탭 화면 틀 — 상단 바 + 내용 + 하단 탭. 상세 · 작성 화면은 이 틀을 쓰지 않는다 */

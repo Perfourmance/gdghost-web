@@ -1,10 +1,20 @@
 import { useState } from 'react'
-import { PencilLine, Search, X } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
 import { LoadError } from '@/components/PageStates'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Bookmark,
+  DotChips,
+  EmptyState,
+  Fab,
+  Ghost,
+  IconBookmark,
+  Pill,
+  SearchField,
+  Shelf,
+  SortLinks,
+  StoryTopBar,
+} from '@/components/story'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
 import { useLockSheet } from '@/features/auth/useLockSheet'
@@ -14,8 +24,10 @@ import { QUERY_MAX, QUERY_MIN, useShareList, type ShareFilters, type ShareSort }
 import { ShareListCard } from '@/features/shares/ShareBits'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { useLoadMore } from '@/hooks/useLoadMore'
-import { useNowEveryMinute } from '@/lib/time'
-import { cn } from '@/lib/utils'
+import { authorName } from '@/features/member/author'
+import { colorOf, SHARE_COLORS } from '@/lib/categoryColors'
+import { formatRelative, useNowEveryMinute } from '@/lib/time'
+import '@/styles/shares.css'
 
 const WRITE_PATH = '/shares/new'
 
@@ -52,134 +64,124 @@ export function SharesPage() {
   const shares = list.data?.pages.flatMap((page) => page.items) ?? []
   const tooShort = query.trim().length > 0 && query.trim().length < QUERY_MIN
 
-  return (
-    <div className="pb-20">
-      <div className="flex items-center justify-between">
+  if (!me) {
+    return (
+      <div className="pb-20">
         <h1 className="text-xl font-bold text-title">공유</h1>
-        {member && (
-          <Link to="/saved-shares" className="text-sm text-muted-foreground hover:text-foreground">
+        <div className="mt-4 space-y-2">
+          {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[92px] w-full rounded-xl" />)}
+          {list.isError && <LoadError text="공유를 불러오지 못했어요." onRetry={() => list.refetch()} />}
+          {list.isSuccess && shares.length === 0 && <EmptyCard>아직 공유된 글이 없어요.</EmptyCard>}
+          {shares.map((s) => (
+            <ShareListCard key={s.id} share={s} target={target} now={now} />
+          ))}
+        </div>
+        <LockSheet next={lock.next} onClose={lock.close} title="공유 글은 부원만 볼 수 있어요." />
+      </div>
+    )
+  }
+
+  return (
+    <div className="pb-44">
+      <div className="gh-shsky">
+        <StoryTopBar unread={me.unreadNotificationCount} />
+        <div className="gh-shttl">
+          <h1>공유</h1>
+          <Link to="/saved-shares">
+            <IconBookmark />
             저장한 공유
           </Link>
-        )}
-      </div>
-
-      {/* 검색은 부원만 (비회원이 q를 쓰면 401) */}
-      {member && (
-        <div className="relative mt-4">
-          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="search"
+        </div>
+        <p className="gh-shdesc">마을 사람들이 꽂아 둔 책갈피</p>
+        <div className="gh-shfind">
+          <SearchField
             aria-label="공유 검색"
             maxLength={QUERY_MAX}
             placeholder="제목이나 태그로 찾기"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-11 w-full rounded-lg border border-input bg-card pr-9 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm [&::-webkit-search-cancel-button]:hidden"
+            onClear={() => setQuery('')}
           />
-          {query && (
-            <button
-              type="button"
-              aria-label="검색어 지우기"
-              onClick={() => setQuery('')}
-              className="absolute top-1/2 right-2 flex size-7 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-            >
-              <X className="size-4" />
-            </button>
-          )}
+          {!query && <Ghost pose="glass" />}
+          {tooShort && <small>검색어 {QUERY_MIN}자 이상</small>}
         </div>
-      )}
-      {tooShort && <p className="mt-1.5 text-xs text-muted-foreground">검색어 {QUERY_MIN}자 이상</p>}
-
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div className="flex w-max gap-2">
-          <Chip selected={category == null} onClick={() => setFilter('category', null)}>
-            전체
-          </Chip>
-          {SHARE_CATEGORY_KEYS.map((c) => (
-            <Chip key={c} selected={category === c} onClick={() => setFilter('category', category === c ? null : c)}>
-              {shareCategoryLabel(c)}
-            </Chip>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-2 flex gap-4 text-sm" role="group" aria-label="정렬">
-        {(
-          [
-            ['SAVED', '저장 많은 순'],
-            ['LATEST', '최신순'],
-          ] as const
-        ).map(([value, label]) => (
-          <button
-            key={value}
-            type="button"
-            aria-pressed={sort === value}
-            onClick={() => setFilter('sort', value === 'SAVED' ? null : value)}
-            className={cn('py-1.5', sort === value ? 'font-bold text-brand-text' : 'text-muted-foreground')}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-4 space-y-2">
-        {list.isPending && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[92px] w-full rounded-xl" />)}
-
-        {list.isError && <LoadError text="공유를 불러오지 못했어요." onRetry={() => list.refetch()} />}
-
-        {list.isSuccess && shares.length === 0 && (
-          <EmptyCard>
-            {q ? `‘${q}’에 맞는 글이 없어요.` : category ? '이 분류에는 아직 글이 없어요.' : '아직 공유된 글이 없어요.'}
-          </EmptyCard>
-        )}
-
-        {shares.map((s) => (
-          <ShareListCard key={s.id} share={s} target={target} now={now} />
-        ))}
-
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {isFetchingNextPage && <Skeleton className="h-[92px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더보기
-          </Button>
-        )}
-        {list.isFetchNextPageError && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더 불러오지 못했어요. 다시 시도
-          </Button>
-        )}
-      </div>
-
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-10 mx-auto flex max-w-md justify-end px-4">
-        {member ? (
-          <Link to={WRITE_PATH} className={writeButtonClass}>
-            <PencilLine aria-hidden />
-            공유하기
-          </Link>
-        ) : (
-          <button type="button" className={writeButtonClass} onClick={() => lock.open(WRITE_PATH)}>
-            <PencilLine aria-hidden />
-            공유하기
-          </button>
-        )}
-      </div>
-
-      {lock.next === WRITE_PATH ? (
-        <LockSheet
-          next={lock.next}
-          onClose={lock.close}
-          title="공유는 부원만 올릴 수 있어요."
-          description="부원으로 로그인하면 글을 공유할 수 있어요."
+        <DotChips
+          label="분류"
+          value={category ?? 'ALL'}
+          onChange={(v) => setFilter('category', v === 'ALL' ? null : v)}
+          options={[
+            { value: 'ALL', label: '전체' },
+            ...SHARE_CATEGORY_KEYS.map((c) => ({ value: c, label: shareCategoryLabel(c), color: colorOf(SHARE_COLORS, c) })),
+          ]}
         />
-      ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="공유 글은 부원만 볼 수 있어요." />
+      </div>
+      <div className="gh-shsort">
+        <SortLinks
+          value={sort}
+          onChange={(v) => setFilter('sort', v === 'SAVED' ? null : v)}
+          options={[
+            { value: 'SAVED', label: '저장 많은 순' },
+            { value: 'LATEST', label: '최신순' },
+          ]}
+        />
+      </div>
+
+      {list.isPending && <div className="gh-shskel" aria-label="불러오는 중" />}
+      {list.isError && (
+        <div className="px-4 pt-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="공유를 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
       )}
+      {list.isSuccess && shares.length === 0 && (
+        <div className="px-4 pt-4">
+          <EmptyState pose="glass" title={q ? `‘${q}’에 맞는 책갈피가 없어요` : category ? '이 칸은 아직 비어 있어요' : '아직 꽂힌 책갈피가 없어요'}>
+            {q ? '다른 말로 찾아보세요.' : '알아 둔 걸 첫 책갈피로 꽂아 주세요.'}
+          </EmptyState>
+        </div>
+      )}
+
+      {shares.length > 0 && (
+        <div className="gh-shelfwrap">
+          <Shelf>
+            {shares.map((s) => (
+              <Bookmark
+                key={s.id}
+                to={`/shares/${s.id}`}
+                color={colorOf(SHARE_COLORS, s.category)}
+                category={shareCategoryLabel(s.category)}
+                title={s.title}
+                tags={s.tags}
+                by={`${authorName(s.author)} · ${formatRelative(s.createdAt, now)}`}
+                saved={s.saved}
+                saveCount={s.saveCount}
+                noteCount={s.noteCount}
+                hasPhoto={s.hasPhoto}
+              />
+            ))}
+          </Shelf>
+        </div>
+      )}
+
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {isFetchingNextPage && <div className="gh-shskel" />}
+      {(showMoreButton || list.isFetchNextPageError) && (
+        <button type="button" className="gh-shmore" onClick={() => fetchNextPage()}>
+          {list.isFetchNextPageError ? '더 불러오지 못했어요. 다시 시도' : '더보기'}
+        </button>
+      )}
+
+      <Fab to={WRITE_PATH} icon={<IconBookmark />}>
+        책갈피 꽂기
+      </Fab>
     </div>
   )
 }
-
-const writeButtonClass = buttonVariants({
-  size: 'lg',
-  className: 'pointer-events-auto h-12 rounded-full px-5 text-[15px] font-bold shadow-lg',
-})
