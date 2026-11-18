@@ -1,19 +1,20 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type CSSProperties, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { Chip } from '@/components/Chip'
-import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
+import { DotChips, FieldError, Ghost, IconSend, Rope, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { FEED_CATEGORY_KEYS, feedCategoryLabel } from '@/features/content/labels'
 import { BODY_MAX, feedErrorMessage, useCreateFeedPost } from '@/features/feed/api'
-import { uploadErrorMessage } from '@/features/uploads/api'
-import { PhotoPicker } from '@/features/uploads/PhotoPicker'
+import { MAX_PHOTOS, uploadErrorMessage } from '@/features/uploads/api'
+import { PolaroidPicker } from '@/features/uploads/PolaroidPicker'
 import { usePhotoUploads } from '@/features/uploads/usePhotoUploads'
 import { useIdempotencyKey } from '@/hooks/useIdempotencyKey'
 import { useLeaveGuard } from '@/hooks/useLeaveGuard'
 import { toApiError } from '@/lib/api'
+import { colorOf, FEED_COLORS } from '@/lib/categoryColors'
+import { cn } from '@/lib/utils'
+import '@/styles/feed.css'
 
 /** 피드 글쓰기 (S51) — 분류 · 본문 · 사진 3장. 수정이 없어 올리기 전에 한 번 더 본다 */
 export function FeedWritePage() {
@@ -28,9 +29,9 @@ export function FeedWritePage() {
     )
   }
   return (
-    <SubPageLayout fallback="/feed">
+    <StorySubPage fallback="/feed" className="gh-fw">
       <FeedForm />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }
 
@@ -80,65 +81,72 @@ function FeedForm() {
     )
   }
 
+  const color = colorOf(FEED_COLORS, category ?? 'DAILY')
+  const blocked = (triedSubmit && (category == null || trimmed === '')) || error != null
+
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1 className="mb-8 text-[22px] leading-snug font-bold text-title">피드 글쓰기</h1>
-      <div className="space-y-8">
-        <section>
-          <FieldLabel>분류</FieldLabel>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="분류">
-            {FEED_CATEGORY_KEYS.map((c) => (
-              <Chip key={c} selected={category === c} onClick={() => setCategory(c)}>
-                {feedCategoryLabel(c)}
-              </Chip>
-            ))}
-          </div>
-          {triedSubmit && category == null && <FieldError>분류를 골라 주세요.</FieldError>}
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="feed-body" aside={`${body.length} / ${BODY_MAX}`}>
-            내용
-          </FieldLabel>
-          <textarea
-            id="feed-body"
-            maxLength={BODY_MAX}
-            rows={6}
-            placeholder="오늘 있었던 일이나 자랑하고 싶은 것"
-            className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
-          {triedSubmit && trimmed === '' && <FieldError>내용을 써 주세요.</FieldError>}
-        </section>
-
-        <section>
-          <FieldLabel>
-            사진 <span className="font-normal text-muted-foreground">(선택)</span>
-          </FieldLabel>
-          <PhotoPicker uploads={uploads} disabled={busy} />
-        </section>
+    <form onSubmit={handleSubmit} noValidate style={{ '--c': color } as CSSProperties}>
+      <div className="gh-fw-ttl">
+        <h1>
+          어떤 하루를
+          <br />
+          걸어 둘까요?
+        </h1>
+        <p>빨랫줄에 걸면 마을 사람들이 봐요.</p>
+        <Ghost pose="b" />
       </div>
+      <DotChips
+        label="분류"
+        className={cn(triedSubmit && category == null && 'is-error')}
+        value={category ?? ''}
+        onChange={(v) => setCategory(v)}
+        options={FEED_CATEGORY_KEYS.map((c) => ({ value: c, label: feedCategoryLabel(c), color: colorOf(FEED_COLORS, c) }))}
+      />
+      {triedSubmit && category == null && <FieldError>분류를 골라 주세요.</FieldError>}
 
-      <StepFooter>
-        {error && (
-          <p className="mb-3 text-center text-sm text-destructive" role="alert">
-            {error}
-          </p>
+      <Rope className="mt-[22px]" />
+      <div className="gh-fwnote">
+        <i className="gh-pin is-a" aria-hidden />
+        <i className="gh-pin is-b" aria-hidden />
+        <textarea
+          id="feed-body"
+          aria-label="내용"
+          maxLength={BODY_MAX}
+          placeholder="오늘 있었던 일이나 자랑하고 싶은 것"
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+        />
+        <div className="gh-n">
+          <span className="gh-chip">{category ? feedCategoryLabel(category) : '분류 고르기 전'}</span>
+          {body.length} / {BODY_MAX}
+        </div>
+      </div>
+      {triedSubmit && trimmed === '' && <FieldError>내용을 써 주세요.</FieldError>}
+
+      <p className="gh-fwph">
+        사진
+        <small>
+          선택 · {uploads.photos.length} / {MAX_PHOTOS}
+        </small>
+      </p>
+      <Rope className="gh-mini" />
+      <PolaroidPicker uploads={uploads} disabled={busy} />
+
+      <div className="gh-go2">
+        {uploading ? '사진 거는 중…' : create.isPending ? '거는 중…' : uploads.preparing ? '사진 준비 중…' : '하루 걸어 두기'}
+        <button type="submit" aria-label="하루 걸어 두기" disabled={busy || uploads.preparing}>
+          <IconSend />
+        </button>
+      </div>
+      <p className={cn('gh-gon', blocked && error && 'is-bad')} role={error ? 'alert' : undefined}>
+        {error ?? (
+          <>
+            걸어 둔 뒤에는 고칠 수 없어요.
+            <br />
+            내리고 다시 걸 수는 있어요.
+          </>
         )}
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={busy || uploads.preparing}>
-          {uploading ? '사진 올리는 중…' : create.isPending ? '올리는 중…' : uploads.preparing ? '사진 준비 중…' : '올리기'}
-        </Button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">올린 뒤에는 수정할 수 없어요. 삭제하고 다시 쓸 수는 있어요.</p>
-      </StepFooter>
+      </p>
     </form>
-  )
-}
-
-function FieldError({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
   )
 }
