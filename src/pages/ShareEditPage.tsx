@@ -1,7 +1,6 @@
 import { useLocation, useNavigate, useParams } from 'react-router'
-import { GoneNotice, LoadError } from '@/components/PageStates'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Blocked, GoneSlot, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { shareSubmitError, useShareDetail, useUpdateShare, type ShareDetail, type ShareInput } from '@/features/shares/api'
@@ -29,22 +28,15 @@ export function ShareEditPage() {
   const back = validId ? `/shares/${id}` : '/shares'
 
   return (
-    <SubPageLayout fallback={back}>
-      {notFound && <GoneNotice to="/shares" link="공유 목록으로" />}
-      {!notFound && detail.isPending && (
-        <div className="space-y-4">
-          <Skeleton className="h-7 w-1/3" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-40 w-full" />
-        </div>
-      )}
-      {!notFound && detail.isError && <LoadError text="공유를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
+    <StorySubPage fallback={back} className="gh-qwrite">
+      {notFound && <GoneSlot title="책갈피가 있던 자리만 남았어요" to="/shares" link="공유 목록으로" />}
+      {!notFound && detail.isPending && <LoadingDots className="mt-16" />}
+      {!notFound && detail.isError && <LoadFail title="공유를 불러오지 못했어요" onRetry={() => detail.refetch()} />}
       {detail.data && !detail.data.mine && (
-        <GoneNotice title="내 공유글만 수정할 수 있어요." text="내 글만 수정할 수 있어요." to={back} link="글로 돌아가기" />
+        <Blocked title="내 책갈피만 고칠 수 있어요" text="다른 사람이 꽂은 글이에요." to={back} link="글로 돌아가기" />
       )}
       {detail.data?.mine && <EditForm key={detail.data.id} share={detail.data} />}
-    </SubPageLayout>
+    </StorySubPage>
   )
 }
 

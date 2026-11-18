@@ -1,7 +1,5 @@
 import { useNavigate, useParams } from 'react-router'
-import { GoneNotice, LoadError } from '@/components/PageStates'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Blocked, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { useMe } from '@/features/auth/session'
 import { useNoticeDetail, type NoticeDetail } from '@/features/notices/api'
 import { contentErrorMessage, useCreateNotice, useUpdateNotice, type NoticeInput } from '@/features/ops/content'
@@ -19,7 +17,7 @@ export function OpsNoticeWritePage() {
   const keyFor = useIdempotencyKey()
   return (
     <OpsGuard>
-      <SubPageLayout fallback="/ops/notices">
+      <StorySubPage fallback="/ops/notices" className="gh-qwrite">
         <NoticeForm
           mode="create"
           initial={EMPTY}
@@ -37,7 +35,7 @@ export function OpsNoticeWritePage() {
             )
           }
         />
-      </SubPageLayout>
+      </StorySubPage>
     </OpsGuard>
   )
 }
@@ -52,12 +50,12 @@ export function OpsNoticeEditPage() {
   const notFound = !valid || (detail.isError && toApiError(detail.error).code === 'NOT_FOUND')
   return (
     <OpsGuard>
-      <SubPageLayout fallback="/ops/notices">
-        {notFound && <GoneNotice title="공지를 찾지 못했어요." text="삭제됐거나 없는 공지예요." to="/ops/notices" link="공지 관리로" />}
-        {!notFound && detail.isPending && <Skeleton className="h-60 w-full rounded-xl" />}
-        {!notFound && detail.isError && <LoadError text="공지를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
+      <StorySubPage fallback="/ops/notices" className="gh-qwrite">
+        {notFound && <Blocked title="공지를 찾을 수 없어요" text="삭제됐거나 없는 공지예요." to="/ops/notices" link="공지 관리로" />}
+        {!notFound && detail.isPending && <LoadingDots className="mt-16" />}
+        {!notFound && detail.isError && <LoadFail title="공지를 불러오지 못했어요" onRetry={() => detail.refetch()} />}
         {detail.data && <EditForm key={detail.data.id} notice={detail.data} />}
-      </SubPageLayout>
+      </StorySubPage>
     </OpsGuard>
   )
 }

@@ -1,7 +1,6 @@
-import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Blocked, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import {
@@ -64,17 +63,14 @@ export function ScheduleEditPage() {
 
   if (notFound || (detail.data && !canEdit)) {
     return (
-      <SubPageLayout fallback="/schedules">
-        <div className="rounded-2xl bg-card px-6 py-10 text-center">
-          <p className="text-lg font-bold text-title">{notFound ? '일정을 찾을 수가 없어요.' : '고칠 수 없는 일정이에요'}</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {notFound ? '삭제됐거나 없는 일정이에요.' : '일정을 등록한 부원이나 운영진만 수정할 수 있어요.'}
-          </p>
-          <Link to="/schedules" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
-            캘린더로
-          </Link>
-        </div>
-      </SubPageLayout>
+      <StorySubPage fallback="/schedules">
+        <Blocked
+          title={notFound ? '일정을 찾을 수 없어요' : '고칠 수 없는 일정이에요'}
+          text={notFound ? '삭제됐거나 없는 일정이에요.' : '일정을 띄운 부원이나 운영진만 고칠 수 있어요.'}
+          to="/schedules"
+          link="캘린더로"
+        />
+      </StorySubPage>
     )
   }
 
@@ -91,22 +87,9 @@ export function ScheduleEditPage() {
   const error = update.error ? toApiError(update.error) : null
 
   return (
-    <SubPageLayout fallback={`/schedules/${id}`}>
-      {detail.isPending && (
-        <div className="space-y-3">
-          <Skeleton className="h-7 w-32" />
-          <Skeleton className="h-12 w-full rounded-lg" />
-          <Skeleton className="h-12 w-full rounded-lg" />
-        </div>
-      )}
-      {detail.isError && !notFound && (
-        <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-          <p className="text-sm">일정을 불러오지 못했어요.</p>
-          <Button variant="secondary" onClick={() => detail.refetch()}>
-            다시 시도
-          </Button>
-        </div>
-      )}
+    <StorySubPage fallback={`/schedules/${id}`} className="gh-qwrite">
+      {detail.isPending && <LoadingDots className="mt-16" />}
+      {detail.isError && !notFound && <LoadFail title="일정을 불러오지 못했어요" onRetry={() => detail.refetch()} />}
       {detail.data && (
         <ScheduleForm
           key={detail.data.id}
@@ -119,6 +102,6 @@ export function ScheduleEditPage() {
           onSubmit={handleSubmit}
         />
       )}
-    </SubPageLayout>
+    </StorySubPage>
   )
 }

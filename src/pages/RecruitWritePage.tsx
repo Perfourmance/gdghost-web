@@ -1,11 +1,18 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
-import { Minus, Plus, X } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
-import { Chip } from '@/components/Chip'
-import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import {
+  FieldError,
+  Hint,
+  IconX,
+  LinedTextarea,
+  PaperChips,
+  PaperInput,
+  PaperLabel,
+  StorySubPage,
+  TitleInput,
+  WriteForm,
+} from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { recruitKindLabel } from '@/features/content/labels'
@@ -116,160 +123,97 @@ function RecruitForm() {
   }
 
   return (
-    <SubPageLayout fallback={scheduleId ? `/schedules/${scheduleId}` : '/recruits'}>
-      <form onSubmit={handleSubmit} noValidate>
-        <h1 className="mb-8 text-[22px] leading-snug font-bold text-title">모집 열기</h1>
-
-        {scheduleId != null && (
-          <div className="-mt-4 mb-8 flex items-start justify-between gap-3 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-            <p>
-              {schedule.data ? (
-                <>
-                  <b className="font-bold">{schedule.data.title}</b> 일정에 연결돼요.
-                </>
-              ) : schedule.isError ? (
-                '연결할 일정을 찾을 수가 없어요.'
-              ) : (
-                '연결할 일정을 불러오는 중…'
-              )}
-              <span className="mt-0.5 block text-xs text-brand-text/80">모집을 열면 일정 상세 화면에서도 볼 수 있어요.</span>
-            </p>
-            <button
-              type="button"
-              aria-label="일정 연결 빼기"
-              onClick={() => setScheduleId(null)}
-              className="flex size-7 shrink-0 items-center justify-center rounded-full hover:bg-brand-text/10"
-            >
-              <X className="size-4" />
-            </button>
-          </div>
-        )}
-
-        <div className="space-y-8">
-          <section>
-            <FieldLabel>종류</FieldLabel>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="종류">
-              {RECRUIT_KINDS.map((k) => (
-                <Chip key={k} selected={kind === k} onClick={() => setKind(k)}>
-                  {recruitKindLabel(k)}
-                </Chip>
-              ))}
-            </div>
-            {kindError && <FieldError>{kindError}</FieldError>}
-          </section>
-
-          <section>
-            <FieldLabel htmlFor="title" aside={`${title.length} / ${TITLE_MAX}`}>
-              제목
-            </FieldLabel>
-            <Input
-              id="title"
-              maxLength={TITLE_MAX}
-              placeholder="예: 금요일 저녁 홍대입구역행 택시 동승"
-              className="h-12 bg-card"
-              aria-invalid={titleError ? true : undefined}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            {titleError && <FieldError>{titleError}</FieldError>}
-          </section>
-
-          <section>
-            <FieldLabel htmlFor="date">만나는 날짜와 시간</FieldLabel>
-            <div className="grid grid-cols-[3fr_2fr] gap-2">
-              <Input
-                id="date"
-                type="date"
-                min={today}
-                max={lastDay}
-                className="h-12 bg-card"
-                aria-invalid={timeError ? true : undefined}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <Input
-                id="time"
-                type="time"
-                aria-label="시간"
-                className="h-12 bg-card"
-                aria-invalid={timeError ? true : undefined}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-            </div>
-            {timeError && <FieldError>{timeError}</FieldError>}
-            <p className="mt-2 text-xs text-muted-foreground">이 시간이 지나면 모집이 자동으로 마감돼요.</p>
-          </section>
-
-          <section>
-            <FieldLabel>인원 (나 포함)</FieldLabel>
-            <div className="flex items-center gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon"
-                aria-label="인원 줄이기"
-                disabled={capacity <= CAPACITY_MIN}
-                onClick={() => setCapacity((c) => Math.max(CAPACITY_MIN, c - 1))}
-              >
-                <Minus />
-              </Button>
-              <p className="w-14 text-center text-lg font-bold text-title tabular-nums" aria-live="polite">
-                {capacity}명
+    <StorySubPage fallback={scheduleId ? `/schedules/${scheduleId}` : '/recruits'} className="gh-qwrite">
+      <WriteForm
+        title="빈 자리 등불 켜기"
+        description="같이 갈 사람을 모아요. 정원이 차거나 시간이 지나면 닫혀요."
+        notice={
+          scheduleId != null && (
+            <div className="gh-link-note">
+              <p>
+                {schedule.data ? (
+                  <>
+                    <b>{schedule.data.title}</b> 일정에 이어져요.
+                  </>
+                ) : schedule.isError ? (
+                  '이을 일정을 찾을 수 없어요.'
+                ) : (
+                  '이을 일정을 불러오는 중…'
+                )}
+                <small>모집을 열면 일정 상세에서도 보여요.</small>
               </p>
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon"
-                aria-label="인원 늘리기"
-                disabled={capacity >= CAPACITY_MAX}
-                onClick={() => setCapacity((c) => Math.min(CAPACITY_MAX, c + 1))}
-              >
-                <Plus />
-              </Button>
+              <button type="button" aria-label="일정 연결 빼기" onClick={() => setScheduleId(null)}>
+                <IconX />
+              </button>
             </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {CAPACITY_MIN}~{CAPACITY_MAX}명까지 모집할 수 있어요. 정원이 차면 자동으로 마감돼요.
-            </p>
-            {error?.fieldMessage('capacity') && <FieldError>{error.fieldMessage('capacity')}</FieldError>}
-          </section>
+          )
+        }
+        submitLabel="모집 열기"
+        pendingLabel="여는 중…"
+        pending={pending}
+        error={recruitErrorMessage(error)}
+        onSubmit={handleSubmit}
+      >
+        <PaperLabel aside="하나 골라 주세요">무엇을 모아요?</PaperLabel>
+        <PaperChips
+          label="종류"
+          options={RECRUIT_KINDS.map((k) => ({ value: k, label: recruitKindLabel(k) }))}
+          isOn={(k) => kind === k}
+          onToggle={setKind}
+        />
+        <FieldError>{kindError}</FieldError>
 
-          <section>
-            <FieldLabel htmlFor="memo" aside={`${memo.length} / ${MEMO_MAX}`}>
-              메모 <span className="font-normal text-muted-foreground">(선택)</span>
-            </FieldLabel>
-            <textarea
-              id="memo"
-              maxLength={MEMO_MAX}
-              rows={4}
-              placeholder="만날 장소나 연락 방법을 적어 주세요."
-              className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-            />
-            <p className="mt-2 text-xs text-muted-foreground">참여 알림은 따로 가지 않아요. 참여자가 메모에 적힌 방법으로 연락해요.</p>
-          </section>
+        <PaperLabel htmlFor="title" aside={`${title.length} / ${TITLE_MAX}`}>
+          제목
+        </PaperLabel>
+        <TitleInput
+          id="title"
+          rows={1}
+          maxLength={TITLE_MAX}
+          placeholder="예: 금요일 저녁 홍대입구역행 택시 동승"
+          aria-invalid={titleError ? true : undefined}
+          value={title}
+          onChange={(e) => setTitle(e.target.value.replace(/\n/g, ' '))}
+        />
+        <FieldError>{titleError}</FieldError>
+
+        <PaperLabel htmlFor="date">만나는 날짜와 시간</PaperLabel>
+        <div className="gh-two-in">
+          <PaperInput id="date" type="date" min={today} max={lastDay} aria-invalid={timeError ? true : undefined} value={date} onChange={(e) => setDate(e.target.value)} />
+          <PaperInput id="time" type="time" aria-label="시간" aria-invalid={timeError ? true : undefined} value={time} onChange={(e) => setTime(e.target.value)} />
         </div>
+        <FieldError>{timeError}</FieldError>
+        <Hint>이 시간이 지나면 모집이 저절로 닫혀요.</Hint>
 
-        <StepFooter>
-          {recruitErrorMessage(error) && (
-            <p className="mb-3 text-center text-sm text-destructive" role="alert">
-              {recruitErrorMessage(error)}
-            </p>
-          )}
-          <Button type="submit" size="lg" className="h-12 w-full" disabled={pending}>
-            {pending ? '여는 중…' : '모집 열기'}
-          </Button>
-        </StepFooter>
-      </form>
-    </SubPageLayout>
-  )
-}
+        <PaperLabel aside={`${CAPACITY_MIN}~${CAPACITY_MAX}명`}>자리 (나 포함)</PaperLabel>
+        <div className="gh-stepper">
+          <button
+            type="button"
+            aria-label="인원 줄이기"
+            disabled={capacity <= CAPACITY_MIN}
+            onClick={() => setCapacity((c) => Math.max(CAPACITY_MIN, c - 1))}
+          >
+            −
+          </button>
+          <b aria-live="polite">{capacity}명</b>
+          <button
+            type="button"
+            aria-label="인원 늘리기"
+            disabled={capacity >= CAPACITY_MAX}
+            onClick={() => setCapacity((c) => Math.min(CAPACITY_MAX, c + 1))}
+          >
+            +
+          </button>
+        </div>
+        <Hint>정원이 차면 저절로 닫혀요.</Hint>
+        <FieldError>{error?.fieldMessage('capacity')}</FieldError>
 
-function FieldError({ children }: { children: ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
+        <PaperLabel htmlFor="memo" aside={`선택 · ${memo.length} / ${MEMO_MAX}`}>
+          메모
+        </PaperLabel>
+        <LinedTextarea id="memo" maxLength={MEMO_MAX} placeholder="만날 장소나 연락 방법을 적어 주세요." value={memo} onChange={(e) => setMemo(e.target.value)} />
+        <Hint>참여 알림은 따로 가지 않아요. 참여한 사람이 메모에 적힌 방법으로 연락해요.</Hint>
+      </WriteForm>
+    </StorySubPage>
   )
 }

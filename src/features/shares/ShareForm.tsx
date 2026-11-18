@@ -1,16 +1,13 @@
 import { useState, type FormEvent, type KeyboardEvent } from 'react'
-import { X } from 'lucide-react'
-import { Chip } from '@/components/Chip'
-import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { FieldError, Hint, IconX, LinedTextarea, PaperChips, PaperInput, PaperLabel, TitleInput, WriteForm } from '@/components/story'
 import { SHARE_CATEGORY_KEYS, shareCategoryLabel } from '@/features/content/labels'
 import { BODY_MAX, BODY_MIN, TAG_MAX, TAGS_MAX, TITLE_MAX, TITLE_MIN } from '@/features/shares/api'
-import { uploadErrorMessage } from '@/features/uploads/api'
-import { PhotoPicker } from '@/features/uploads/PhotoPicker'
+import { MAX_PHOTOS, uploadErrorMessage } from '@/features/uploads/api'
+import { PolaroidPicker } from '@/features/uploads/PolaroidPicker'
 import { usePhotoUploads, type ExistingPhoto } from '@/features/uploads/usePhotoUploads'
 import { useLeaveGuard } from '@/hooks/useLeaveGuard'
 import { toApiError, type ApiError } from '@/lib/api'
+import '@/styles/feed.css'
 
 export interface ShareFormValues {
   category: string | null
@@ -95,96 +92,60 @@ export function ShareForm({ mode, initial, initialPhotos = [], pending, error, f
     (triedSubmit && bodyInvalid ? `본문을 ${BODY_MIN}자 이상 써 주세요.` : null) ?? error?.fieldMessage('body')
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1 className="mb-8 text-[22px] leading-snug font-bold text-title">
-        {mode === 'create' ? '정보 공유하기' : '공유 수정'}
-      </h1>
+    <WriteForm
+      title={mode === 'create' ? '책갈피 꽂기' : '책갈피 고치기'}
+      description="직접 겪어 본 걸 마을 책장에 꽂아요."
+      submitLabel={mode === 'create' ? '책장에 꽂기' : '고친 책갈피 저장'}
+      pendingLabel={uploading ? '사진 올리는 중…' : uploads.preparing ? '사진 준비 중…' : '저장하는 중…'}
+      pending={busy}
+      disabled={uploads.preparing || (mode === 'edit' && !changed)}
+      error={uploadError ?? formError}
+      onSubmit={handleSubmit}
+    >
+      <PaperLabel aside="하나 골라 주세요">어느 칸에 꽂을까요?</PaperLabel>
+      <PaperChips
+        label="분류"
+        options={SHARE_CATEGORY_KEYS.map((c) => ({ value: c, label: shareCategoryLabel(c) }))}
+        isOn={(c) => values.category === c}
+        onToggle={(c) => set({ category: c })}
+      />
+      <FieldError>{categoryError}</FieldError>
 
-      <div className="space-y-8">
-        <section>
-          <FieldLabel>분류</FieldLabel>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="분류">
-            {SHARE_CATEGORY_KEYS.map((c) => (
-              <Chip key={c} selected={values.category === c} onClick={() => set({ category: c })}>
-                {shareCategoryLabel(c)}
-              </Chip>
-            ))}
-          </div>
-          {categoryError && <FieldError>{categoryError}</FieldError>}
-        </section>
+      <PaperLabel htmlFor="share-title" aside={`${values.title.length} / ${TITLE_MAX}`}>
+        제목
+      </PaperLabel>
+      <TitleInput
+        id="share-title"
+        rows={1}
+        maxLength={TITLE_MAX}
+        placeholder="예: 학교 앞 혼밥하기 좋은 곳"
+        aria-invalid={titleError ? true : undefined}
+        value={values.title}
+        onChange={(e) => set({ title: e.target.value.replace(/\n/g, ' ') })}
+      />
+      <FieldError>{titleError}</FieldError>
 
-        <section>
-          <FieldLabel htmlFor="share-title" aside={`${values.title.length} / ${TITLE_MAX}`}>
-            제목
-          </FieldLabel>
-          <Input
-            id="share-title"
-            maxLength={TITLE_MAX}
-            placeholder="예: 학교 앞 혼밥하기 좋은 곳"
-            className="h-12 bg-card"
-            aria-invalid={titleError ? true : undefined}
-            value={values.title}
-            onChange={(e) => set({ title: e.target.value })}
-          />
-          {titleError && <FieldError>{titleError}</FieldError>}
-        </section>
+      <PaperLabel htmlFor="share-body" aside={`${values.body.length} / ${BODY_MAX}`}>
+        본문
+      </PaperLabel>
+      <LinedTextarea
+        id="share-body"
+        maxLength={BODY_MAX}
+        placeholder="직접 겪어 본 내용을 적어 주세요. 링크도 넣을 수 있어요."
+        aria-invalid={bodyError ? true : undefined}
+        value={values.body}
+        onChange={(e) => set({ body: e.target.value })}
+      />
+      <FieldError>{bodyError}</FieldError>
 
-        <section>
-          <FieldLabel htmlFor="share-body" aside={`${values.body.length} / ${BODY_MAX}`}>
-            본문
-          </FieldLabel>
-          <textarea
-            id="share-body"
-            maxLength={BODY_MAX}
-            rows={8}
-            placeholder="직접 겪어 본 내용을 적어 주세요. 링크도 넣을 수 있어요."
-            aria-invalid={bodyError ? true : undefined}
-            className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm"
-            value={values.body}
-            onChange={(e) => set({ body: e.target.value })}
-          />
-          {bodyError && <FieldError>{bodyError}</FieldError>}
-        </section>
+      <PaperLabel htmlFor="share-tag" aside={`선택 · ${values.tags.length} / ${TAGS_MAX}`}>
+        태그
+      </PaperLabel>
+      <TagInput tags={values.tags} onChange={(tags) => set({ tags })} />
 
-        <section>
-          <FieldLabel htmlFor="share-tag" aside={`${values.tags.length} / ${TAGS_MAX}`}>
-            태그 <span className="font-normal text-muted-foreground">(선택)</span>
-          </FieldLabel>
-          <TagInput tags={values.tags} onChange={(tags) => set({ tags })} />
-        </section>
-
-        <section>
-          <FieldLabel>
-            사진 <span className="font-normal text-muted-foreground">(선택)</span>
-          </FieldLabel>
-          <PhotoPicker uploads={uploads} disabled={busy} />
-        </section>
-      </div>
-
-      <StepFooter>
-        {(uploadError ?? formError) && (
-          <p className="mb-3 text-center text-sm text-destructive" role="alert">
-            {uploadError ?? formError}
-          </p>
-        )}
-        <Button
-          type="submit"
-          size="lg"
-          className="h-12 w-full"
-          disabled={busy || uploads.preparing || (mode === 'edit' && !changed)}
-        >
-          {uploading
-            ? '사진 올리는 중…'
-            : pending
-              ? '저장하는 중…'
-              : uploads.preparing
-                ? '사진 준비 중…'
-                : mode === 'create'
-                  ? '공유 올리기'
-                  : '수정 완료'}
-        </Button>
-      </StepFooter>
-    </form>
+      <PaperLabel aside={`선택 · ${uploads.photos.length} / ${MAX_PHOTOS}`}>사진</PaperLabel>
+      <PolaroidPicker uploads={uploads} disabled={busy} />
+    </WriteForm>
   )
 }
 
@@ -214,48 +175,34 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   return (
     <div>
       {tags.length > 0 && (
-        <ul className="mb-2 flex flex-wrap gap-1.5">
+        <ul className="gh-tags-in">
           {tags.map((tag) => (
-            <li key={tag} className="flex items-center gap-1 rounded-md bg-brand-soft py-1 pr-1 pl-2 text-sm text-brand-text">
+            <li key={tag}>
               #{tag}
-              <button
-                type="button"
-                aria-label={`${tag} 태그 빼기`}
-                onClick={() => onChange(tags.filter((t) => t !== tag))}
-                className="flex size-5 items-center justify-center rounded hover:bg-background/50"
-              >
-                <X className="size-3.5" />
+              <button type="button" aria-label={`${tag} 태그 빼기`} onClick={() => onChange(tags.filter((t) => t !== tag))}>
+                <IconX />
               </button>
             </li>
           ))}
         </ul>
       )}
-      <div className="flex gap-2">
-        <Input
+      <div className="gh-tag-row">
+        <PaperInput
           id="share-tag"
           maxLength={TAG_MAX}
           disabled={full}
           placeholder={full ? `태그는 ${TAGS_MAX}개까지예요` : '예: 혼밥'}
-          className="h-11 bg-card"
           value={text}
           onChange={(e) => setText(e.target.value.replace(',', ''))}
           onKeyDown={handleKey}
           // 다른 칸으로 넘어가면 쓰던 태그도 넣는다
           onBlur={commit}
         />
-        <Button type="button" variant="secondary" className="h-11 shrink-0" disabled={full || !text.trim()} onClick={commit}>
+        <button type="button" disabled={full || !text.trim()} onClick={commit}>
           추가
-        </Button>
+        </button>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">태그를 입력하고 Enter를 누르면 검색에 쓰여요.</p>
+      <Hint>태그를 쓰고 Enter를 누르면 검색에 쓰여요.</Hint>
     </div>
-  )
-}
-
-function FieldError({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
   )
 }

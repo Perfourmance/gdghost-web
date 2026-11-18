@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
+import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { scheduleErrorMessage, useCreateSchedule, type ScheduleInput } from '@/features/schedules/api'
@@ -61,7 +62,7 @@ export function ScheduleWritePage() {
   const error = create.error ? toApiError(create.error) : null
 
   return (
-    <SubPageLayout fallback="/schedules">
+    <StorySubPage fallback="/schedules" className="gh-qwrite">
       <ScheduleForm
         mode="create"
         initial={initial}
@@ -71,6 +72,6 @@ export function ScheduleWritePage() {
         formError={scheduleErrorMessage(error)}
         onSubmit={handleSubmit}
       />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }

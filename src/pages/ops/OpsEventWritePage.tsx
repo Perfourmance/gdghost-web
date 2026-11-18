@@ -1,7 +1,5 @@
 import { useNavigate, useParams } from 'react-router'
-import { GoneNotice, LoadError } from '@/components/PageStates'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Blocked, LoadFail, LoadingDots, StorySubPage } from '@/components/story'
 import { useMe } from '@/features/auth/session'
 import { useEventDetail, type EventDetail } from '@/features/events/api'
 import { contentErrorMessage, useCreateEvent, useUpdateEvent, type EventInput } from '@/features/ops/content'
@@ -26,7 +24,7 @@ export function OpsEventWritePage() {
   const keyFor = useIdempotencyKey()
   return (
     <OpsGuard>
-      <SubPageLayout fallback="/ops/events">
+      <StorySubPage fallback="/ops/events" className="gh-qwrite">
         <EventForm
           mode="create"
           initial={EMPTY}
@@ -44,7 +42,7 @@ export function OpsEventWritePage() {
             )
           }
         />
-      </SubPageLayout>
+      </StorySubPage>
     </OpsGuard>
   )
 }
@@ -58,12 +56,12 @@ export function OpsEventEditPage() {
   const notFound = !valid || (detail.isError && toApiError(detail.error).code === 'NOT_FOUND')
   return (
     <OpsGuard>
-      <SubPageLayout fallback="/ops/events">
-        {notFound && <GoneNotice title="이벤트를 찾을 수가 없어요." text="없는 이벤트예요." to="/ops/events" link="이벤트 관리로" />}
-        {!notFound && detail.isPending && <Skeleton className="h-60 w-full rounded-xl" />}
-        {!notFound && detail.isError && <LoadError text="이벤트를 불러오지 못했어요." onRetry={() => detail.refetch()} />}
+      <StorySubPage fallback="/ops/events" className="gh-qwrite">
+        {notFound && <Blocked title="이벤트를 찾을 수 없어요" text="없는 이벤트예요." to="/ops/events" link="이벤트 관리로" />}
+        {!notFound && detail.isPending && <LoadingDots className="mt-16" />}
+        {!notFound && detail.isError && <LoadFail title="이벤트를 불러오지 못했어요" onRetry={() => detail.refetch()} />}
         {detail.data && <EditForm key={detail.data.id} event={detail.data} />}
-      </SubPageLayout>
+      </StorySubPage>
     </OpsGuard>
   )
 }

@@ -2572,3 +2572,141 @@
     height: 20px;
   }
 }
+
+/* ── 작성 화면 틀 (write-final '편지지') — 질문 · 일정 · 모집 · 공유 · 공지 · 이벤트 작성이 같이 쓴다 ── */
+@layer components {
+  .gh-qwrite {
+    padding-bottom: 40px;
+    background: radial-gradient(90% 40% at 50% 30%, rgba(245, 185, 82, 0.12), rgba(245, 185, 82, 0) 70%), var(--color-gh-night);
+  }
+  .gh-wh {
+    padding: 4px 22px 14px;
+  }
+  .gh-wh h1 {
+    font: 400 24px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-wh p {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-wfrom {
+    margin-top: 18px;
+    padding-top: 2px;
+    border-top: 1.5px dashed var(--color-gh-paper-line);
+  }
+  .gh-wfrom .gh-hint {
+    padding-right: 70px;
+  }
+  .gh-paper > .gh-send.is-big {
+    position: absolute;
+    right: 16px;
+    bottom: -26px;
+    box-shadow: 0 0 0 6px var(--color-gh-night), 0 10px 22px -6px rgba(74, 124, 245, 0.9);
+  }
+  .gh-paper > .gh-send.is-big:disabled {
+    background: #3a4560;
+    color: #7d89a3;
+    box-shadow: 0 0 0 6px var(--color-gh-night);
+  }
+  .gh-sendcap {
+    margin: 36px 22px 0;
+    text-align: right;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-sendcap.is-err {
+    color: var(--color-gh-error-night);
+  }
+}
+
+/* 종이 위 숫자 고르기 (모집 인원) + 연결 안내 */
+@layer components {
+  .gh-stepper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gh-stepper button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3efe2;
+    color: var(--color-gh-d-ink);
+    font: 400 20px var(--font-title);
+  }
+  .gh-stepper button:disabled {
+    opacity: 0.4;
+  }
+  .gh-stepper b {
+    min-width: 56px;
+    text-align: center;
+    font: 400 20px var(--font-title);
+  }
+  .gh-link-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(169, 199, 255, 0.1);
+    font-size: 13px;
+    color: var(--color-gh-sky);
+  }
+  .gh-link-note p {
+    flex: 1;
+  }
+  .gh-link-note b {
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-link-note small {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-link-note button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-two-in {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 8px;
+  }
+}
+
+/* 종이 위 켜고 끄기 줄 (공지 고정 · 필독 · 이벤트 사진 필수) */
+@layer components {
+  .gh-pswitch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #f3efe2;
+  }
+  .gh-pswitch > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .gh-pswitch b {
+    display: block;
+    font: 400 14px var(--font-title);
+  }
+  .gh-pswitch span {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8a8370;
+  }
+  .gh-pswitch .gh-toggle:not([aria-checked='true']) {
+    background: #dcd5c2;
+  }
+}

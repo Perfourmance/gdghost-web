@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router'
 import { SubPageLayout } from '@/components/layout/SubPageLayout'
+import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { shareSubmitError, useCreateShare, type ShareInput } from '@/features/shares/api'
@@ -28,7 +29,7 @@ export function ShareWritePage() {
   const error = create.error ? toApiError(create.error) : null
 
   return (
-    <SubPageLayout fallback="/shares">
+    <StorySubPage fallback="/shares" className="gh-qwrite">
       <ShareForm
         mode="create"
         initial={EMPTY}
@@ -54,6 +55,6 @@ export function ShareWritePage() {
           )
         }}
       />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }
