@@ -1,3 +1,0 @@
-# Netlify 배포 규칙. /api는 백엔드(Railway)로 넘겨 같은 주소로 쓴다 — 쿠키 · CSRF가 그대로 동작
-/api/*  https://gdghost-server-production.up.railway.app/api/:splat  200
-/*      /index.html  200
