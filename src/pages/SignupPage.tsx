@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useConfirm } from '@/components/story'
 import { Navigate, useBlocker, useNavigate } from 'react-router'
 import { useMe } from '@/features/auth/session'
@@ -29,6 +29,8 @@ export function SignupPage() {
   const [notice, setNotice] = useState(loadedExpired ? EXPIRED_MESSAGE : '')
   // 방금 가입을 마쳤으면 홈 대신 알림 준비로
   const [finished, setFinished] = useState(false)
+  // 가입을 마친 순간부터는 묻지 않는다. 화면 이동(Navigate)이 막는 조건 갱신보다 먼저 일어나므로 ref로 바로 읽는다
+  const doneRef = useRef(false)
 
   const stepIndex = SIGNUP_STEPS.indexOf(draft.step)
   const inProgress = draft.signupToken != null
@@ -36,7 +38,8 @@ export function SignupPage() {
   // 입력한 내용이 있으면 화면을 나갈 때 한 번 묻는다 (IA 2장)
   const confirm = useConfirm()
   const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => inProgress && !me && currentLocation.pathname !== nextLocation.pathname,
+    ({ currentLocation, nextLocation }) =>
+      !doneRef.current && inProgress && !me && currentLocation.pathname !== nextLocation.pathname,
   )
   useEffect(() => {
     if (blocker.state !== 'blocked') return
@@ -119,6 +122,7 @@ export function SignupPage() {
               onRedirect={redirect}
               onRestart={restart}
               onFinished={() => {
+                doneRef.current = true
                 setFinished(true)
                 clearSignupDraft()
                 reset()
