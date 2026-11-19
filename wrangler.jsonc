@@ -1,0 +1,12 @@
+// Cloudflare Workers 배포 설정. 화면은 dist에서, /api만 worker/index.js가 백엔드로 넘긴다
+{
+  "name": "gdghost",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application", // 새로고침 404 막기
+    "run_worker_first": ["/api/*"]
+  }
+}
