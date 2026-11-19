@@ -1,22 +1,33 @@
-import { PencilLine } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router'
-import { Chip, FilterToggle } from '@/components/Chip'
-import { SegmentTabs } from '@/components/layout/SegmentTabs'
-import { QUESTION_SEGMENTS } from '@/components/layout/segments'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { LockSheet } from '@/features/auth/LockSheet'
 import { useMe } from '@/features/auth/session'
 import { useLockSheet } from '@/features/auth/useLockSheet'
 import { DayRetry, LetterCard } from '@/components/day/Day'
-import { BigTitle, EmptyState, Fab, Ghost, IconPencil, StoryDayTopBar, TextTabs } from '@/components/story'
-import { EmptyCard, QuestionCard, type CardTarget, type QuestionCardData } from '@/features/content/Cards'
+import {
+  BigTitle,
+  EmptyState,
+  Fab,
+  FilterSwitches,
+  Ghost,
+  IconPencil,
+  Lab,
+  Nums,
+  Pill,
+  ReplyBubble,
+  StarItem,
+  StarLine,
+  StoryDayTopBar,
+  StoryTopBar,
+  TextTabs,
+} from '@/components/story'
+import type { QuestionCardData } from '@/features/content/Cards'
 import { authorName } from '@/features/member/author'
-import { questionCategoryLabel } from '@/features/content/labels'
+import { questionCategoryLabel, questionStateLabel } from '@/features/content/labels'
 import { useQuestionList, type QuestionFilters } from '@/features/questions/api'
 import { QUESTION_CATEGORIES as CATEGORIES } from '@/features/questions/write'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
+import '@/styles/questions.css'
 
 /** 질문 목록 (S20) — 분류 필터 · 내 질문 · 답변 기다리는 질문만 · 무한 스크롤. 필터는 주소에 둔다(뒤로 와도 유지) */
 export function QuestionsPage() {
@@ -46,10 +57,9 @@ export function QuestionsPage() {
     setParams(next, { replace: true, preventScrollReset: true })
   }
 
-  const target: CardTarget = { member, onLocked: lock.open }
   const questions = list.data?.pages.flatMap((page) => page.items) ?? []
 
-  if (!member) {
+  if (!me) {
     return (
       <GuestQuestions
         category={category}
@@ -65,113 +75,120 @@ export function QuestionsPage() {
     )
   }
 
-  return (
-    <div className="pb-20">
-      <h1 className="sr-only">질문</h1>
-      <SegmentTabs items={QUESTION_SEGMENTS} label="질문 탭" />
+  const empty = filters.mine
+    ? { title: '아직 띄운 질문이 없어요', body: '궁금한 게 생기면 선배들에게 물어보세요.' }
+    : filters.unanswered
+      ? { title: '빛을 기다리는 질문이 없어요', body: '모든 질문에 답장이 닿았어요.' }
+      : { title: '아직 질문이 없어요', body: '첫 질문을 띄워 보세요.' }
 
-      {/* 분류 칩 — 가로로 밀어서 본다 */}
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div className="flex w-max gap-2">
-          <Chip selected={category == null} onClick={() => setFilter('category', null)}>
-            전체
-          </Chip>
-          {CATEGORIES.map((c) => (
-            <Chip key={c} selected={category === c} onClick={() => setFilter('category', category === c ? null : c)}>
-              {questionCategoryLabel(c)}
-            </Chip>
+  return (
+    <div className="pb-28">
+      <div className="gh-qsky">
+        <StoryTopBar unread={me.unreadNotificationCount} />
+        <BigTitle items={[{ to: '/questions', label: '질문', on: true }, { to: '/members', label: '부원' }]} />
+        <Ghost pose="glass" className="gh-peek" />
+      </div>
+      <Link to={WRITE_PATH} className="gh-ask">
+        <Ghost pose="b" />
+        <span>
+          궁금한 건
+          <br />
+          선배들이 들어 줘요
+        </span>
+        <b>
+          <IconPencil />
+          질문하기
+        </b>
+      </Link>
+
+      <TextTabs
+        label="분류"
+        className="mt-1"
+        value={category ?? 'ALL'}
+        onChange={(v) => setFilter('category', v === 'ALL' ? null : v)}
+        options={[{ value: 'ALL', label: '전체' }, ...CATEGORIES.map((c) => ({ value: c, label: questionCategoryLabel(c) }))]}
+      />
+      <FilterSwitches
+        items={[
+          { label: '내 질문', on: filters.mine, onToggle: () => setFilter('mine', filters.mine ? null : '1') },
+          { label: '답변 기다리는 질문만', on: filters.unanswered, onToggle: () => setFilter('unanswered', filters.unanswered ? null : '1') },
+        ]}
+      />
+
+      {list.isPending && (
+        <div aria-label="불러오는 중">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="gh-qskel" />
           ))}
         </div>
-      </div>
-
-      {member && (
-        <div className="mt-2 flex gap-4">
-          <FilterToggle checked={filters.mine} onClick={() => setFilter('mine', filters.mine ? null : '1')}>
-            내 질문
-          </FilterToggle>
-          <FilterToggle checked={filters.unanswered} onClick={() => setFilter('unanswered', filters.unanswered ? null : '1')}>
-            답변 기다리는 질문만
-          </FilterToggle>
+      )}
+      {list.isError && (
+        <div className="px-4 pt-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="질문을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => list.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
+        </div>
+      )}
+      {list.isSuccess && questions.length === 0 && (
+        <div className="px-4 pt-4">
+          <EmptyState pose="glass" title={empty.title}>
+            {empty.body}
+          </EmptyState>
         </div>
       )}
 
-      <div className="mt-5 space-y-2">
-        {list.isPending &&
-          [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[88px] w-full rounded-xl" />)}
+      {questions.length > 0 && (
+        <StarLine>
+          {questions.map((q) => {
+            const kind = q.state === 'ADOPTED' ? 'pick' : q.state === 'WAITING' ? 'wait' : 'plain'
+            return (
+              <StarItem key={q.id} kind={kind} to={`/questions/${q.id}`}>
+                <div className="flex items-center gap-2">
+                  <Lab>{questionCategoryLabel(q.category)}</Lab>
+                  {kind !== 'plain' && <span className={`gh-state is-${kind}`}>{questionStateLabel(q.state!)}</span>}
+                </div>
+                <h3>{q.title}</h3>
+                <div className="gh-meta">
+                  <span>
+                    {authorName(q.author)} · {formatRelative(q.createdAt, now)}
+                  </span>
+                  <Nums answers={q.answerCount} views={q.viewCount} />
+                </div>
+                <ReplyBubble names={answererNames(q.answererPreview)} />
+              </StarItem>
+            )
+          })}
+        </StarLine>
+      )}
 
-        {list.isError && (
-          <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-            <p className="text-sm">질문을 불러오지 못했어요.</p>
-            <Button variant="secondary" onClick={() => list.refetch()}>
-              다시 시도
-            </Button>
-          </div>
-        )}
-
-        {list.isSuccess && questions.length === 0 && (
-          <EmptyCard>
-            {filters.mine
-              ? '아직 남긴 질문이 없어요.'
-              : filters.unanswered
-                ? '답변을 기다리는 질문이 없어요.'
-                : '아직 질문이 없어요. 첫 질문을 남겨 보세요.'}
-          </EmptyCard>
-        )}
-
-        {questions.map((q) => (
-          <QuestionCard key={q.id} question={q} target={target} now={now} showDetails />
-        ))}
-
-        {/* 바닥이 보이면 다음 20개 (60개까지), 그다음은 더보기 */}
-        {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-        {isFetchingNextPage && <Skeleton className="h-[88px] w-full rounded-xl" />}
-        {showMoreButton && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더보기
-          </Button>
-        )}
-        {list.isFetchNextPageError && (
-          <Button variant="secondary" className="w-full" onClick={() => fetchNextPage()}>
-            더 불러오지 못했어요. 다시 시도
-          </Button>
-        )}
-      </div>
-
-      {/* 질문 쓰기 — 하단 탭 위에 떠 있다. 비회원은 잠금 안내 */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5rem+env(safe-area-inset-bottom))] z-10 mx-auto flex max-w-md justify-end px-4">
-        {member ? (
-          <Link to={WRITE_PATH} className={writeButtonClass}>
-            <PencilLine aria-hidden />
-            질문하기
-          </Link>
-        ) : (
-          <button type="button" className={writeButtonClass} onClick={() => lock.open(WRITE_PATH)}>
-            <PencilLine aria-hidden />
-            질문하기
-          </button>
-        )}
-      </div>
-
-      {lock.next === WRITE_PATH ? (
-        <LockSheet
-          next={lock.next}
-          onClose={lock.close}
-          title="질문은 부원만 남길 수 있어요."
-          description="부원으로 로그인하면 선배에게 질문할 수 있어요."
-        />
-      ) : (
-        <LockSheet next={lock.next} onClose={lock.close} title="선배의 답변은 부원만 볼 수 있어요." />
+      {/* 바닥이 보이면 다음 20개 (60개까지), 그다음은 더보기 */}
+      {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
+      {isFetchingNextPage && <div className="gh-qskel" />}
+      {(showMoreButton || list.isFetchNextPageError) && (
+        <button type="button" className="gh-qmore" onClick={() => fetchNextPage()}>
+          {list.isFetchNextPageError ? '더 불러오지 못했어요. 다시 시도' : '더보기'}
+        </button>
       )}
     </div>
   )
 }
 
+/** "준호 외 1명" — 답한 사람이 없으면 null */
+function answererNames(answerers: QuestionCardData['answererPreview']): string | null {
+  if (!answerers?.length) return null
+  const first = authorName(answerers[0])
+  return answerers.length > 1 ? `${first} 외 ${answerers.length - 1}명` : first
+}
+
 const WRITE_PATH = '/questions/new'
 
-const writeButtonClass = buttonVariants({
-  size: 'lg',
-  className: 'pointer-events-auto h-12 rounded-full px-5 text-[15px] font-bold shadow-lg',
-})
 
 /**
  * 비회원 질문 목록 — 시안 gquestions-final. 데이터 · 필터 처리는 위 QuestionsPage와 같고 그리는 것만 낮 화면.

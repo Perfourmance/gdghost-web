@@ -1,11 +1,20 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router'
-import searchMascot from '@/assets/mascot/search.png'
-import { Chip } from '@/components/Chip'
-import { FieldLabel } from '@/components/form/StepLayout'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { useLocation, useNavigate } from 'react-router'
+import {
+  EmptyState,
+  FieldError,
+  Ghost,
+  IconSearch,
+  LinedTextarea,
+  LoadingDots,
+  Paper,
+  PaperChips,
+  PaperLabel,
+  Pill,
+  PillLink,
+  StampPicker,
+  StorySubPage,
+} from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { CoffeeChatSheet, type CoffeeTarget } from '@/features/coffee/CoffeeChatSheet'
@@ -23,6 +32,8 @@ import {
 } from '@/features/routing/api'
 import { useTags } from '@/features/tags/useTags'
 import { toApiError } from '@/lib/api'
+import { cn } from '@/lib/utils'
+import '@/styles/members.css'
 
 /** 뒤로 와도 결과가 남게 history state에 둔다 (프로필을 보고 돌아오는 흐름) */
 interface SavedSearch {
@@ -37,16 +48,14 @@ export function SeniorFindPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/members">
-        <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요." buttonText="로그인하고 선배 찾기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="선배 찾기는 부원만 쓸 수 있어요." buttonText="로그인하고 선배 찾기" />
     )
   }
 
   return (
-    <SubPageLayout fallback="/members">
+    <StorySubPage fallback="/members" className="gh-find">
       <SeniorFinder saved={(location.state as SavedSearch | null) ?? null} />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }
 
@@ -77,87 +86,95 @@ function SeniorFinder({ saved }: { saved: SavedSearch | null }) {
     })
   }
 
+  const lit = !match.isPending && shown ? Math.min(shown.result.items.length, 3) : 0
+
   return (
-    <div className="pb-10">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-[22px] leading-snug font-bold text-title">선배 찾기</h1>
-          <p className="mt-1 text-sm text-muted-foreground">궁금한 점을 적으면 답해 줄 선배를 찾아요.</p>
+    <div>
+      <div className="gh-fh">
+        <h1>선배 찾기</h1>
+        <p>
+          궁금한 걸 적어 주면
+          <br />
+          답해 줄 선배의 집을 찾아 줄게요.
+        </p>
+        <Ghost pose="glass" />
+      </div>
+      {/* 불 꺼진 집 세 채 = 최대 3명. 찾으면 그 수만큼 불이 켜진다 */}
+      <div className="gh-frow">
+        <div className="gh-fhs" aria-hidden>
+          {[0, 1, 2].map((i) => (
+            <div key={i} className={cn(i < lit && 'is-lit')}>
+              <div className="gh-r" />
+              <div className="gh-w">
+                <i />
+              </div>
+            </div>
+          ))}
         </div>
-        <img src={searchMascot} alt="" className="w-16 shrink-0" />
+        <p>
+          맞는 선배 <b>최대 3명</b>의
+          <br />
+          창문에 불을 켜 드려요
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate className="mt-8 space-y-8">
-        <section>
-          <FieldLabel>주제</FieldLabel>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="주제">
-            {QUESTION_CATEGORIES.map((c) => (
-              <Chip key={c} selected={category === c} onClick={() => setCategory(c)}>
-                {questionCategoryLabel(c)}
-              </Chip>
-            ))}
-          </div>
+      <form onSubmit={handleSubmit} noValidate>
+        <Paper>
+          <PaperLabel aside="하나 골라 주세요">어떤 이야기예요?</PaperLabel>
+          <StampPicker
+            label="주제"
+            error={triedSubmit && category == null}
+            value={category}
+            onChange={setCategory}
+            options={QUESTION_CATEGORIES.map((c) => ({ value: c, label: questionCategoryLabel(c) }))}
+          />
           {triedSubmit && category == null && <FieldError>주제를 골라 주세요.</FieldError>}
-        </section>
 
-        <section>
-          <FieldLabel aside="하나만">분야</FieldLabel>
-          {tags.isPending && <Skeleton className="h-20 w-full rounded-lg" />}
+          <PaperLabel aside="하나만">어느 분야 선배요?</PaperLabel>
+          {tags.isPending && <p className="text-sm text-gh-d-sub">분야를 불러오는 중…</p>}
           {tags.isError && (
-            <Button type="button" variant="secondary" onClick={() => tags.refetch()}>
+            <button type="button" className="text-sm text-gh-pine underline" onClick={() => tags.refetch()}>
               분야를 불러오지 못했어요. 다시 시도
-            </Button>
+            </button>
           )}
           {tags.data && (
-            <div className="flex flex-wrap gap-2" role="group" aria-label="관심 분야">
-              {tags.data.interests.map((t) => (
-                <Chip key={t.id} selected={interestId === t.id} onClick={() => setInterestId(t.id)}>
-                  {t.name}
-                </Chip>
-              ))}
-            </div>
+            <PaperChips
+              label="관심 분야"
+              options={tags.data.interests.map((t) => ({ value: t.id, label: t.name }))}
+              isOn={(v) => interestId === v}
+              onToggle={setInterestId}
+            />
           )}
           {triedSubmit && interestId == null && <FieldError>분야를 골라 주세요.</FieldError>}
-        </section>
 
-        <section>
-          <FieldLabel htmlFor="match-text" aside={`${trimmed.length} / ${MATCH_TEXT_MAX}`}>
+          <PaperLabel htmlFor="match-text" aside={`${trimmed.length} / ${MATCH_TEXT_MAX}`}>
             무엇이 궁금한가요?
-          </FieldLabel>
-          <textarea
+          </PaperLabel>
+          <LinedTextarea
             id="match-text"
             rows={3}
             maxLength={MATCH_TEXT_MAX}
-            placeholder="인턴 포트폴리오를 어떻게 준비했나요?"
-            className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
+            placeholder="예: 인턴 포트폴리오를 어떻게 준비했나요?"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          {(triedSubmit || trimmed.length > 0) && textInvalid && (
-            <FieldError>{MATCH_TEXT_MIN}자 이상 적어 주세요.</FieldError>
-          )}
-        </section>
+          {(triedSubmit || trimmed.length > 0) && textInvalid && <FieldError>{MATCH_TEXT_MIN}자 이상 적어 주세요.</FieldError>}
+        </Paper>
 
-        <div>
-          <Button type="submit" size="lg" className="h-12 w-full" disabled={match.isPending}>
-            {match.isPending ? '선배를 찾는 중…' : '선배 찾기'}
-          </Button>
-          <p className="mt-2 text-xs text-muted-foreground">질문에 맞는 선배를 최대 3명까지 추천해요.</p>
-          {match.isError && (
-            <p className="mt-2 text-sm text-destructive" role="alert">
-              {seniorMatchErrorMessage(toApiError(match.error))}
-            </p>
-          )}
-        </div>
+        <button type="submit" className="gh-go" disabled={match.isPending}>
+          <IconSearch />
+          {match.isPending ? '선배 집을 찾는 중…' : '선배 집 찾기'}
+        </button>
+        {match.isError ? (
+          <p className="gh-cap2 is-err" role="alert">
+            {seniorMatchErrorMessage(toApiError(match.error))}
+          </p>
+        ) : (
+          <p className="gh-cap2">질문에 맞는 선배를 최대 3명까지 추천해요.</p>
+        )}
       </form>
 
-      {match.isPending && (
-        <div className="mt-8 space-y-2">
-          {[0, 1].map((i) => (
-            <Skeleton key={i} className="h-36 w-full rounded-xl" />
-          ))}
-        </div>
-      )}
+      {match.isPending && <LoadingDots className="mt-8" />}
 
       {!match.isPending && shown && <Results input={shown.input} result={shown.result} />}
     </div>
@@ -166,38 +183,31 @@ function SeniorFinder({ saved }: { saved: SavedSearch | null }) {
 
 function Results({ input, result }: { input: SeniorMatchInput; result: SeniorMatchResult }) {
   return (
-    <section className="mt-10 border-t pt-6" aria-live="polite">
-      <h2 className="text-base font-bold text-title">추천 선배</h2>
-      {result.fallback && result.items.length > 0 && (
-        <p className="mt-1 text-xs text-muted-foreground">지금은 AI 추천을 사용할 수 없어요. 분야와 경험을 기준으로 선배를 골랐어요.</p>
-      )}
+    <section className="gh-fres" aria-live="polite">
+      <h2>불이 켜진 집</h2>
+      {result.fallback && result.items.length > 0 && <p>지금은 AI 추천을 쓸 수 없어서, 분야와 경험으로 골랐어요.</p>}
 
       {result.items.length === 0 ? (
-        <div className="mt-4 rounded-xl bg-card px-4 py-6 text-center">
-          <p className="text-sm text-foreground">조건에 맞는 선배가 없어요.</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            질문을 올리면 운영진과 해당 분야 선배에게 차례로 알려요.
-          </p>
-          <Link
-            to="/questions/new"
-            state={{ category: input.category, text: input.text } satisfies DirectAskState}
-            className={buttonVariants({ size: 'lg', className: 'mt-4 h-12 w-full' })}
-          >
-            질문 올리기
-          </Link>
-        </div>
+        <EmptyState
+          pose="glass"
+          className="mt-3"
+          title="조건에 맞는 선배가 없어요"
+          action={
+            <PillLink to="/questions/new" state={{ category: input.category, text: input.text } satisfies DirectAskState} className="mt-3">
+              질문 띄우기
+            </PillLink>
+          }
+        >
+          질문을 띄우면 운영진과 그 분야 선배에게 차례로 알려요.
+        </EmptyState>
       ) : (
-        <ul className="mt-4 space-y-3">
-          {result.items.map((c) => (
-            <CandidateCard key={c.member.id} candidate={c} input={input} />
-          ))}
-        </ul>
+        result.items.map((c) => <CandidateCard key={c.member.id} candidate={c} input={input} />)
       )}
     </section>
   )
 }
 
-/** 후보 카드 — 순위 · 기수 · 근황 · 추천 이유, 프로필 보기 · 질문하기 · 커피챗 신청 */
+/** 후보 카드 — 순위(불 켜진 창문) · 기수 · 근황 · 추천 이유, 프로필 보기 · 질문하기 · 커피챗 신청 */
 function CandidateCard({ candidate, input }: { candidate: SeniorCandidate; input: SeniorMatchInput }) {
   const { member } = candidate
   const [coffee, setCoffee] = useState<CoffeeTarget | null>(null)
@@ -207,47 +217,40 @@ function CandidateCard({ candidate, input }: { candidate: SeniorCandidate; input
     text: input.text,
   }
   return (
-    <li className="rounded-xl bg-card px-4 py-4">
-      <p className="text-xs font-bold text-brand-text">
-        {candidate.rank}순위 · {member.generation}기 · {memberStatusLabel(member.status)} · {positionLabel(member.position)}
-      </p>
-      <p className="mt-1 text-[15px] font-bold text-title">{member.nickname}</p>
-      {member.statusNote && <p className="mt-1 line-clamp-2 text-sm text-foreground">{member.statusNote}</p>}
+    <article className="gh-cand">
+      <div className="gh-cand-h">
+        <span className="gh-cand-win" aria-label={`${candidate.rank}순위`}>
+          {candidate.rank}
+        </span>
+        <div>
+          <small>
+            {member.generation}기 · {memberStatusLabel(member.status)} · {positionLabel(member.position)}
+          </small>
+          <h3>{member.nickname}</h3>
+        </div>
+      </div>
+      {member.statusNote && <p>{member.statusNote}</p>}
       {candidate.reasons.length > 0 && (
-        <ul className="mt-2.5 flex flex-wrap gap-1" aria-label="추천 이유">
+        <ul aria-label="추천 이유">
           {candidate.reasons.map((r) => (
-            <li key={r} className="rounded bg-brand-soft px-1.5 py-0.5 text-[11px] text-brand-text">
-              {r}
-            </li>
+            <li key={r}>{r}</li>
           ))}
         </ul>
       )}
-      <div className="mt-4 grid grid-cols-2 gap-2">
-        <Link to={`/members/${member.id}`} className={buttonVariants({ variant: 'secondary', className: 'h-10' })}>
-          프로필 보기
-        </Link>
-        <Link to="/questions/new" state={ask} className={buttonVariants({ className: 'h-10' })}>
+      <div className="gh-cand-acts">
+        <PillLink to="/questions/new" state={ask}>
           질문하기
-        </Link>
+        </PillLink>
+        <PillLink to={`/members/${member.id}`} soft>
+          프로필 보기
+        </PillLink>
+        {member.acceptCoffee && (
+          <Pill soft onClick={() => setCoffee({ id: member.id, nickname: member.nickname })}>
+            커피챗 신청
+          </Pill>
+        )}
       </div>
-      {member.acceptCoffee && (
-        <Button
-          variant="secondary"
-          className="mt-2 h-10 w-full"
-          onClick={() => setCoffee({ id: member.id, nickname: member.nickname })}
-        >
-          커피챗 신청
-        </Button>
-      )}
       <CoffeeChatSheet target={coffee} onClose={() => setCoffee(null)} />
-    </li>
-  )
-}
-
-function FieldError({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
+    </article>
   )
 }

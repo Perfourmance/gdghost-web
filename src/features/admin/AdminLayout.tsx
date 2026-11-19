@@ -1,9 +1,9 @@
 import { NavLink, Outlet } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
+import { Ghost, StorySubPage } from '@/components/story'
 import { ADMIN_BASE } from '@/features/admin/api'
 import { useMe } from '@/features/auth/session'
-import { cn } from '@/lib/utils'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import '@/styles/ops.css'
 
 const TABS = [
   { to: ADMIN_BASE, label: '에러', end: true },
@@ -19,32 +19,24 @@ export function AdminLayout() {
   if (me?.role !== 'DEV') return <NotFoundPage />
 
   return (
-    <SubPageLayout fallback="/">
-      <h1 className="text-[22px] leading-snug font-bold text-title">어드민</h1>
-      <nav aria-label="어드민 메뉴" className="-mx-4 mt-3 overflow-x-auto border-b px-4 [scrollbar-width:none]">
-        <ul className="flex w-max gap-4">
+    <StorySubPage fallback="/" className="gh-ops">
+      <div className="gh-ops-sky">
+        <div className="gh-ops-ttl">
+          <h1>어드민</h1>
+          <p>마을 지하 기계실 · 개발자만</p>
+        </div>
+        <Ghost pose="glass" className="gh-ops-peek" />
+        <nav aria-label="어드민 메뉴" className="gh-ops-menu">
           {TABS.map((t) => (
-            <li key={t.to}>
-              <NavLink
-                to={t.to}
-                end={t.end}
-                replace
-                className={({ isActive }) =>
-                  cn(
-                    'block border-b-2 py-2.5 text-sm transition-colors',
-                    isActive ? 'border-brand-text font-bold text-brand-text' : 'border-transparent text-muted-foreground',
-                  )
-                }
-              >
-                {t.label}
-              </NavLink>
-            </li>
+            <NavLink key={t.to} to={t.to} end={t.end} replace>
+              {t.label}
+            </NavLink>
           ))}
-        </ul>
-      </nav>
-      <div className="pt-5 pb-12">
+        </nav>
+      </div>
+      <div className="gh-ops-body gh-bridge">
         <Outlet />
       </div>
-    </SubPageLayout>
+    </StorySubPage>
   )
 }

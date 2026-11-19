@@ -1,9 +1,5 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
-import { Chip } from '@/components/Chip'
-import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
+import { useState, type FormEvent } from 'react'
+import { FieldError, Hint, LinedTextarea, PaperChips, PaperInput, PaperLabel, TitleInput, WriteForm } from '@/components/story'
 import { scheduleKindLabel } from '@/features/content/labels'
 import {
   MEMO_MAX,
@@ -88,134 +84,91 @@ export function ScheduleForm({ mode, initial, staff, pending, error, formError, 
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1 className="mb-8 text-[22px] leading-snug font-bold text-title">
-        {mode === 'create' ? '일정 등록' : '일정 수정'}
-      </h1>
+    <WriteForm
+      title={mode === 'create' ? '날 하나 띄우기' : '일정 고치기'}
+      description={staff ? '동아리와 학사 일정은 공식 별로 떠요.' : '동아리와 학사 일정은 운영진이 띄워요.'}
+      submitLabel={mode === 'create' ? '하늘에 띄우기' : '고친 일정 저장'}
+      pendingLabel="저장하는 중…"
+      pending={pending}
+      disabled={mode === 'edit' && !changed}
+      error={formError}
+      onSubmit={handleSubmit}
+    >
+      <PaperLabel aside="하나 골라 주세요">어떤 날이에요?</PaperLabel>
+      <PaperChips
+        label="분류"
+        options={kinds.map((k) => ({ value: k, label: scheduleKindLabel(k) }))}
+        isOn={(k) => values.kind === k}
+        onToggle={(k) => set({ kind: k })}
+      />
+      <FieldError>{kindError}</FieldError>
 
-      <div className="space-y-8">
-        <section>
-          <FieldLabel>분류</FieldLabel>
-          <div className="flex flex-wrap gap-2" role="group" aria-label="분류">
-            {kinds.map((k) => (
-              <Chip key={k} selected={values.kind === k} onClick={() => set({ kind: k })}>
-                {scheduleKindLabel(k)}
-              </Chip>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            {staff
-              ? '동아리와 학사 일정은 공식 일정으로 표시돼요.'
-              : '동아리와 학사 일정은 운영진이 등록해요.'}
-          </p>
-          {kindError && <FieldError>{kindError}</FieldError>}
-        </section>
+      <PaperLabel htmlFor="title" aside={`${values.title.length} / ${TITLE_MAX}`}>
+        제목
+      </PaperLabel>
+      <TitleInput
+        id="title"
+        rows={1}
+        maxLength={TITLE_MAX}
+        placeholder="예: 교내 해커톤 참가 신청 마감"
+        aria-invalid={titleError ? true : undefined}
+        value={values.title}
+        onChange={(e) => set({ title: e.target.value.replace(/\n/g, ' ') })}
+      />
+      <FieldError>{titleError}</FieldError>
 
-        <section>
-          <FieldLabel htmlFor="title" aside={`${values.title.length} / ${TITLE_MAX}`}>
-            제목
-          </FieldLabel>
-          <Input
-            id="title"
-            maxLength={TITLE_MAX}
-            placeholder="예: 교내 해커톤 참가 신청 마감"
-            className="h-12 bg-card"
-            aria-invalid={titleError ? true : undefined}
-            value={values.title}
-            onChange={(e) => set({ title: e.target.value })}
-          />
-          {titleError && <FieldError>{titleError}</FieldError>}
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="startDate">{period ? '시작하는 날' : '날짜'}</FieldLabel>
-          <Input
-            id="startDate"
+      <PaperLabel>기간</PaperLabel>
+      <PaperChips
+        label="기간"
+        options={[
+          { value: 'one', label: '하루' },
+          { value: 'many', label: '며칠에 걸쳐' },
+        ]}
+        isOn={(v) => (v === 'many') === period}
+        onToggle={(v) => setPeriod(v === 'many')}
+      />
+      <PaperLabel htmlFor="startDate">{period ? '시작하는 날' : '날짜'}</PaperLabel>
+      <PaperInput
+        id="startDate"
+        type="date"
+        aria-invalid={startError ? true : undefined}
+        value={values.startDate}
+        onChange={(e) => set({ startDate: e.target.value })}
+      />
+      <FieldError>{startError}</FieldError>
+      {period && (
+        <>
+          <PaperLabel htmlFor="endDate">끝나는 날</PaperLabel>
+          <PaperInput
+            id="endDate"
             type="date"
-            className="h-12 bg-card"
-            aria-invalid={startError ? true : undefined}
-            value={values.startDate}
-            onChange={(e) => set({ startDate: e.target.value })}
+            min={values.startDate || undefined}
+            aria-invalid={endError ? true : undefined}
+            value={values.endDate}
+            onChange={(e) => set({ endDate: e.target.value })}
           />
-          {startError && <FieldError>{startError}</FieldError>}
+        </>
+      )}
+      <FieldError>{endError}</FieldError>
+      <Hint>마감 3일 전부터 캘린더에서 강조해요.</Hint>
 
-          <label className="mt-3 flex items-center gap-2.5 text-sm text-title">
-            <Checkbox checked={period} onCheckedChange={(on) => setPeriod(on === true)} />
-            며칠에 걸친 일정이에요
-          </label>
+      <PaperLabel htmlFor="place" aside={`선택 · ${values.place.length} / ${PLACE_MAX}`}>
+        장소
+      </PaperLabel>
+      <PaperInput
+        id="place"
+        maxLength={PLACE_MAX}
+        placeholder="예: 학생회관 301호"
+        value={values.place}
+        onChange={(e) => set({ place: e.target.value })}
+      />
+      <FieldError>{error?.fieldMessage('place')}</FieldError>
 
-          {period && (
-            <div className="mt-4">
-              <FieldLabel htmlFor="endDate">끝나는 날</FieldLabel>
-              <Input
-                id="endDate"
-                type="date"
-                min={values.startDate || undefined}
-                className="h-12 bg-card"
-                aria-invalid={endError ? true : undefined}
-                value={values.endDate}
-                onChange={(e) => set({ endDate: e.target.value })}
-              />
-            </div>
-          )}
-          {endError && <FieldError>{endError}</FieldError>}
-          <p className="mt-2 text-xs text-muted-foreground">마감 3일 전부터 캘린더에서 강조해요.</p>
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="place" aside={`${values.place.length} / ${PLACE_MAX}`}>
-            장소 <span className="font-normal text-muted-foreground">(선택)</span>
-          </FieldLabel>
-          <Input
-            id="place"
-            maxLength={PLACE_MAX}
-            placeholder="예: 학생회관 301호"
-            className="h-12 bg-card"
-            value={values.place}
-            onChange={(e) => set({ place: e.target.value })}
-          />
-          <OptionalFieldError message={error?.fieldMessage('place')} />
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="memo" aside={`${values.memo.length} / ${MEMO_MAX}`}>
-            메모 <span className="font-normal text-muted-foreground">(선택)</span>
-          </FieldLabel>
-          <textarea
-            id="memo"
-            maxLength={MEMO_MAX}
-            rows={5}
-            placeholder="신청 링크·준비물"
-            className="w-full resize-y rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            value={values.memo}
-            onChange={(e) => set({ memo: e.target.value })}
-          />
-          <OptionalFieldError message={error?.fieldMessage('memo')} />
-        </section>
-      </div>
-
-      <StepFooter>
-        {formError && (
-          <p className="mb-3 text-center text-sm text-destructive" role="alert">
-            {formError}
-          </p>
-        )}
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={pending || (mode === 'edit' && !changed)}>
-          {pending ? '저장하는 중…' : mode === 'create' ? '일정 등록' : '수정 완료'}
-        </Button>
-      </StepFooter>
-    </form>
+      <PaperLabel htmlFor="memo" aside={`선택 · ${values.memo.length} / ${MEMO_MAX}`}>
+        한마디
+      </PaperLabel>
+      <LinedTextarea id="memo" maxLength={MEMO_MAX} placeholder="신청 링크 · 준비물" value={values.memo} onChange={(e) => set({ memo: e.target.value })} />
+      <FieldError>{error?.fieldMessage('memo')}</FieldError>
+    </WriteForm>
   )
-}
-
-function FieldError({ children }: { children: ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
-  )
-}
-
-function OptionalFieldError({ message }: { message: string | undefined }) {
-  return message ? <FieldError>{message}</FieldError> : null
 }

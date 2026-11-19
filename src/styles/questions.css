@@ -1,0 +1,383 @@
+/* 질문 묶음 (questions · detail · mydetail · write · report) — 화면 전용 모양. 공통 부품은 story.css */
+
+/* JS가 불러와 index.css보다 먼저 들어갈 수 있다 — 층 순서를 먼저 못 박는다 */
+@layer theme, base, components, utilities;
+
+@layer components {
+  /* 질문 목록 위 하늘 */
+  .gh-qsky {
+    position: relative;
+    background: url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-qsky .gh-big {
+    padding-top: 16px;
+  }
+  /* 위에 붙는 질문하기 막대 */
+  .gh-ask {
+    position: sticky;
+    top: 8px;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 62px;
+    margin: 18px 14px 0;
+    padding: 0 8px 0 6px;
+    border-radius: 31px;
+    background: rgba(27, 37, 58, 0.92);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line), 0 12px 24px -14px rgba(0, 0, 0, 0.8);
+  }
+  .gh-ask img {
+    width: 56px;
+    margin-top: 6px;
+  }
+  .gh-ask span {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--color-gh-sub);
+  }
+  .gh-ask b {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 46px;
+    padding: 0 16px;
+    border-radius: 23px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 14px var(--font-title);
+  }
+  .gh-ask b svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-qmore {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 4px 16px 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-qskel {
+    height: 120px;
+    margin: 12px 16px 0 48px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: gh-q-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes gh-q-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ── 질문 상세 (detail-final · mydetail-final '편지와 답장') ── */
+@layer components {
+  .gh-qdetail {
+    padding-bottom: 120px;
+    background: radial-gradient(90% 40% at 50% 18%, rgba(245, 185, 82, 0.12), rgba(245, 185, 82, 0) 70%), var(--color-gh-night);
+  }
+  .gh-qletter {
+    position: relative;
+    margin: 10px 16px 0;
+    padding: 22px 20px;
+    border-radius: 8px 8px 22px 22px;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    box-shadow: 0 0 50px -8px rgba(245, 185, 82, 0.35), 0 20px 30px -18px rgba(0, 0, 0, 0.8);
+  }
+  .gh-qstamp {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    padding: 8px 9px;
+    border: 2px dashed #c9b98f;
+    border-radius: 6px;
+    background: #fff3d6;
+    color: #8c7448;
+    font: 400 12px var(--font-title);
+    transform: rotate(4deg);
+  }
+  .gh-qfrom {
+    padding-right: 80px;
+    font-size: 12.5px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-qfrom b,
+  .gh-qfrom a {
+    font-weight: 700;
+    color: var(--color-gh-d-ink);
+  }
+  .gh-qletter h1 {
+    margin: 12px 70px 0 0;
+    font: 400 21px/1.42 var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  .gh-qletter .gh-qbody {
+    margin-top: 14px;
+    padding-bottom: 2px;
+    font-size: 15px;
+    line-height: 30px;
+    background: repeating-linear-gradient(180deg, transparent 0 29px, #ede6d3 29px 30px);
+  }
+  .gh-qpost {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-qpost > span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .gh-qpost svg {
+    width: 15px;
+    height: 15px;
+  }
+  .gh-qpost .gh-qv {
+    font: 400 12.5px var(--font-title);
+  }
+  .gh-qstate {
+    padding: 3px 8px;
+    border-radius: 8px;
+    background: #ebe5d3;
+    font: 400 11px var(--font-title);
+    color: var(--color-gh-d-sub);
+  }
+  .gh-qstate.is-pick {
+    background: #fff3d6;
+    color: var(--color-gh-ticket-ink);
+  }
+
+  /* 배달 영수증 = 전달 현황 */
+  .gh-receipt {
+    margin: 0 28px;
+    padding: 14px 16px 12px;
+    border-top: 2px dashed rgba(169, 199, 255, 0.25);
+    border-radius: 0 0 18px 18px;
+    background: #20293f;
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+  }
+  .gh-rh {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gh-rh img {
+    width: 52px;
+    margin: -14px 0 -6px;
+  }
+  .gh-rh b {
+    font: 400 14px var(--font-title);
+  }
+  .gh-rh b em {
+    margin-left: 3px;
+    font-style: normal;
+    color: var(--color-gh-sky);
+  }
+  .gh-rh span {
+    display: block;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-rh > i {
+    margin-left: auto;
+    padding: 5px 9px;
+    border-radius: 9px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 11px var(--font-title);
+    font-style: normal;
+    white-space: nowrap;
+  }
+  .gh-rcv {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .gh-rcv > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .gh-rcv b {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: 400 14px var(--font-title);
+  }
+  .gh-rcv b.is-hidden {
+    color: var(--color-gh-sub);
+  }
+  .gh-rcv .gh-ai {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 7px;
+    border-radius: 7px;
+    background: rgba(199, 178, 255, 0.13);
+    color: #c7b2ff;
+    font: 400 10.5px var(--font-title);
+  }
+  .gh-rcv .gh-ai svg {
+    width: 10px;
+    height: 10px;
+  }
+  .gh-rcv .gh-done {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    font: 400 11.5px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-rcv .gh-done.is-on {
+    color: var(--color-gh-amber);
+  }
+  .gh-rcv .gh-done svg {
+    width: 14px;
+    height: 14px;
+  }
+  .gh-rcv ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+  .gh-rcv li {
+    padding: 2px 7px;
+    border-radius: 7px;
+    background: rgba(169, 199, 255, 0.1);
+    font-size: 11px;
+    color: var(--color-gh-sky);
+  }
+
+  /* 나에게 온 질문 · 전달 결과 안내 */
+  .gh-qnote {
+    margin: 14px 16px 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(245, 185, 82, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(245, 185, 82, 0.3);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #f3dcb0;
+  }
+  .gh-qnote b {
+    display: block;
+    font: 400 15px var(--font-title);
+    color: var(--color-gh-amber);
+  }
+  .gh-qnote.is-err {
+    background: rgba(240, 138, 122, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(240, 138, 122, 0.3);
+    color: var(--color-gh-error-night);
+  }
+
+  /* 답장 머리 · 목록 */
+  .gh-ah {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 30px 20px 12px;
+    font: 400 17px var(--font-title);
+  }
+  .gh-ah small {
+    font: 400 13px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-ah::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--color-gh-line);
+  }
+  .gh-alist {
+    padding: 0 16px;
+  }
+  .gh-alist ul ul {
+    padding-left: 30px;
+  }
+  .gh-alist ul ul ul ul {
+    padding-left: 0;
+  }
+  .gh-ans.is-mine {
+    background: rgba(74, 124, 245, 0.1);
+  }
+  .gh-ans .gh-gone {
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-acts button:disabled {
+    opacity: 0.5;
+  }
+
+  /* 아래 답장 막대 (누르면 시트) */
+  .gh-abar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px 14px max(22px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--color-gh-line);
+    background: rgba(18, 26, 45, 0.95);
+    backdrop-filter: blur(12px);
+  }
+  .gh-abar > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .gh-abar .gh-fake {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 18px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    text-align: left;
+    font-size: 14.5px;
+    color: #7d89a3;
+  }
+}
+@layer components {
+  .gh-alist li {
+    margin-bottom: 10px;
+  }
+  .gh-alist li > ul {
+    margin-top: 10px;
+  }
+  .gh-ans .gh-body {
+    margin-top: 8px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #e3e9f5;
+  }
+  .gh-ans .gh-body a {
+    color: var(--color-gh-sky);
+    text-decoration: underline;
+  }
+  .gh-ans .gh-who a:hover {
+    text-decoration: underline;
+  }
+}
+

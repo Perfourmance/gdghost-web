@@ -1,14 +1,32 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { ChevronRight, Search, X } from 'lucide-react'
 import { useLocation, useSearchParams } from 'react-router'
-import { LoadError } from '@/components/PageStates'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Bookmark,
+  EmptyState,
+  Ghost,
+  House,
+  IconBookmark,
+  IconCalendar,
+  IconChat,
+  IconUser,
+  Lab,
+  LoadingDots,
+  Nums,
+  Pill,
+  SearchField,
+  Shelf,
+  StarItem,
+  StarLine,
+  StorySubPage,
+  TextTabs,
+  Ticket,
+  Town,
+} from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
-import { EmptyCard, QuestionCard, ScheduleCard, type CardTarget } from '@/features/content/Cards'
-import { MemberCard } from '@/features/member/MemberCard'
+import { questionCategoryLabel, questionStateLabel, scheduleKindLabel, shareCategoryLabel } from '@/features/content/labels'
+import { authorName } from '@/features/member/author'
+import { memberStatusLabel, positionLabel } from '@/features/member/labels'
 import {
   QUERY_MAX,
   QUERY_MIN,
@@ -17,13 +35,15 @@ import {
   type SearchItems,
   type SearchType,
 } from '@/features/search/api'
-import { ShareListCard } from '@/features/shares/ShareBits'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { useLoadMore } from '@/hooks/useLoadMore'
 import { toApiError } from '@/lib/api'
 import { commonErrorMessage } from '@/lib/errorMessage'
-import { useNowEveryMinute } from '@/lib/time'
+import { colorOf, ROOF_COLORS, SCHEDULE_COLORS, SHARE_COLORS } from '@/lib/categoryColors'
+import { formatDay, formatRelative, useNowEveryMinute } from '@/lib/time'
 import { cn } from '@/lib/utils'
+import '@/styles/common.css'
+import '@/styles/schedules.css'
 
 const TYPES: { type: SearchType; label: string; group: 'members' | 'questions' | 'shares' | 'schedules' }[] = [
   { type: 'MEMBER', label: '부원', group: 'members' },
@@ -31,8 +51,6 @@ const TYPES: { type: SearchType; label: string; group: 'members' | 'questions' |
   { type: 'SHARE', label: '공유', group: 'shares' },
   { type: 'SCHEDULE', label: '일정', group: 'schedules' },
 ]
-
-const TARGET: CardTarget = { member: true, onLocked: () => {} }
 
 /** 검색 (S60) — 부원 · 질문 · 공유 · 일정. 전체는 종류별 5개, 종류 탭을 고르면 그 종류만 이어서. 주소에 q · type을 둔다 */
 export function SearchPage() {
@@ -54,9 +72,7 @@ export function SearchPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="검색은 부원만 쓸 수 있어요." />
     )
   }
 
@@ -70,11 +86,9 @@ export function SearchPage() {
   }
 
   return (
-    <SubPageLayout>
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          type="search"
+    <StorySubPage className={cn('gh-search-pg', q && 'is-hit')}>
+      <div className="gh-sbar">
+        <SearchField
           // 들어오자마자 바로 쓸 수 있게
           autoFocus
           aria-label="검색어"
@@ -82,65 +96,167 @@ export function SearchPage() {
           placeholder="부원 · 질문 · 공유 · 일정 찾기"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="h-12 w-full rounded-lg border border-input bg-card pr-10 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm [&::-webkit-search-cancel-button]:hidden"
+          onClear={() => setText('')}
         />
-        {text && (
-          <button
-            type="button"
-            aria-label="검색어 지우기"
-            onClick={() => setText('')}
-            className="absolute top-1/2 right-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-          >
-            <X className="size-4" />
-          </button>
-        )}
       </div>
+      <TextTabs
+        label="검색 종류"
+        className="mt-2"
+        value={type ?? 'ALL'}
+        onChange={(v) => selectType(v === 'ALL' ? null : (v as SearchType))}
+        options={[{ value: 'ALL', label: '전체' }, ...TYPES.map((t) => ({ value: t.type as string, label: t.label }))]}
+      />
 
-      <div className="-mx-4 mt-4 overflow-x-auto px-4 [scrollbar-width:none]">
-        <div className="flex w-max gap-4 text-sm" role="tablist" aria-label="검색 종류">
-          {[{ type: null, label: '전체' } as const, ...TYPES].map((t) => (
-            <button
-              key={t.label}
-              type="button"
-              role="tab"
-              aria-selected={type === t.type}
-              onClick={() => selectType(t.type)}
-              className={cn('py-1.5', type === t.type ? 'font-bold text-brand-text' : 'text-muted-foreground')}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 pb-10">
-        {q == null ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">
-            {text.trim().length > 0 && text.trim().length < QUERY_MIN
-              ? `검색어 ${QUERY_MIN}자 이상`
-              : '닉네임, 관심 분야, 질문 제목, 태그, 일정명으로 검색'}
-          </p>
-        ) : type ? (
-          <TypeResults key={`${type}-${q}`} type={type} q={q} />
-        ) : (
-          <AllResults q={q} onMore={selectType} />
-        )}
-      </div>
-    </SubPageLayout>
+      {q == null ? (
+        <section className="gh-lost">
+          <span className="gh-beam" aria-hidden />
+          <Ghost pose="glass" />
+          <h1>
+            {text.trim().length > 0 && text.trim().length < QUERY_MIN ? `${QUERY_MIN}자 이상 적어 주세요` : '무엇을 찾아 드릴까요?'}
+          </h1>
+          <p>닉네임, 관심 분야, 질문 제목, 태그, 일정 이름으로 찾아요.</p>
+        </section>
+      ) : type ? (
+        <TypeResults key={`${type}-${q}`} type={type} q={q} />
+      ) : (
+        <AllResults q={q} onMore={selectType} />
+      )}
+    </StorySubPage>
   )
 }
 
-function ItemCard<T extends SearchType>({ type, item, now }: { type: T; item: SearchItems[T]; now: number }) {
-  switch (type) {
-    case 'MEMBER':
-      return <MemberCard member={item as SearchItems['MEMBER']} />
-    case 'QUESTION':
-      return <QuestionCard question={item as SearchItems['QUESTION']} target={TARGET} now={now} />
-    case 'SHARE':
-      return <ShareListCard share={item as SearchItems['SHARE']} target={TARGET} now={now} />
-    default:
-      return <ScheduleCard schedule={item as SearchItems['SCHEDULE']} target={TARGET} />
+/** 검색어를 밑줄 형광으로 */
+function Hl({ text, q }: { text: string; q: string }) {
+  const i = text.toLowerCase().indexOf(q.toLowerCase())
+  if (i < 0) return <>{text}</>
+  return (
+    <>
+      {text.slice(0, i)}
+      <mark>{text.slice(i, i + q.length)}</mark>
+      {text.slice(i + q.length)}
+    </>
+  )
+}
+
+/** 못 찾았을 때 — 돋보기 유령 */
+function Lost({ q }: { q: string }) {
+  return (
+    <section className="gh-lost">
+      <span className="gh-beam" aria-hidden />
+      <Ghost pose="glass" />
+      <h1>
+        <q>{q}</q>은
+        <br />
+        마을 어디에도 없었어요
+      </h1>
+      <p>
+        돋보기로 집집마다 살펴봤지만 못 찾았어요.
+        <br />
+        다른 말로 찾아볼까요?
+      </p>
+      <div className="gh-dots" aria-hidden>
+        <i />
+        <i />
+        <i />
+      </div>
+    </section>
+  )
+}
+
+const GROUP_ICONS: Record<SearchType, ReactNode> = {
+  MEMBER: <IconUser />,
+  QUESTION: <IconChat />,
+  SHARE: <IconBookmark />,
+  SCHEDULE: <IconCalendar />,
+}
+
+/** 종류마다 목록 화면과 같은 부품 — 부원 = 집, 질문 = 별빛 줄, 공유 = 책갈피, 일정 = 티켓 */
+function Items<T extends SearchType>({ type, items, q, now }: { type: T; items: SearchItems[T][]; q: string; now: number }) {
+  if (type === 'MEMBER') {
+    return (
+      <Town>
+        {(items as SearchItems['MEMBER'][]).map((m) => (
+          <House
+            key={m.id}
+            to={`/members/${m.id}`}
+            roofColor={colorOf(ROOF_COLORS, m.position)}
+            track={positionLabel(m.position)}
+            staff={m.isStaff}
+            lit={m.acceptCoffee}
+            generation={`${m.generation}기 · ${memberStatusLabel(m.status)}`}
+            name={m.nickname}
+            intro={m.statusNote}
+            field={m.interestTags[0]}
+            answers={m.answerCount}
+          />
+        ))}
+      </Town>
+    )
   }
+  if (type === 'QUESTION') {
+    return (
+      <StarLine>
+        {(items as SearchItems['QUESTION'][]).map((qq) => {
+          const kind = qq.state === 'ADOPTED' ? 'pick' : qq.state === 'WAITING' ? 'wait' : 'plain'
+          return (
+            <StarItem key={qq.id} kind={kind} to={`/questions/${qq.id}`}>
+              <div className="flex items-center gap-2">
+                <Lab>{questionCategoryLabel(qq.category)}</Lab>
+                {qq.state && kind !== 'plain' && <span className={`gh-state is-${kind}`}>{questionStateLabel(qq.state)}</span>}
+              </div>
+              <h3>
+                <Hl text={qq.title} q={q} />
+              </h3>
+              <div className="gh-meta">
+                <span>
+                  {authorName(qq.author)} · {formatRelative(qq.createdAt, now)}
+                </span>
+                <Nums answers={qq.answerCount} />
+              </div>
+            </StarItem>
+          )
+        })}
+      </StarLine>
+    )
+  }
+  if (type === 'SHARE') {
+    return (
+      <Shelf>
+        {(items as SearchItems['SHARE'][]).map((s) => (
+          <Bookmark
+            key={s.id}
+            to={`/shares/${s.id}`}
+            color={colorOf(SHARE_COLORS, s.category)}
+            category={shareCategoryLabel(s.category)}
+            title={s.title}
+            tags={s.tags}
+            by={`${authorName(s.author)} · ${formatRelative(s.createdAt, now)}`}
+            saved={s.saved}
+            saveCount={s.saveCount}
+            noteCount={s.noteCount}
+            hasPhoto={s.hasPhoto}
+          />
+        ))}
+      </Shelf>
+    )
+  }
+  return (
+    <>
+      {(items as SearchItems['SCHEDULE'][]).map((s) => (
+        <div key={s.id} className="gh-tw">
+          <Ticket
+            to={`/schedules/${s.id}`}
+            color={colorOf(SCHEDULE_COLORS, s.kind)}
+            category={scheduleKindLabel(s.kind)}
+            official={s.isOfficial}
+            title={s.title}
+            when={[s.endDate && s.endDate !== s.startDate ? `${formatDay(s.startDate)} ~ ${formatDay(s.endDate)}` : formatDay(s.startDate), s.place].filter(Boolean).join(' · ')}
+            dday={s.dDay == null ? undefined : s.dDay < 0 ? '지남' : s.dDay === 0 ? 'D-DAY' : `D-${s.dDay}`}
+          />
+        </div>
+      ))}
+    </>
+  )
 }
 
 function searchError(error: unknown): string {
@@ -149,56 +265,52 @@ function searchError(error: unknown): string {
   return commonErrorMessage(apiError)
 }
 
-function AllResults({ q, onMore }: { q: string; onMore: (type: SearchType) => void }) {
-  const all = useSearchAll(q)
-  const now = useNowEveryMinute()
-
-  if (all.isPending) {
-    return (
-      <div className="space-y-2">
-        {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="h-[80px] w-full rounded-xl" />
-        ))}
-      </div>
-    )
-  }
-  if (all.isError) return <LoadError text={searchError(all.error)} onRetry={() => all.refetch()} />
-
-  const groups = TYPES.map((t) => ({ ...t, ...all.data[t.group] }))
-  if (groups.every((g) => g.total === 0)) return <EmptyCard>‘{q}’ 검색 결과가 없어요.</EmptyCard>
-
+function Failed({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
-    <div className="space-y-8">
-      {groups
-        .filter((g) => g.total > 0)
-        .map((g) => (
-          <Section
-            key={g.type}
-            title={`${g.label} ${g.total}`}
-            more={g.total > g.items.length ? () => onMore(g.type) : undefined}
-          >
-            {g.items.map((item) => (
-              <ItemCard key={item.id} type={g.type} item={item} now={now} />
-            ))}
-          </Section>
-        ))}
+    <div className="px-4 pt-6">
+      <EmptyState
+        row
+        pose="shh"
+        title={searchError(error)}
+        action={
+          <Pill soft className="mt-2" onClick={onRetry}>
+            다시 시도
+          </Pill>
+        }
+      />
     </div>
   )
 }
 
-function Section({ title, more, children }: { title: string; more?: () => void; children: ReactNode }) {
+function AllResults({ q, onMore }: { q: string; onMore: (type: SearchType) => void }) {
+  const all = useSearchAll(q)
+  const now = useNowEveryMinute()
+
+  if (all.isPending) return <LoadingDots className="mt-16" />
+  if (all.isError) return <Failed error={all.error} onRetry={() => all.refetch()} />
+
+  const groups = TYPES.map((t) => ({ ...t, ...all.data[t.group] }))
+  if (groups.every((g) => g.total === 0)) return <Lost q={q} />
+
   return (
-    <section>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-base font-bold text-title">{title}</h2>
-        {more && (
-          <button type="button" onClick={more} className="flex items-center text-xs text-muted-foreground hover:text-foreground">
-            더보기
-            <ChevronRight className="size-4" aria-hidden />
-          </button>
-        )}
-      </div>
-      <div className="space-y-2">{children}</div>
+    <section className="gh-found">
+      {groups
+        .filter((g) => g.total > 0)
+        .map((g) => (
+          <div key={g.type}>
+            <h2 className="gh-gh2">
+              {GROUP_ICONS[g.type]}
+              {g.label}
+              <em>{g.total}</em>
+              {g.total > g.items.length && (
+                <button type="button" onClick={() => onMore(g.type)}>
+                  더보기 ›
+                </button>
+              )}
+            </h2>
+            <Items type={g.type} items={g.items} q={q} now={now} />
+          </div>
+        ))}
     </section>
   )
 }
@@ -209,21 +321,20 @@ function TypeResults({ type, q }: { type: SearchType; q: string }) {
   const { bottomRef, showSentinel, showMoreButton } = useLoadMore(list, 3)
   const items = list.data?.pages.flatMap((p) => p.items) ?? []
 
+  if (list.isPending) return <LoadingDots className="mt-16" />
+  if (list.isError) return <Failed error={list.error} onRetry={() => list.refetch()} />
+  if (items.length === 0) return <Lost q={q} />
+
   return (
-    <div className="space-y-2">
-      {list.isPending && [0, 1, 2].map((i) => <Skeleton key={i} className="h-[80px] w-full rounded-xl" />)}
-      {list.isError && <LoadError text={searchError(list.error)} onRetry={() => list.refetch()} />}
-      {list.isSuccess && items.length === 0 && <EmptyCard>‘{q}’ 검색 결과가 없어요.</EmptyCard>}
-      {items.map((item) => (
-        <ItemCard key={item.id} type={type} item={item} now={now} />
-      ))}
+    <section className="gh-found">
+      <Items type={type} items={items} q={q} now={now} />
       {showSentinel && <div ref={bottomRef} aria-hidden className="h-1" />}
-      {list.isFetchingNextPage && <Skeleton className="h-[80px] w-full rounded-xl" />}
+      {list.isFetchingNextPage && <LoadingDots className="mt-6" />}
       {showMoreButton && (
-        <Button variant="secondary" className="w-full" onClick={() => list.fetchNextPage()}>
+        <button type="button" className="gh-cmore !mx-0 !w-full" onClick={() => list.fetchNextPage()}>
           더보기
-        </Button>
+        </button>
       )}
-    </div>
+    </section>
   )
 }

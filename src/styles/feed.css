@@ -1,0 +1,524 @@
+/* 피드 묶음 (feed · fdetail · fwrite) — 화면 전용 모양. 공통 부품은 story.css */
+
+/* JS가 불러와 index.css보다 먼저 들어갈 수 있다 — 층 순서를 먼저 못 박는다 */
+@layer theme, base, components, utilities;
+
+@layer components {
+  .gh-fsky {
+    position: relative;
+    background: linear-gradient(rgba(18, 26, 45, 0) 55%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-fttl {
+    padding: 16px 22px 0;
+  }
+  .gh-fttl h1 {
+    font: 400 34px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-fttl h1::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    margin: 4px 0 0 22px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.6);
+  }
+  .gh-fdesc {
+    padding: 8px 22px 0;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-fsky .gh-fpeek {
+    position: absolute;
+    right: 10px;
+    top: 50px;
+    width: 110px;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+  }
+  .gh-fsky .gh-dotchips {
+    padding-top: 18px;
+  }
+  .gh-hang .gh-cp.is-clamp {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+  }
+  .gh-fgap {
+    height: 26px;
+  }
+  .gh-fmore {
+    display: block;
+    width: calc(100% - 44px);
+    margin: 30px 22px 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-fskel {
+    height: 220px;
+    margin: 30px 22px 0;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: gh-f-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes gh-f-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ── 피드 상세 (fdetail-final '걷어 온 쪽지') ── */
+@layer components {
+  .gh-fd {
+    padding-bottom: 130px;
+  }
+  .gh-fnote {
+    position: relative;
+    margin: -14px 18px 0;
+    padding: 22px 20px 18px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--c) 22%, #fffdf6);
+    color: var(--color-gh-d-ink);
+    transform: rotate(-1deg);
+    box-shadow: 0 22px 30px -18px #000;
+  }
+  .gh-fnote .gh-pin {
+    position: absolute;
+    top: -12px;
+    width: 12px;
+    height: 26px;
+    border-radius: 3px;
+    background: #c9a57a;
+    box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.15);
+  }
+  .gh-fnote .gh-pin.is-a {
+    left: 28%;
+  }
+  .gh-fnote .gh-pin.is-b {
+    right: 28%;
+  }
+  .gh-fnote .gh-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-fnote .gh-top b {
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-fnote .gh-chip {
+    margin-left: auto;
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--c) 45%, #fff);
+    font: 400 11.5px var(--font-title);
+  }
+  .gh-fnote .gh-photos {
+    margin-top: 14px;
+  }
+  .gh-fnote .gh-body {
+    margin-top: 12px;
+    font: 400 18px/1.55 var(--font-title);
+  }
+  .gh-fnote .gh-body a {
+    text-decoration: underline;
+  }
+  .gh-facts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .gh-like {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 16px 0 12px;
+    border-radius: 22px;
+    background: #fff;
+    color: var(--color-gh-like);
+    font: 400 15px var(--font-title);
+    box-shadow: inset 0 0 0 1.5px rgba(226, 92, 122, 0.4);
+  }
+  .gh-like[aria-pressed='true'] {
+    background: var(--color-gh-like);
+    color: #fff;
+    box-shadow: 0 8px 16px -8px rgba(226, 92, 122, 0.9);
+  }
+  .gh-like svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-cm {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font: 400 15px var(--font-title);
+    color: #5b5a55;
+  }
+  .gh-cm svg {
+    width: 19px;
+    height: 19px;
+  }
+  .gh-fd-err {
+    margin: 10px 18px 0;
+    font-size: 13px;
+    color: var(--color-gh-error-night);
+  }
+  .gh-fd-sh {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 34px 22px 4px;
+    font: 400 18px var(--font-title);
+  }
+  .gh-fd-sh em {
+    font-style: normal;
+    color: var(--color-gh-sky);
+  }
+  .gh-scraps {
+    padding: 0 16px;
+  }
+  .gh-scraps > li,
+  .gh-scraps ul > li {
+    margin-top: 16px;
+    scroll-margin-top: 80px;
+  }
+  .gh-scraps .gh-gone {
+    padding: 12px 4px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-replying button {
+    margin-left: auto;
+  }
+}
+
+/* ── 피드 글쓰기 (fwrite-final '빨랫줄 쪽지 입력 + 폴라로이드 사진 칸') ── */
+@layer components {
+  .gh-fw {
+    padding-bottom: 40px;
+  }
+  .gh-fw-ttl {
+    position: relative;
+    padding: 4px 22px 0;
+  }
+  .gh-fw-ttl h1 {
+    font: 400 28px/1.3 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-fw-ttl p {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-fw-ttl img {
+    position: absolute;
+    right: 8px;
+    top: -22px;
+    width: 96px;
+  }
+  .gh-fw .gh-dotchips {
+    padding-top: 18px;
+  }
+  .gh-fw .gh-dotchips.is-error button {
+    box-shadow: inset 0 0 0 1.2px rgba(240, 138, 122, 0.6);
+  }
+  .gh-fwnote {
+    position: relative;
+    margin: -14px 18px 0;
+    padding: 22px 18px 12px;
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--c) 22%, #fffdf6);
+    color: var(--color-gh-d-ink);
+    transform: rotate(-1deg);
+    box-shadow: 0 22px 30px -18px #000;
+  }
+  .gh-fwnote .gh-pin,
+  .gh-slot .gh-pin {
+    position: absolute;
+    top: -12px;
+    width: 12px;
+    height: 26px;
+    border-radius: 3px;
+    background: #c9a57a;
+    box-shadow: inset -3px 0 0 rgba(0, 0, 0, 0.15);
+  }
+  .gh-fwnote .gh-pin.is-a {
+    left: 28%;
+  }
+  .gh-fwnote .gh-pin.is-b {
+    right: 28%;
+  }
+  .gh-fwnote textarea {
+    display: block;
+    width: 100%;
+    height: 150px;
+    resize: none;
+    background: transparent;
+    font: 400 17px/1.6 var(--font-title);
+    color: var(--color-gh-d-ink);
+    outline: none;
+  }
+  .gh-fwnote textarea::placeholder {
+    color: color-mix(in srgb, var(--c) 55%, #6b7385);
+  }
+  .gh-fwnote .gh-n {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-fwnote .gh-chip {
+    padding: 3px 8px;
+    border-radius: 7px;
+    background: color-mix(in srgb, var(--c) 45%, #fff);
+    font: 400 11px var(--font-title);
+  }
+  .gh-fw .gh-err {
+    margin: 10px 22px 0;
+  }
+  .gh-fwph {
+    margin: 30px 22px 0;
+    font: 400 14px var(--font-title);
+  }
+  .gh-fwph small {
+    margin-left: 6px;
+    font: 400 12px var(--font-body);
+    color: var(--color-gh-sub);
+  }
+  .gh-fw .gh-mini {
+    height: 24px;
+    margin-top: 6px;
+  }
+  .gh-slots {
+    display: flex;
+    gap: 14px;
+    margin-top: -10px;
+    padding: 0 24px;
+  }
+  .gh-slot {
+    position: relative;
+    width: 96px;
+    padding: 6px 6px 16px;
+    border: 1.5px dashed rgba(169, 199, 255, 0.3);
+    border-radius: 3px;
+    background: rgba(255, 253, 246, 0.08);
+  }
+  .gh-slot:nth-child(1) {
+    transform: rotate(-2deg);
+  }
+  .gh-slot:nth-child(2) {
+    transform: rotate(1.5deg);
+  }
+  .gh-slot:nth-child(3) {
+    transform: rotate(-1deg);
+  }
+  .gh-slot .gh-pin {
+    top: -10px;
+    left: 50%;
+    height: 20px;
+    margin-left: -6px;
+  }
+  .gh-slot.is-empty .gh-pin {
+    opacity: 0.4;
+  }
+  .gh-slot .gh-in {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(169, 199, 255, 0.06);
+    color: #5e6a84;
+  }
+  .gh-slot .gh-in img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gh-slot.is-add,
+  .gh-slot.is-photo {
+    border: 0;
+    background: #fffdf6;
+    box-shadow: 0 12px 18px -12px #000;
+  }
+  .gh-slot.is-add .gh-in {
+    align-content: center;
+    gap: 2px;
+    background: #eef2f8;
+    color: var(--color-gh-d-ink);
+    font: 400 11.5px var(--font-title);
+    text-align: center;
+  }
+  .gh-slot.is-add .gh-in svg {
+    width: 22px;
+    height: 22px;
+    margin: 0 auto;
+  }
+  .gh-slot .gh-x {
+    position: absolute;
+    right: -6px;
+    top: -6px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    box-shadow: 0 0 0 2px #fffdf6;
+  }
+  .gh-slot .gh-x svg {
+    width: 13px;
+    height: 13px;
+  }
+  .gh-slot .gh-state {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 4px;
+    background: rgba(18, 26, 45, 0.6);
+    color: #fff;
+    font-size: 11px;
+    text-align: center;
+  }
+  .gh-phn {
+    margin: 14px 22px 0;
+    font-size: 12.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-phn.is-bad {
+    color: var(--color-gh-error-night);
+  }
+  .gh-go2 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin: 30px 22px 0;
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-go2 button {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: var(--color-gh-blue);
+    color: #fff;
+    box-shadow: 0 10px 22px -8px rgba(74, 124, 245, 0.9);
+  }
+  .gh-go2 button:disabled {
+    background: #2c3650;
+    color: #66728c;
+    box-shadow: none;
+  }
+  .gh-go2 svg {
+    width: 25px;
+    height: 25px;
+  }
+  .gh-gon {
+    margin: 10px 22px 0;
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #66728c;
+  }
+  .gh-gon.is-bad {
+    color: var(--color-gh-error-night);
+  }
+}
+
+/* 종이 위 폴라로이드 칸 (공유 작성) + 태그 */
+@layer components {
+  .gh-paper .gh-slots {
+    margin-top: 6px;
+    padding: 6px 0 0;
+  }
+  .gh-paper .gh-slot.is-empty {
+    border-color: var(--color-gh-paper-line);
+    background: #f3efe2;
+  }
+  .gh-paper .gh-slot.is-empty .gh-in {
+    background: transparent;
+  }
+  .gh-paper .gh-slot.is-add,
+  .gh-paper .gh-slot.is-photo {
+    background: #fff;
+    box-shadow: 0 8px 14px -8px rgba(0, 0, 0, 0.35);
+  }
+  .gh-paper .gh-phn {
+    margin: 10px 0 0;
+    color: #8a8370;
+  }
+  .gh-tags-in {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .gh-tags-in li {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 4px 4px 10px;
+    border-radius: 10px;
+    background: #e8eeff;
+    font: 400 12.5px var(--font-title);
+    color: #3b57c9;
+  }
+  .gh-tags-in button {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+  }
+  .gh-tags-in svg {
+    width: 12px;
+    height: 12px;
+  }
+  .gh-tag-row {
+    display: flex;
+    gap: 8px;
+  }
+  .gh-tag-row .gh-field {
+    flex: 1;
+  }
+  .gh-tag-row button {
+    flex: none;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: var(--color-gh-night);
+    color: #fff;
+    font: 400 13px var(--font-title);
+  }
+  .gh-tag-row button:disabled {
+    background: #e7e3d6;
+    color: #a8a08a;
+  }
+}
+@layer components {
+  .gh-sheet .gh-slots {
+    margin-top: 14px;
+    padding: 0;
+  }
+  .gh-sheet .gh-phn {
+    margin: 10px 0 0;
+  }
+}

@@ -24,7 +24,7 @@ export default defineConfig({
         display: 'standalone',
         background_color: '#F6F8FC',
         theme_color: '#F6F8FC',
-        // 임시 아이콘(마스코트 기본 자세 B). 디자이너 아이콘이 오면 public/의 파일만 바꾼다
+        // 앱 아이콘: 별 안은 유령 (temp/design/gdghost/assets/gdghost-icon.png에서 둥근 모서리 · 워터마크를 잘라 냄)
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },

@@ -9,6 +9,7 @@ import { memberStatusLabel } from '@/features/member/labels'
 import { opsErrorMessage, useGraduate, useGraduationCandidates } from '@/features/ops/api'
 import { formatDate } from '@/lib/time'
 import { toApiError } from '@/lib/api'
+import { useConfirm } from '@/components/story'
 
 /** 졸업 일괄 처리 (S73, 3월 · 9월) — 기수 · 학번으로 대상을 좁히고 골라서 졸업으로 바꾼다. 바뀐 부원에게 앱 내 알림 */
 export function OpsGraduationPage() {
@@ -32,10 +33,11 @@ export function OpsGraduationPage() {
     })
   }
 
-  function submit() {
+  const confirm = useConfirm()
+  async function submit() {
     const ids = items.filter((m) => picked.has(m.id)).map((m) => m.id)
     if (ids.length === 0) return
-    if (!window.confirm(`${ids.length}명을 졸업 상태로 변경할까요? 해당 부원에게 알림이 가요.`)) return
+    if (!(await confirm({ title: `${ids.length}명을 졸업 상태로 변경할까요? 해당 부원에게 알림이 가요.`, confirmLabel: '확인' }))) return
     setResult(null)
     graduate.mutate(ids.slice(0, 200), {
       onSuccess: (r) => {

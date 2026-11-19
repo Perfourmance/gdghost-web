@@ -4,6 +4,7 @@ import { authorName, authorProfileId, type Author } from '@/features/member/auth
 import type { AnswerNode } from '@/features/questions/api'
 import { formatRelative } from '@/lib/time'
 import { cn } from '@/lib/utils'
+import { IconStar } from '@/components/story'
 
 // 답글 들여쓰기는 3단계(depth 1–3)까지. 더 깊은 답글은 백엔드가 depth 3 자리(형제)로 올려 보낸다 (기능명세 F2-09)
 const MAX_INDENT = 3
@@ -22,11 +23,11 @@ export interface AnswerActions {
   onReport: (answer: AnswerNode) => void
 }
 
-/** 답변 · 답글 트리 */
+/** 답변 · 답글 트리 — 밤 유리 카드, 답글은 휜 선으로 들여쓰기, 채택은 앰버 빛 */
 export function AnswerList({ answers, now, actions }: { answers: AnswerNode[]; now: number; actions?: AnswerActions }) {
   const byId = indexById(answers)
   return (
-    <ul className="space-y-3">
+    <ul>
       {answers.map((answer) => (
         <AnswerItem key={answer.id} answer={answer} now={now} actions={actions} byId={byId} />
       ))}
@@ -53,39 +54,40 @@ interface ItemProps {
 function AnswerItem({ answer, now, actions, byId }: ItemProps) {
   const isReply = answer.depth > 0
   const parent = answer.parentId != null ? byId.get(answer.parentId) : undefined
+  const pickLabel = answer.adopted ? (actions?.questionMine ? '내가 채택한 답장' : '채택된 답장') : null
   return (
     // 알림 · 신고 링크의 #answer-{id}로 바로 내려온다
     <li id={`answer-${answer.id}`} className="scroll-mt-20">
-      <div
-        className={cn(
-          // 답글은 카드 대신 왼쪽 선으로 구분 (다크에서도 답변 카드와 헷갈리지 않게)
-          isReply ? 'border-l-2 border-border py-1.5 pl-3' : 'rounded-xl bg-card px-4 py-3.5',
-          answer.adopted && 'ring-2 ring-brand',
-        )}
-      >
+      <article className={cn('gh-ans', isReply && 'is-reply', pickLabel && 'is-pick', answer.mine && !pickLabel && 'is-mine')}>
         {answer.deletedBy ? (
-          <p className="text-sm text-muted-foreground">
-            {answer.deletedBy === 'STAFF' ? '운영진이 숨긴 답변이에요' : '삭제된 답변이에요'}
-          </p>
+          <p className="gh-gone">{answer.deletedBy === 'STAFF' ? '운영진이 숨긴 답장이에요' : '삭제된 답장이에요'}</p>
         ) : (
           <>
-            <div className="flex items-center gap-2 text-xs">
-              {answer.adopted && (
-                <span className="rounded bg-brand px-1.5 py-0.5 text-[11px] font-bold text-white">채택</span>
-              )}
-              <AuthorLink author={answer.author} />
-              <span className="text-muted-foreground">{formatRelative(answer.createdAt, now)}</span>
-              {answer.editedAt && <span className="text-muted-foreground">· 수정</span>}
+            {pickLabel && (
+              <span className="gh-pick-tag">
+                <IconStar />
+                {pickLabel}
+              </span>
+            )}
+            <div className="gh-who">
+              <b>
+                <AuthorLink author={answer.author} className="" />
+              </b>
+              <span>
+                {formatRelative(answer.createdAt, now)}
+                {answer.mine && ' · 나'}
+                {answer.editedAt && ' · 고침'}
+              </span>
             </div>
             {isReply && <ReplyTarget parent={parent} />}
-            {answer.body && <LinkifiedText text={answer.body} className="mt-2 text-sm leading-relaxed text-foreground" />}
+            {answer.body && <LinkifiedText text={answer.body} className="gh-body" />}
             {actions && <ActionRow answer={answer} actions={actions} />}
           </>
         )}
-      </div>
+      </article>
 
       {answer.replies.length > 0 && (
-        <ul className={cn('mt-2 space-y-2', answer.depth < MAX_INDENT ? 'pl-3' : 'pl-0')}>
+        <ul className={cn(answer.depth >= MAX_INDENT && '!pl-0')}>
           {answer.replies.map((reply) => (
             <AnswerItem key={reply.id} answer={reply} now={now} actions={actions} byId={byId} />
           ))}
@@ -98,65 +100,52 @@ function AnswerItem({ answer, now, actions, byId }: ItemProps) {
 /** 누구에게 단 답글인지 — 대상이 지워졌으면 그렇게 적는다 */
 function ReplyTarget({ parent }: { parent: AnswerNode | undefined }) {
   const gone = !parent || parent.deletedBy != null
-  return (
-    <p className="mt-1.5 text-xs text-muted-foreground">
-      {gone ? (
-        '삭제된 답변에 남긴 답글'
-      ) : (
-        <>
-          <span className="font-bold text-brand-text">@{authorName(parent.author)}</span>님에게
-        </>
-      )}
-    </p>
-  )
+  return <div className="gh-to">{gone ? '삭제된 답장에 남긴 답글' : `@${authorName(parent.author)}님에게`}</div>
 }
 
 /** 답글 · 수정 · 삭제 · 신고 · 채택 — 시안 06의 작은 글씨 줄. 지운 자리에는 없다 */
 function ActionRow({ answer, actions }: { answer: AnswerNode; actions: AnswerActions }) {
   const canAdopt = actions.questionMine && answer.depth === 0
-  const buttons: { label: string; onClick: () => void; strong?: boolean }[] = [
+  const buttons: { label: string; onClick: () => void; tone?: 'dim' | 'amber' }[] = [
     { label: '답글', onClick: () => actions.onReply(answer) },
   ]
   if (answer.mine) {
     buttons.push({ label: '수정', onClick: () => actions.onEdit(answer) })
-    buttons.push({ label: '삭제', onClick: () => actions.onDelete(answer) })
-  }
-  if (!answer.mine) {
-    buttons.push({ label: '신고', onClick: () => actions.onReport(answer) })
+    buttons.push({ label: '삭제', onClick: () => actions.onDelete(answer), tone: 'dim' })
+  } else {
+    buttons.push({ label: '신고', onClick: () => actions.onReport(answer), tone: 'dim' })
   }
   if (canAdopt) {
     buttons.push(
       answer.adopted
-        ? { label: '채택 취소', onClick: () => actions.onAdopt(answer, false) }
-        : { label: '채택하기', onClick: () => actions.onAdopt(answer, true), strong: true },
+        ? { label: '채택 취소', onClick: () => actions.onAdopt(answer, false), tone: 'amber' }
+        : { label: '채택하기', onClick: () => actions.onAdopt(answer, true), tone: 'amber' },
     )
   }
   return (
-    <div className="mt-2.5 flex flex-wrap items-center gap-x-1 text-xs text-muted-foreground">
-      {buttons.map((b, i) => (
-        <span key={b.label} className="flex items-center gap-x-1">
-          {i > 0 && <span aria-hidden>·</span>}
-          <button
-            type="button"
-            disabled={actions.disabled}
-            onClick={b.onClick}
-            className={cn('py-1 hover:underline disabled:opacity-50', b.strong && 'font-bold text-brand-text')}
-          >
-            {b.label}
-          </button>
-        </span>
+    <div className="gh-acts">
+      {buttons.map((b) => (
+        <button
+          key={b.label}
+          type="button"
+          disabled={actions.disabled}
+          onClick={b.onClick}
+          className={cn(b.tone === 'dim' && 'is-dim', b.tone === 'amber' && 'is-amber')}
+        >
+          {b.label}
+        </button>
       ))}
     </div>
   )
 }
 
 /** 닉네임을 누르면 프로필로. 익명 · 탈퇴자는 링크 없음 (IA 2장) */
-export function AuthorLink({ author }: { author: Author | null }) {
+export function AuthorLink({ author, className = 'font-bold text-title hover:underline' }: { author: Author | null; className?: string }) {
   const profileId = authorProfileId(author)
   const name = authorName(author)
-  if (profileId == null) return <span className="font-bold text-title">{name}</span>
+  if (profileId == null) return <span className={className}>{name}</span>
   return (
-    <Link to={`/members/${profileId}`} className="font-bold text-title hover:underline">
+    <Link to={`/members/${profileId}`} className={className}>
       {name}
     </Link>
   )

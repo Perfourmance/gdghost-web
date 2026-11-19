@@ -1,3 +1,4 @@
+import { useConfirm } from '@/components/story'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Chip } from '@/components/Chip'
@@ -79,13 +80,14 @@ function ReportCard({ report: r }: { report: OpsReportItem }) {
   const handle = useHandleReport()
   const [error, setError] = useState<string | null>(null)
 
-  function act(action: ReportAction) {
+  const confirm = useConfirm()
+  async function act(action: ReportAction) {
     const confirmText: Record<ReportAction, string> = {
       DISMISS: '문제없음으로 처리할까요? 같은 글의 다른 신고도 닫혀요.',
       HIDE: '글을 숨길까요? 부원에게 보이지 않고, 같은 글의 다른 신고도 닫혀요.',
       RESTORE: '숨김을 해제할까요? 부원에게 다시 보여요.',
     }
-    if (!window.confirm(confirmText[action])) return
+    if (!(await confirm({ title: confirmText[action], confirmLabel: '확인' }))) return
     setError(null)
     handle.mutate({ id: r.id, action }, { onError: (e) => setError(reportHandleErrorMessage(toApiError(e))) })
   }

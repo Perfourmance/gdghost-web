@@ -1,28 +1,19 @@
-import door from '@/assets/mascot/door.png'
-import shh from '@/assets/mascot/shh.png'
-import { Logo } from '@/components/Logo'
+import { Ghost, LoadingDots } from '@/components/story'
+import { cn } from '@/lib/utils'
 
-const DOT_DELAYS = ['0ms', '160ms', '320ms']
-
-/** 시안 07 — 캐릭터 → 파란 점 세 개 → 로고. 비회원은 문 여는 유령, 회원은 쉿 포즈 */
+/** 첫 로딩 — 비회원은 낮(문 여는 유령), 회원은 밤(쉿 유령) → 앰버 점 세 개 → 글자 로고 */
 export function LoadingScreen({ member }: { member: boolean }) {
   return (
     <div
-      className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-background"
+      className={cn('flex min-h-dvh flex-col items-center justify-center gap-6', member ? 'gh-night' : 'gh-day')}
       role="status"
       aria-label="불러오는 중"
     >
-      <img src={member ? shh : door} alt="" className="w-32" />
-      <div className="flex gap-2" aria-hidden>
-        {DOT_DELAYS.map((delay) => (
-          <span
-            key={delay}
-            className="loading-dot size-2 rounded-full bg-brand"
-            style={{ animationDelay: delay }}
-          />
-        ))}
-      </div>
-      <Logo className="text-2xl" />
+      <Ghost pose={member ? 'shh' : 'door'} className="w-32" />
+      <LoadingDots />
+      <span className="gh-logo text-2xl">
+        <b>GDG</b>host
+      </span>
     </div>
   )
 }

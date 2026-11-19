@@ -1,12 +1,24 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router'
-import { Chip } from '@/components/Chip'
-import { FieldLabel, StepFooter } from '@/components/form/StepLayout'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
+import {
+  ChipGroup,
+  EmptyState,
+  FieldError,
+  Hint,
+  IconChevronDown,
+  LanternRow,
+  LockedField,
+  Paper,
+  PaperChips,
+  PaperInput,
+  PaperLabel,
+  PaperTextarea,
+  Pill,
+  SaveBar,
+  StoryButton,
+  StorySubPage,
+  Toggle,
+} from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { DepartmentSelect } from '@/features/departments/DepartmentSelect'
 import { isDepartment, useDepartments } from '@/features/departments/useDepartments'
@@ -21,24 +33,33 @@ import {
   type ProfileUpdateInput,
 } from '@/features/me/api'
 import type { ContactType } from '@/features/member/api'
-import { CONTACT_TYPES, MEMBER_STATUSES, POSITIONS, type MemberStatus, type Position } from '@/features/member/labels'
-import { ExperiencePicker, InterestPicker } from '@/features/member/TagPickers'
-import { BIO_MAX, STATUS_NOTE_MAX } from '@/features/signup/answerableRules'
-import { TagsState } from '@/features/signup/TagsState'
+import {
+  CONTACT_TYPES,
+  MEMBER_STATUSES,
+  memberStatusLabel,
+  POSITIONS,
+  positionLabel,
+  type MemberStatus,
+  type Position,
+} from '@/features/member/labels'
+import {
+  BIO_MAX,
+  groupExperiences,
+  MAX_EXPERIENCES,
+  MAX_INTERESTS,
+  MAX_SKILLS_PER_INTEREST,
+  sortedInterests,
+  STATUS_NOTE_MAX,
+  toggleId,
+  toggleInterestSelection,
+} from '@/features/signup/answerableRules'
 import { useNicknameCheck } from '@/features/signup/useNicknameCheck'
 import { useTags } from '@/features/tags/useTags'
 import { useLeaveGuard } from '@/hooks/useLeaveGuard'
 import { toApiError } from '@/lib/api'
 import { formatMonthDay } from '@/lib/time'
-
-const MISSING_LABELS: Record<string, string> = {
-  INTEREST: '관심 분야',
-  SKILL: '세부 기술',
-  EXPERIENCE: '경험',
-  STATUS_NOTE: '근황',
-  BIO: '자기소개',
-  CONTACT: '연락 수단',
-}
+import { cn } from '@/lib/utils'
+import '@/styles/members.css'
 
 const CONTACT_PLACEHOLDERS: Record<ContactType, string> = {
   KAKAO: '오픈채팅 링크나 아이디',
@@ -126,32 +147,86 @@ export function ProfileEditPage() {
 
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요." />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="프로필 수정은 로그인 후에 할 수 있어요." />
     )
   }
 
   return (
-    <SubPageLayout fallback={`/members/${me.id}`}>
-      {profile.isPending && (
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-40" />
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-40 w-full rounded-xl" />
-        </div>
-      )}
+    <StorySubPage fallback={`/members/${me.id}`} className="gh-pedit">
+      {profile.isPending && <div className="gh-mskel mx-4 mt-6 !h-72" aria-label="불러오는 중" />}
       {profile.isError && (
-        <div className="py-16 text-center">
-          <p className="text-sm">프로필을 불러오지 못했어요.</p>
-          <Button variant="secondary" className="mt-3" onClick={() => profile.refetch()}>
-            다시 시도
-          </Button>
+        <div className="px-4 pt-6">
+          <EmptyState
+            row
+            pose="shh"
+            title="프로필을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => profile.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
         </div>
       )}
       {/* 처음 불러온 값으로 폼을 한 번만 채운다 (저장 뒤 다시 불러와도 입력 중인 값은 그대로) */}
       {profile.data && <ProfileForm key={profile.data.id} profile={profile.data} />}
-    </SubPageLayout>
+    </StorySubPage>
+  )
+}
+
+type FoldKey = 'basic' | 'field' | 'exp' | 'intro' | 'contact'
+
+/** 접힌 칸 — 머리(등불 · 이름 · 요약 글)를 누르면 펼쳐진다. 접혀 있으면 요약 칩만 */
+function Fold({
+  id,
+  open,
+  onToggle,
+  title,
+  sub,
+  lamps,
+  error,
+  summary,
+  children,
+}: {
+  id: FoldKey
+  open: boolean
+  onToggle: () => void
+  title: string
+  sub: string
+  lamps?: boolean[]
+  error?: boolean
+  summary: { text: string; empty?: boolean }[]
+  children: ReactNode
+}) {
+  return (
+    <section id={`fold-${id}`} className={cn('gh-fold', open && 'is-open')}>
+      <button type="button" className="gh-fold-h" aria-expanded={open} aria-controls={`fold-${id}-body`} onClick={onToggle}>
+        {lamps && (
+          <span className="gh-lps" aria-hidden>
+            {lamps.map((on, i) => (
+              <i key={i} className={cn(!on && 'is-off')} />
+            ))}
+          </span>
+        )}
+        <b>{title}</b>
+        <small>{sub}</small>
+        {error && <span className="gh-err-dot" aria-label="고칠 곳이 있어요" />}
+        <IconChevronDown />
+      </button>
+      {open ? (
+        <div id={`fold-${id}-body`}>
+          <Paper flat>{children}</Paper>
+        </div>
+      ) : (
+        <div className="gh-sum">
+          {summary.map((s, i) => (
+            <span key={i} className={cn(s.empty && 'is-empty')}>
+              {s.text}
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
   )
 }
 
@@ -206,206 +281,311 @@ function ProfileForm({ profile }: { profile: MyProfile }) {
     )
   }
 
-  const { filled, total, missing } = profile.profileCompleteness
+  const [open, setOpen] = useState<Set<FoldKey>>(() => new Set())
+  const toggle = (key: FoldKey) =>
+    setOpen((prev) => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  function jump(key: FoldKey) {
+    setOpen((prev) => new Set(prev).add(key))
+    requestAnimationFrame(() => document.getElementById(`fold-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
+
+  // 등불 6개 — 지금 입력한 값 기준으로 켠다
+  const contactsFilled = contactList(values.contacts).length > 0
+  const lamps: { key: string; label: string; on: boolean; fold: FoldKey }[] = [
+    { key: 'INTEREST', label: '관심 분야', on: values.interestTagIds.length > 0, fold: 'field' },
+    { key: 'SKILL', label: '세부 기술', on: values.skillTagIds.length > 0, fold: 'field' },
+    { key: 'EXPERIENCE', label: '경험', on: values.experienceTagIds.length > 0, fold: 'exp' },
+    { key: 'STATUS_NOTE', label: '근황', on: values.statusNote.trim() !== '', fold: 'intro' },
+    { key: 'BIO', label: '자기소개', on: values.bio.trim() !== '', fold: 'intro' },
+    { key: 'CONTACT', label: '연락 수단', on: contactsFilled, fold: 'contact' },
+  ]
+  const litCount = lamps.filter((l) => l.on).length
+  const missing = lamps.filter((l) => !l.on)
+
+  const interestNames = tags.data
+    ? tags.data.interests.filter((i) => values.interestTagIds.includes(i.id)).map((i) => i.name)
+    : []
+  const skillNames = tags.data
+    ? tags.data.interests.flatMap((i) => i.skills).filter((sk) => values.skillTagIds.includes(sk.id)).map((sk) => sk.name)
+    : []
+  const expNames = tags.data ? tags.data.experiences.filter((e) => values.experienceTagIds.includes(e.id)).map((e) => e.name) : []
+  const deptLabel = isDepartment(departments.data, values.department) ? values.department : '학과 고르기 전'
+
+  // 저장하려다 막히면 고칠 칸을 펼친다
+  function submitWithReveal(event: FormEvent<HTMLFormElement>) {
+    const reveal: FoldKey[] = []
+    if (errors.nickname || errors.department) reveal.push('basic')
+    if (errors.interests) reveal.push('field')
+    if (errors.phone) reveal.push('contact')
+    if (reveal.length) setOpen((prev) => new Set([...prev, ...reveal]))
+    handleSubmit(event)
+  }
+
+  const interestsMax = values.interestTagIds.length >= MAX_INTERESTS
+  const selectedInterests = tags.data
+    ? sortedInterests(tags.data).filter((i) => values.interestTagIds.includes(i.id))
+    : []
+  const expFull = values.experienceTagIds.length >= MAX_EXPERIENCES
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1 className="text-[22px] leading-snug font-bold text-title">프로필 수정</h1>
-      {missing.length > 0 ? (
-        <p className="mt-2 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text">
-          프로필을 {filled}/{total} 채웠어요. 더 채우면 내 경험에 맞는 질문을 받을 수 있어요.
-          <span className="mt-0.5 block text-xs text-brand-text/80">
-            비어 있는 것: {missing.map((m) => MISSING_LABELS[m] ?? m).join(' · ')}
-          </span>
-        </p>
-      ) : (
-        <p className="mt-2 text-sm text-muted-foreground">프로필을 모두 채웠어요.</p>
-      )}
-
-      <div className="mt-8 space-y-8">
-        <section>
-          <FieldLabel htmlFor="nickname">닉네임</FieldLabel>
-          <Input
-            id="nickname"
-            maxLength={12}
-            className="h-12 bg-card"
-            disabled={nicknameLockedUntil != null}
-            aria-invalid={errors.nickname != null}
-            value={values.nickname}
-            onChange={(e) => set('nickname', e.target.value)}
-          />
-          <p className="mt-2 text-xs" aria-live="polite">
-            {nicknameLockedUntil != null ? (
-              <span className="text-muted-foreground">
-                {formatMonthDay(nicknameLockedUntil)}부터 다시 바꿀 수 있어요. 30일에 한 번 바꿀 수 있어요.
-              </span>
-            ) : !nicknameChanged ? (
-              <span className="text-muted-foreground">2~12자로 입력해 주세요. 바꾼 뒤 30일 동안은 다시 바꿀 수 없어요.</span>
-            ) : nicknameCheck.state === 'checking' ? (
-              <span className="text-muted-foreground">확인 중…</span>
-            ) : nicknameCheck.state === 'available' ? (
-              <span className="text-brand-text">사용할 수 있어요.</span>
-            ) : nicknameCheck.state === 'invalid' ? (
-              <span className="text-destructive">{nicknameCheck.message}</span>
-            ) : nicknameCheck.state === 'error' ? (
-              <span className="text-destructive">확인 실패. 잠시 뒤 다시 입력해 주세요.</span>
-            ) : null}
-          </p>
-        </section>
-
-        <section className="rounded-xl bg-card px-4 py-3 text-sm">
-          <p className="text-foreground">
-            {profile.name} · {profile.generation}기{profile.studentNo && ` · ${profile.studentNo}학번`}
-          </p>
-          <p className="mt-0.5 text-xs text-muted-foreground">이름 · 기수 · 학번은 바꿀 수 없어요.</p>
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="department">학과</FieldLabel>
-          <DepartmentSelect
-            id="department"
-            value={values.department}
-            invalid={triedSubmit && errors.department != null}
-            onChange={(name) => set('department', name)}
-          />
-          {triedSubmit && errors.department && <FieldError>{errors.department}</FieldError>}
-        </section>
-
-        <section>
-          <FieldLabel>포지션</FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            {POSITIONS.map((p) => (
-              <Chip key={p.value} selected={values.position === p.value} onClick={() => set('position', p.value)}>
-                {p.label}
-              </Chip>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <FieldLabel>상태</FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            {MEMBER_STATUSES.map((s) => (
-              <Chip key={s.value} selected={values.status === s.value} onClick={() => set('status', s.value)}>
-                {s.label}
-              </Chip>
-            ))}
-          </div>
-        </section>
-
-        <TagsState tags={tags} />
-        {tags.data && (
-          <>
-            <div>
-              <InterestPicker
-                tags={tags.data}
-                value={values}
-                onChange={(next) => setValues((v) => ({ ...v, ...next }))}
-              />
-              {triedSubmit && errors.interests && <FieldError>{errors.interests}</FieldError>}
-            </div>
-            <section>
-              <FieldLabel>경험 (선택)</FieldLabel>
-              <ExperiencePicker
-                tags={tags.data}
-                value={values.experienceTagIds}
-                onChange={(ids) => set('experienceTagIds', ids)}
-              />
-            </section>
-          </>
-        )}
-
-        <section>
-          <FieldLabel htmlFor="statusNote" aside={`${values.statusNote.length} / ${STATUS_NOTE_MAX}`}>
-            근황
-          </FieldLabel>
-          <Input
-            id="statusNote"
-            maxLength={STATUS_NOTE_MAX}
-            placeholder="예: OO기업 백엔드 인턴 근무 중"
-            className="h-12 bg-card"
-            value={values.statusNote}
-            onChange={(e) => set('statusNote', e.target.value)}
-          />
-        </section>
-
-        <section>
-          <FieldLabel htmlFor="bio" aside={`${values.bio.length} / ${BIO_MAX}`}>
-            자기소개
-          </FieldLabel>
-          <p className="mb-3 text-xs text-muted-foreground">
-            <b className="font-bold text-brand-text">어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배에게 보여요.
-          </p>
-          <textarea
-            id="bio"
-            maxLength={BIO_MAX}
-            rows={4}
-            className="w-full resize-none rounded-lg border border-input bg-card px-3 py-2.5 text-base leading-relaxed outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
-            value={values.bio}
-            onChange={(e) => set('bio', e.target.value)}
-          />
-        </section>
-
-        <section>
-          <FieldLabel>연락 수단 (선택)</FieldLabel>
-          <p className="mb-3 text-xs text-muted-foreground">
-            공개한 항목만 부원에게 보여요. 비워 두면 삭제돼요.
-          </p>
-          <ul className="space-y-3">
-            {CONTACT_TYPES.map(({ value: type, label }) => {
-              const row = values.contacts[type]
-              const id = `contact-${type}`
-              return (
-                <li key={type} className="rounded-xl bg-card p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <label htmlFor={id} className="text-sm font-bold text-title">
-                      {label}
-                    </label>
-                    <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Checkbox
-                        checked={row.isPublic}
-                        disabled={row.value.trim() === ''}
-                        onCheckedChange={(checked) => setContact(type, { isPublic: checked === true })}
-                      />
-                      공개
-                    </label>
-                  </div>
-                  <Input
-                    id={id}
-                    maxLength={CONTACT_VALUE_MAX}
-                    inputMode={type === 'PHONE' ? 'tel' : undefined}
-                    placeholder={CONTACT_PLACEHOLDERS[type]}
-                    className="mt-2 h-11 bg-background"
-                    aria-invalid={type === 'PHONE' && errors.phone != null}
-                    value={row.value}
-                    onChange={(e) => setContact(type, { value: e.target.value })}
-                  />
-                  {type === 'PHONE' && errors.phone && <FieldError>{errors.phone}</FieldError>}
-                </li>
-              )
-            })}
-          </ul>
-        </section>
+    <form onSubmit={submitWithReveal} noValidate>
+      <div className="gh-pe-ttl">
+        <h1>내 집 손보기</h1>
+        <p>펼친 칸만 고치고, 한 번에 저장해요.</p>
       </div>
 
-      <StepFooter>
-        {save.isError && (
-          <p className="mb-2 text-sm text-destructive" role="alert">
-            {profileSaveErrorMessage(toApiError(save.error))}
+      <div className="gh-meter">
+        <div className="gh-meter-t">
+          <span>
+            등불 {lamps.length}개 중 <em>{litCount}개</em>가 켜졌어요
+          </span>
+          <small>누르면 그 칸으로 가요</small>
+        </div>
+        <LanternRow items={lamps.map((l) => ({ label: l.label, on: l.on, onClick: () => jump(l.fold) }))} />
+        {missing.length > 0 && (
+          <p className="gh-miss">
+            비어 있는 것: <b>{missing.map((m) => m.label).join(' · ')}</b> · 더 채우면 내 경험에 맞는 질문을 받아요
           </p>
         )}
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!dirty || save.isPending}>
-          {save.isPending ? '저장하는 중…' : dirty ? '저장' : '바꾼 내용이 없어요.'}
-        </Button>
-      </StepFooter>
-    </form>
-  )
-}
+      </div>
 
-function FieldError({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="mt-2 text-xs text-destructive" role="alert">
-      {children}
-    </p>
+      <Fold
+        id="basic"
+        open={open.has('basic')}
+        onToggle={() => toggle('basic')}
+        title="기본 정보"
+        sub="문패"
+        error={triedSubmit && (errors.nickname != null || errors.department != null)}
+        summary={[
+          { text: values.nickname.trim() || '닉네임 없음' },
+          { text: positionLabel(values.position) },
+          { text: memberStatusLabel(values.status) },
+          { text: deptLabel, empty: !isDepartment(departments.data, values.department) },
+        ]}
+      >
+        <PaperLabel htmlFor="nickname" aside="2~12자">
+          닉네임
+        </PaperLabel>
+        <PaperInput
+          id="nickname"
+          maxLength={12}
+          disabled={nicknameLockedUntil != null}
+          aria-invalid={errors.nickname != null}
+          value={values.nickname}
+          onChange={(e) => set('nickname', e.target.value)}
+        />
+        <p className={cn('gh-pe-msg', nicknameChanged && nicknameCheck.state === 'available' && 'is-good', errors.nickname && 'is-bad')} aria-live="polite">
+          {nicknameLockedUntil != null
+            ? `${formatMonthDay(nicknameLockedUntil)}부터 다시 바꿀 수 있어요. 30일에 한 번 바꿀 수 있어요.`
+            : !nicknameChanged
+              ? '바꾸면 30일 동안 다시 바꿀 수 없어요.'
+              : nicknameCheck.state === 'checking'
+                ? '확인하는 중…'
+                : nicknameCheck.state === 'available'
+                  ? '쓸 수 있어요'
+                  : nicknameCheck.state === 'invalid'
+                    ? nicknameCheck.message
+                    : nicknameCheck.state === 'error'
+                      ? '확인하지 못했어요. 잠시 뒤 다시 입력해 주세요.'
+                      : ''}
+        </p>
+
+        <div className="mt-4">
+          <LockedField note="이름 · 기수 · 학번은 바꿀 수 없어요">
+            {profile.name} · {profile.generation}기{profile.studentNo && ` · ${profile.studentNo}학번`}
+          </LockedField>
+        </div>
+
+        <PaperLabel htmlFor="department">학과</PaperLabel>
+        <DepartmentSelect
+          id="department"
+          className="gh-field"
+          value={values.department}
+          invalid={triedSubmit && errors.department != null}
+          onChange={(name) => set('department', name)}
+        />
+        {triedSubmit && <FieldError>{errors.department}</FieldError>}
+
+        <PaperLabel>포지션</PaperLabel>
+        <PaperChips label="포지션" options={POSITIONS} isOn={(v) => values.position === v} onToggle={(v) => set('position', v)} />
+
+        <PaperLabel>상태</PaperLabel>
+        <PaperChips label="상태" options={MEMBER_STATUSES} isOn={(v) => values.status === v} onToggle={(v) => set('status', v)} />
+      </Fold>
+
+      <Fold
+        id="field"
+        open={open.has('field')}
+        onToggle={() => toggle('field')}
+        title="분야와 기술"
+        sub={`관심 분야 ${values.interestTagIds.length}/${MAX_INTERESTS}`}
+        lamps={[lamps[0].on, lamps[1].on]}
+        error={triedSubmit && errors.interests != null}
+        summary={
+          interestNames.length + skillNames.length > 0
+            ? [...interestNames, ...skillNames].map((t) => ({ text: t }))
+            : [{ text: '비어 있어요', empty: true }]
+        }
+      >
+        {tags.isPending && <p className="gh-pe-msg">목록을 불러오는 중…</p>}
+        {tags.isError && (
+          <button type="button" className="gh-pe-msg is-bad underline" onClick={() => tags.refetch()}>
+            목록을 불러오지 못했어요. 다시 시도
+          </button>
+        )}
+        {tags.data && (
+          <>
+            <PaperLabel aside={`최대 ${MAX_INTERESTS}개 · ${values.interestTagIds.length} / ${MAX_INTERESTS}`}>관심 분야</PaperLabel>
+            <PaperChips
+              label="관심 분야"
+              options={sortedInterests(tags.data).map((i) => ({ value: i.id, label: i.name, disabled: interestsMax }))}
+              isOn={(id) => values.interestTagIds.includes(id)}
+              onToggle={(id) => setValues((v) => ({ ...v, ...toggleInterestSelection(sortedInterests(tags.data!), v, id) }))}
+            />
+            {triedSubmit && <FieldError>{errors.interests}</FieldError>}
+
+            {selectedInterests.length > 0 && (
+              <>
+                <PaperLabel aside="선택">세부 기술</PaperLabel>
+                <Hint>써 본 기술만 골라 주세요. 고른 기술에 맞는 질문을 받아요.</Hint>
+                {selectedInterests.map((interest) => {
+                  const picked = interest.skills.filter((sk) => values.skillTagIds.includes(sk.id)).length
+                  return (
+                    <ChipGroup key={interest.id} title={interest.name} aside={`${picked} / ${MAX_SKILLS_PER_INTEREST}`}>
+                      <PaperChips
+                        label={`${interest.name} 세부 기술`}
+                        options={interest.skills.map((sk) => ({ value: sk.id, label: sk.name, disabled: picked >= MAX_SKILLS_PER_INTEREST }))}
+                        isOn={(id) => values.skillTagIds.includes(id)}
+                        onToggle={(id) => set('skillTagIds', toggleId(values.skillTagIds, id))}
+                      />
+                    </ChipGroup>
+                  )
+                })}
+              </>
+            )}
+          </>
+        )}
+      </Fold>
+
+      <Fold
+        id="exp"
+        open={open.has('exp')}
+        onToggle={() => toggle('exp')}
+        title="걸어 온 길"
+        sub={`경험 ${values.experienceTagIds.length}/${MAX_EXPERIENCES}`}
+        lamps={[lamps[2].on]}
+        summary={expNames.length > 0 ? expNames.map((t) => ({ text: t })) : [{ text: '비어 있어요', empty: true }]}
+      >
+        <PaperLabel aside={`선택 · 최대 ${MAX_EXPERIENCES}개 · ${values.experienceTagIds.length} / ${MAX_EXPERIENCES}`}>경험</PaperLabel>
+        {tags.data &&
+          groupExperiences(tags.data).map(([group, items]) => (
+            <ChipGroup key={group} title={group}>
+              <PaperChips
+                label={group}
+                options={items.map((t) => ({ value: t.id, label: t.name, disabled: expFull }))}
+                isOn={(id) => values.experienceTagIds.includes(id)}
+                onToggle={(id) => set('experienceTagIds', toggleId(values.experienceTagIds, id))}
+              />
+            </ChipGroup>
+          ))}
+      </Fold>
+
+      <Fold
+        id="intro"
+        open={open.has('intro')}
+        onToggle={() => toggle('intro')}
+        title="근황 · 소개"
+        sub="문 앞 쪽지"
+        lamps={[lamps[3].on, lamps[4].on]}
+        summary={[
+          values.statusNote.trim() ? { text: values.statusNote.trim() } : { text: '근황 비어 있어요', empty: true },
+          values.bio.trim() ? { text: `소개 ${values.bio.trim().length}자` } : { text: '소개 비어 있어요', empty: true },
+        ]}
+      >
+        <PaperLabel htmlFor="statusNote" aside={`${values.statusNote.length} / ${STATUS_NOTE_MAX}`}>
+          근황 · 문 앞 쪽지
+        </PaperLabel>
+        <PaperInput
+          id="statusNote"
+          maxLength={STATUS_NOTE_MAX}
+          placeholder="예: OO기업 백엔드 인턴 근무 중"
+          value={values.statusNote}
+          onChange={(e) => set('statusNote', e.target.value)}
+        />
+        <PaperLabel htmlFor="bio" aside={`${values.bio.length} / ${BIO_MAX}`}>
+          자기소개
+        </PaperLabel>
+        <Hint>
+          <b>어떤 질문에 답할 수 있는지</b> 적어 주세요. 후배에게 보여요.
+        </Hint>
+        <PaperTextarea id="bio" maxLength={BIO_MAX} rows={4} value={values.bio} onChange={(e) => set('bio', e.target.value)} />
+      </Fold>
+
+      <Fold
+        id="contact"
+        open={open.has('contact')}
+        onToggle={() => toggle('contact')}
+        title="연락 수단"
+        sub="우편함 · 선택"
+        lamps={[lamps[5].on]}
+        error={triedSubmit && errors.phone != null}
+        summary={
+          contactsFilled
+            ? contactList(values.contacts).map((c) => ({ text: `${CONTACT_TYPES.find((t) => t.value === c.type)?.label}${c.isPublic ? ' · 공개' : ''}` }))
+            : [{ text: '비어 있어요 · 공개한 것만 부원에게 보여요', empty: true }]
+        }
+      >
+        <Hint>공개한 것만 부원에게 보여요. 비워 두면 지워져요.</Hint>
+        {CONTACT_TYPES.map(({ value: type, label }) => {
+          const row = values.contacts[type]
+          const id = `contact-${type}`
+          return (
+            <div key={type} className="gh-cbox">
+              <div className="gh-ct">
+                <label htmlFor={id}>{label}</label>
+                <span>
+                  공개
+                  <Toggle
+                    small
+                    label={`${label} 공개`}
+                    checked={row.isPublic}
+                    disabled={row.value.trim() === ''}
+                    onChange={(on) => setContact(type, { isPublic: on })}
+                  />
+                </span>
+              </div>
+              <PaperInput
+                id={id}
+                maxLength={CONTACT_VALUE_MAX}
+                inputMode={type === 'PHONE' ? 'tel' : undefined}
+                placeholder={CONTACT_PLACEHOLDERS[type]}
+                aria-invalid={type === 'PHONE' && errors.phone != null}
+                value={row.value}
+                onChange={(e) => setContact(type, { value: e.target.value })}
+              />
+              {type === 'PHONE' && <FieldError>{errors.phone}</FieldError>}
+            </div>
+          )
+        })}
+      </Fold>
+
+      <SaveBar>
+        <div className="mx-auto max-w-[420px]">
+          {save.isError && (
+            <p className="gh-pe-fail" role="alert">
+              {profileSaveErrorMessage(toApiError(save.error))}
+            </p>
+          )}
+          <StoryButton type="submit" tone={dirty ? 'blue' : 'glass'} disabled={!dirty || save.isPending}>
+            {save.isPending ? '저장하는 중…' : dirty ? '저장하기' : '바꾼 내용이 없어요'}
+          </StoryButton>
+        </div>
+      </SaveBar>
+    </form>
   )
 }

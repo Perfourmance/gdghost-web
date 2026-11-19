@@ -11,6 +11,7 @@ import { contentErrorMessage, useDeleteNotice, useOpsNotices, useRemindNotice, t
 import { Pager } from '@/features/ops/OpsBits'
 import { formatDate } from '@/lib/time'
 import { toApiError } from '@/lib/api'
+import { useConfirm } from '@/components/story'
 
 /** 운영 · 공지 관리 (S71) — 목록 · 확인 집계 · 쓰기 · 수정 · 삭제 · 한 번 더 알리기 */
 export function OpsNoticesPage() {
@@ -52,8 +53,9 @@ function NoticeRow({ notice: n, onMessage }: { notice: OpsNotice; onMessage: (m:
   const rate = n.stats.memberCount > 0 ? Math.round((n.stats.confirmedCount / n.stats.memberCount) * 100) : 0
   const unconfirmed = n.stats.memberCount - n.stats.confirmedCount
 
-  function handleRemind() {
-    if (!window.confirm(`미확인 ${unconfirmed}명에게 다시 알릴까요? 추가 알림은 공지당 한 번만 보낼 수 있어요.`)) return
+  const confirm = useConfirm()
+  async function handleRemind() {
+    if (!(await confirm({ title: `미확인 ${unconfirmed}명에게 다시 알릴까요? 추가 알림은 공지당 한 번만 보낼 수 있어요.`, confirmLabel: '확인' }))) return
     onMessage(null)
     remind.mutate(n.id, {
       onSuccess: (r) => onMessage({ text: `${r.targetCount}명에게 알림을 한 번 더 보냈어요.`, error: false }),
@@ -61,8 +63,8 @@ function NoticeRow({ notice: n, onMessage }: { notice: OpsNotice; onMessage: (m:
     })
   }
 
-  function handleDelete() {
-    if (!window.confirm(`‘${n.title}’ 공지를 삭제할까요? 디스코드 메시지는 남아요.`)) return
+  async function handleDelete() {
+    if (!(await confirm({ title: `‘${n.title}’ 공지를 삭제할까요? 디스코드 메시지는 남아요.`, confirmLabel: '확인' }))) return
     onMessage(null)
     remove.mutate(n.id, {
       onSuccess: () => onMessage({ text: '공지를 삭제했어요.', error: false }),

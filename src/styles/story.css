@@ -2423,3 +2423,377 @@
     animation: none;
   }
 }
+
+/* ── 없는 글 (gone-final '편지가 있던 자리') ── */
+@layer components {
+  .gh-gone-slot {
+    position: relative;
+    height: 300px;
+    margin: 24px 22px 0;
+    border: 2px dashed rgba(169, 199, 255, 0.28);
+    border-radius: 8px 8px 22px 22px;
+    background: repeating-linear-gradient(180deg, transparent 0 29px, rgba(169, 199, 255, 0.06) 29px 30px);
+    background-position: 0 120px;
+  }
+  .gh-gone-slot .gh-stamp {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 58px;
+    height: 46px;
+    border: 2px dashed rgba(169, 199, 255, 0.25);
+    border-radius: 6px;
+    transform: rotate(4deg);
+  }
+  .gh-gone-slot .gh-l {
+    position: absolute;
+    left: 20px;
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(169, 199, 255, 0.1);
+  }
+  .gh-gone-slot img {
+    position: absolute;
+    left: 50%;
+    bottom: -40px;
+    width: 190px;
+    margin-left: -95px;
+    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
+  }
+  .gh-gone-txt {
+    margin-top: 58px;
+    padding: 0 30px;
+    text-align: center;
+  }
+  .gh-gone-txt h1 {
+    font: 400 23px/1.4 var(--font-title);
+    letter-spacing: -0.02em;
+  }
+  .gh-gone-txt p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-gone-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+    margin: 28px 22px 40px;
+    border-radius: 28px;
+    background: var(--color-gh-blue);
+    color: #fff;
+    font: 400 16px var(--font-title);
+    box-shadow: 0 10px 22px -10px rgba(74, 124, 245, 0.95);
+  }
+  .gh-gone-back svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+
+/* ── 404 · 오류 (notfound-final '끊긴 길 + 등불 유령') ── */
+@layer components {
+  .gh-lostway {
+    position: relative;
+    min-height: 100dvh;
+    overflow: hidden;
+    background: url('../assets/scene/bg-full.webp') center 120px / 390px auto no-repeat, var(--color-gh-night-deep);
+    color: var(--color-gh-ink);
+    font-family: var(--font-body);
+  }
+  .gh-lostway::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--color-gh-night-deep) 0%, rgba(6, 13, 29, 0.2) 32%, rgba(6, 13, 29, 0) 60%, rgba(6, 13, 29, 0.4));
+  }
+  .gh-lostway > div {
+    position: relative;
+    max-width: 448px;
+    min-height: 100dvh;
+    margin: 0 auto;
+  }
+  .gh-lostway .gh-top {
+    display: block;
+    height: auto;
+    padding: 72px 26px 0;
+  }
+  .gh-lostway .gh-code {
+    font: 400 13px var(--font-title);
+    letter-spacing: 0.1em;
+    color: var(--color-gh-amber);
+  }
+  .gh-lostway h1 {
+    margin-top: 10px;
+    font: 400 34px/1.28 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-lostway .gh-top p {
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--color-gh-sub);
+  }
+  .gh-lostway .gh-path {
+    position: absolute;
+    left: 0;
+    top: 330px;
+    width: 100%;
+    height: 200px;
+  }
+  .gh-lostway .gh-walker {
+    position: absolute;
+    left: 38%;
+    top: 318px;
+    width: 150px;
+    filter: drop-shadow(0 0 30px rgba(245, 185, 82, 0.35));
+  }
+  .gh-lostway .gh-home {
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: calc(40px + env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    height: 58px;
+    border-radius: 29px;
+    background: var(--color-gh-amber);
+    color: var(--color-gh-night);
+    font: 400 17px var(--font-title);
+    box-shadow: 0 0 30px -4px rgba(245, 185, 82, 0.6);
+  }
+  .gh-lostway .gh-home svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ── 작성 화면 틀 (write-final '편지지') — 질문 · 일정 · 모집 · 공유 · 공지 · 이벤트 작성이 같이 쓴다 ── */
+@layer components {
+  .gh-qwrite {
+    padding-bottom: 40px;
+    background: radial-gradient(90% 40% at 50% 30%, rgba(245, 185, 82, 0.12), rgba(245, 185, 82, 0) 70%), var(--color-gh-night);
+  }
+  .gh-wh {
+    padding: 4px 22px 14px;
+  }
+  .gh-wh h1 {
+    font: 400 24px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-wh p {
+    margin-top: 6px;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-wfrom {
+    margin-top: 18px;
+    padding-top: 2px;
+    border-top: 1.5px dashed var(--color-gh-paper-line);
+  }
+  .gh-wfrom .gh-hint {
+    padding-right: 70px;
+  }
+  .gh-paper > .gh-send.is-big {
+    position: absolute;
+    right: 16px;
+    bottom: -26px;
+    box-shadow: 0 0 0 6px var(--color-gh-night), 0 10px 22px -6px rgba(74, 124, 245, 0.9);
+  }
+  .gh-paper > .gh-send.is-big:disabled {
+    background: #3a4560;
+    color: #7d89a3;
+    box-shadow: 0 0 0 6px var(--color-gh-night);
+  }
+  .gh-sendcap {
+    margin: 36px 22px 0;
+    text-align: right;
+    font: 400 12px var(--font-title);
+    color: var(--color-gh-sub);
+  }
+  .gh-sendcap.is-err {
+    color: var(--color-gh-error-night);
+  }
+}
+
+/* 종이 위 숫자 고르기 (모집 인원) + 연결 안내 */
+@layer components {
+  .gh-stepper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gh-stepper button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f3efe2;
+    color: var(--color-gh-d-ink);
+    font: 400 20px var(--font-title);
+  }
+  .gh-stepper button:disabled {
+    opacity: 0.4;
+  }
+  .gh-stepper b {
+    min-width: 56px;
+    text-align: center;
+    font: 400 20px var(--font-title);
+  }
+  .gh-link-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(169, 199, 255, 0.1);
+    font-size: 13px;
+    color: var(--color-gh-sky);
+  }
+  .gh-link-note p {
+    flex: 1;
+  }
+  .gh-link-note b {
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-ink);
+  }
+  .gh-link-note small {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-link-note button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-two-in {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 8px;
+  }
+}
+
+/* 종이 위 켜고 끄기 줄 (공지 고정 · 필독 · 이벤트 사진 필수) */
+@layer components {
+  .gh-pswitch {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #f3efe2;
+  }
+  .gh-pswitch > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .gh-pswitch b {
+    display: block;
+    font: 400 14px var(--font-title);
+  }
+  .gh-pswitch span {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #8a8370;
+  }
+  .gh-pswitch .gh-toggle:not([aria-checked='true']) {
+    background: #dcd5c2;
+  }
+}
+
+/* ── 비회원 잠금 화면 (guestlock-final을 한 화면으로: 노을 띠 + 물결 종이 + 문 유령) ── */
+@layer components {
+  .gh-daylock {
+    min-height: 100dvh;
+    background: var(--color-gh-paper);
+  }
+  .gh-daylock-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 58px;
+    padding: 8px 14px 0;
+  }
+  .gh-daylock-top button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(18, 26, 45, 0.06);
+  }
+  .gh-daylock-top button svg {
+    width: 20px;
+    height: 20px;
+  }
+  .gh-daylock-dusk {
+    position: relative;
+    height: 170px;
+    margin: 14px 16px 0;
+    overflow: hidden;
+    border-radius: 28px 28px 0 0;
+    background: linear-gradient(180deg, #2b3557 0%, #7a6c8e 45%, #f0b98a 100%);
+  }
+  .gh-daylock-dusk i {
+    position: absolute;
+    left: 46px;
+    bottom: -26px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #ffd79a;
+    box-shadow: 0 0 40px 10px rgba(255, 200, 130, 0.6);
+  }
+  .gh-daylock-wave {
+    position: relative;
+    margin: -24px 16px 0;
+    padding: 40px 22px 30px;
+    border-radius: 0 0 24px 24px;
+    background: var(--color-gh-paper);
+    box-shadow: 0 20px 30px -24px rgba(40, 40, 20, 0.4);
+  }
+  .gh-daylock-wave::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -14px;
+    height: 16px;
+    background: radial-gradient(circle at 13px 16px, var(--color-gh-paper) 13px, transparent 13.5px) 0 0 / 26px 16px repeat-x;
+  }
+  .gh-daylock-wave .gh-door {
+    position: absolute;
+    right: 40px;
+    top: -120px;
+    z-index: 2;
+    width: 140px;
+    filter: drop-shadow(0 8px 10px rgba(20, 20, 40, 0.3));
+  }
+  .gh-daylock-wave h1 {
+    margin-top: 14px;
+    font: 400 27px/1.32 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-daylock-wave p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-daylock-wave .gh-btn {
+    margin-top: 26px;
+  }
+  .gh-daylock-wave .gh-invite {
+    margin-top: 12px;
+  }
+}

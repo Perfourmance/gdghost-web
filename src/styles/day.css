@@ -1284,3 +1284,89 @@
     color: var(--color-gh-d-ink);
   }
 }
+
+/* ── 비회원 일정 · 공유 (시안 없음: 낮 산책길 모양) ── */
+@layer components {
+  .gh-gmonth {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 16px 0;
+    padding: 8px;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--color-gh-paper-line);
+  }
+  .gh-gmonth b {
+    font: 400 17px var(--font-title);
+  }
+  .gh-gmonth button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--color-gh-day-mid);
+    color: var(--color-gh-pine);
+  }
+  .gh-gmonth button svg {
+    width: 16px;
+    height: 16px;
+  }
+  .gh-glist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 16px 0;
+  }
+  .gh-glist .gh-dticket {
+    width: 100%;
+  }
+  .gh-gdesc {
+    padding: 6px 22px 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-gdesc b {
+    color: var(--color-gh-d-ink);
+  }
+}
+@layer components {
+  .gh-su-cta.is-two > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .gh-su-cta a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 58px;
+    border-radius: 29px;
+    background: var(--color-gh-night);
+    color: var(--color-gh-ink);
+    font: 400 17px var(--font-title);
+  }
+  .gh-su-sent {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #e6eef8;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #3b5a9c;
+  }
+  .gh-su-sent b {
+    display: block;
+    font: 400 15px var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-su-foot {
+    margin-top: 20px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--color-gh-d-sub);
+  }
+}

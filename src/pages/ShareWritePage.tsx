@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
+import { StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { shareSubmitError, useCreateShare, type ShareInput } from '@/features/shares/api'
@@ -19,16 +19,14 @@ export function ShareWritePage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/shares">
-        <LockPanel next={location.pathname} title="공유는 부원만 올릴 수 있어요." buttonText="로그인하고 공유하기" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname} title="공유는 부원만 올릴 수 있어요." buttonText="로그인하고 공유하기" />
     )
   }
 
   const error = create.error ? toApiError(create.error) : null
 
   return (
-    <SubPageLayout fallback="/shares">
+    <StorySubPage fallback="/shares" className="gh-qwrite">
       <ShareForm
         mode="create"
         initial={EMPTY}
@@ -54,6 +52,6 @@ export function ShareWritePage() {
           )
         }}
       />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }

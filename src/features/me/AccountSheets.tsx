@@ -1,9 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { NewPasswordFields } from '@/components/form/NewPasswordFields'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet'
+import { FieldError, StoryButton, StorySheet, type GhostPose } from '@/components/story'
+import { PasswordRuleDots } from '@/features/signup/SignupParts'
 import {
   emailChangeErrorMessage,
   passwordChangeErrorMessage,
@@ -16,7 +13,9 @@ import {
 import { useSecondsUntil } from '@/hooks/useSecondsUntil'
 import { toApiError } from '@/lib/api'
 import { EMAIL_PATTERN } from '@/lib/emailErrors'
-import { isPasswordValid } from '@/lib/passwordRules'
+import { hasWhitespace, isPasswordValid } from '@/lib/passwordRules'
+import '@/styles/common.css'
+import '@/styles/day.css'
 
 // 설정 화면 위에 뜨는 시트 — 비밀번호 변경 · 이메일 변경 · 탈퇴 (IA 3장 시트)
 
@@ -25,43 +24,36 @@ function AccountSheet({
   onClose,
   title,
   description,
+  ghost = 'shh',
+  bubble,
   children,
 }: {
   open: boolean
   onClose: () => void
   title: string
   description?: ReactNode
+  ghost?: GhostPose
+  bubble?: string
   children: ReactNode
 }) {
   return (
-    <Sheet open={open} onOpenChange={(next) => !next && onClose()}>
-      <SheetContent
-        side="bottom"
-        className="mx-auto max-h-[90dvh] max-w-md gap-0 overflow-y-auto rounded-t-2xl border-0 bg-card px-4 pt-5 pb-[max(1rem,env(safe-area-inset-bottom))]"
-      >
-        <SheetTitle className="text-lg font-bold text-title">{title}</SheetTitle>
-        {description && (
-          <SheetDescription className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</SheetDescription>
-        )}
-        {/* 닫으면 입력값을 비운다 (비밀번호가 메모리에 남지 않게) */}
-        {open && <div className="mt-6">{children}</div>}
-      </SheetContent>
-    </Sheet>
+    <StorySheet open={open} onOpenChange={(next) => !next && onClose()} ghost={ghost} bubble={bubble} title={title} description={description}>
+      {/* 닫으면 입력값을 비운다 (비밀번호가 메모리에 남지 않게) */}
+      {open && children}
+    </StorySheet>
   )
 }
 
 function CurrentPasswordField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="space-y-2">
-      <Label className="font-bold text-title" htmlFor="currentPassword">
-        현재 비밀번호
-      </Label>
-      <Input
+    <div className="gh-sf">
+      <label htmlFor="currentPassword">현재 비밀번호</label>
+      <input
         id="currentPassword"
         type="password"
         autoComplete="current-password"
         maxLength={64}
-        className="h-12 bg-background"
+        className="gh-sin"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -70,17 +62,63 @@ function CurrentPasswordField({ value, onChange }: { value: string; onChange: (v
 }
 
 function ErrorText({ children }: { children: ReactNode }) {
+  return <FieldError>{children}</FieldError>
+}
+
+/** 새 비밀번호 + 확인 (밤 시트) — 규칙 4개를 입력하면서 민트 ✓ */
+function NightNewPassword({
+  password,
+  confirm,
+  onPasswordChange,
+  onConfirmChange,
+}: {
+  password: string
+  confirm: string
+  onPasswordChange: (v: string) => void
+  onConfirmChange: (v: string) => void
+}) {
+  const mismatch = confirm !== '' && confirm !== password
   return (
-    <p className="text-sm text-destructive" role="alert">
-      {children}
-    </p>
+    <>
+      <div className="gh-sf">
+        <label htmlFor="newPassword">새 비밀번호</label>
+        <input
+          id="newPassword"
+          name="new-password"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-sin"
+          aria-describedby="password-rules"
+          aria-invalid={hasWhitespace(password)}
+          value={password}
+          onChange={(e) => onPasswordChange(e.target.value)}
+        />
+        <PasswordRuleDots id="password-rules" password={password} />
+        {hasWhitespace(password) && <small className="is-bad">공백은 넣을 수 없어요.</small>}
+      </div>
+      <div className="gh-sf">
+        <label htmlFor="newPasswordConfirm">새 비밀번호 확인</label>
+        <input
+          id="newPasswordConfirm"
+          type="password"
+          autoComplete="new-password"
+          maxLength={64}
+          className="gh-sin"
+          aria-invalid={mismatch}
+          value={confirm}
+          onChange={(e) => onConfirmChange(e.target.value)}
+        />
+        {mismatch && <small className="is-bad">두 비밀번호가 달라요.</small>}
+      </div>
+    </>
   )
 }
 
 /** 비밀번호 변경 — 이 기기는 로그인 유지, 다른 기기는 로그아웃 */
 export function PasswordChangeSheet({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
   return (
-    <AccountSheet open={open} onClose={onClose} title="비밀번호 변경" description="변경하면 다른 기기에서 로그아웃돼요.">
+    <AccountSheet open={open} onClose={onClose} ghost="lantern" bubble="새 열쇠를 만들어요" title="비밀번호 바꾸기" description="바꾸면 다른 기기에서 로그아웃돼요.">
       <PasswordChangeForm onDone={onDone} />
     </AccountSheet>
   )
@@ -99,19 +137,13 @@ function PasswordChangeForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate>
       <CurrentPasswordField value={current} onChange={setCurrent} />
-      <NewPasswordFields
-        label="새 비밀번호"
-        password={password}
-        confirm={confirm}
-        onPasswordChange={setPassword}
-        onConfirmChange={setConfirm}
-      />
+      <NightNewPassword password={password} confirm={confirm} onPasswordChange={setPassword} onConfirmChange={setConfirm} />
       {change.isError && <ErrorText>{passwordChangeErrorMessage(toApiError(change.error))}</ErrorText>}
-      <Button type="submit" size="lg" className="h-12 w-full" disabled={!canSubmit}>
+      <StoryButton type="submit" disabled={!canSubmit}>
         {change.isPending ? '바꾸는 중…' : '비밀번호 바꾸기'}
-      </Button>
+      </StoryButton>
     </form>
   )
 }
@@ -132,8 +164,10 @@ export function EmailChangeSheet({
     <AccountSheet
       open={open}
       onClose={onClose}
-      title="이메일 변경"
-      description="계정 찾기에 쓰는 이메일. 변경 후 30일간 다시 변경할 수 없어요."
+      ghost="b"
+      bubble="우편함을 옮겨요"
+      title="이메일 바꾸기"
+      description="계정 찾기에 쓰는 이메일이에요. 바꾸면 30일 동안 다시 바꿀 수 없어요."
     >
       <EmailChangeForm currentEmail={currentEmail} onDone={onDone} />
     </AccountSheet>
@@ -179,47 +213,35 @@ function EmailChangeForm({ currentEmail, onDone }: { currentEmail: string; onDon
   const error = confirm.isError ? confirm.error : send.isError ? send.error : null
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
+    <form onSubmit={handleSubmit} noValidate>
       <CurrentPasswordField value={current} onChange={setCurrent} />
 
-      <div className="space-y-2">
-        <Label className="font-bold text-title" htmlFor="newEmail">
-          새 이메일
-        </Label>
-        <div className="flex gap-2">
-          <Input
-            id="newEmail"
-            type="email"
-            autoComplete="email"
-            maxLength={254}
-            className="h-12 bg-background"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button type="button" variant="secondary" className="h-12 shrink-0" disabled={!canSend} onClick={handleSend}>
+      <div className="gh-sf">
+        <label htmlFor="newEmail">새 이메일</label>
+        <div className="gh-sf-row">
+          <input id="newEmail" type="email" autoComplete="email" maxLength={254} className="gh-sin" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <button type="button" disabled={!canSend} onClick={handleSend}>
             {send.isPending ? '보내는 중…' : resendWait > 0 && codeSent ? `${resendWait}초` : codeSent ? '다시 받기' : '인증번호 받기'}
-          </Button>
+          </button>
         </div>
-        <p className="text-xs text-muted-foreground">지금 메일: {currentEmail}</p>
-        {sameAsCurrent && trimmed !== '' && <p className="text-xs text-destructive">현재 사용 중인 이메일</p>}
+        <small>지금 메일: {currentEmail}</small>
+        {sameAsCurrent && trimmed !== '' && <small className="is-bad">지금 쓰는 이메일이에요</small>}
         {codeSent && (
-          <p className="text-xs text-brand-text" role="status">
+          <small className="is-ok" role="status">
             인증번호를 보냈어요. 10분 안에 입력해 주세요.
-          </p>
+          </small>
         )}
       </div>
 
       {codeSent && (
-        <div className="space-y-2">
-          <Label className="font-bold text-title" htmlFor="emailCode">
-            인증번호 6자리
-          </Label>
-          <Input
+        <div className="gh-sf">
+          <label htmlFor="emailCode">인증번호 6자리</label>
+          <input
             id="emailCode"
             inputMode="numeric"
             autoComplete="one-time-code"
             maxLength={6}
-            className="h-12 bg-background tracking-widest"
+            className="gh-sin is-code"
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
           />
@@ -229,9 +251,9 @@ function EmailChangeForm({ currentEmail, onDone }: { currentEmail: string; onDon
       {error && <ErrorText>{emailChangeErrorMessage(toApiError(error), sameAsCurrent)}</ErrorText>}
 
       {codeSent && (
-        <Button type="submit" size="lg" className="h-12 w-full" disabled={!canConfirm}>
-          {confirm.isPending ? '확인 중…' : '이메일 바꾸기'}
-        </Button>
+        <StoryButton type="submit" disabled={!canConfirm}>
+          {confirm.isPending ? '확인하는 중…' : '이메일 바꾸기'}
+        </StoryButton>
       )}
     </form>
   )
@@ -240,7 +262,7 @@ function EmailChangeForm({ currentEmail, onDone }: { currentEmail: string; onDon
 /** 탈퇴 확인 — 비밀번호를 한 번 더. 성공하면 비회원 홈으로 */
 export function WithdrawalSheet({ open, onClose, onDone }: { open: boolean; onClose: () => void; onDone: () => void }) {
   return (
-    <AccountSheet open={open} onClose={onClose} title="정말 탈퇴할까요?">
+    <AccountSheet open={open} onClose={onClose} ghost="shh" bubble="정말 떠나요?" title="정말 탈퇴할까요?">
       <WithdrawalForm onDone={onDone} />
     </AccountSheet>
   )
@@ -256,17 +278,17 @@ function WithdrawalForm({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-6">
-      <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-foreground">
+    <form onSubmit={handleSubmit} noValidate>
+      <ul className="gh-bye-list">
         <li>질문·답변·공유글은 남고, 작성자는 ‘탈퇴한 부원’으로 표시돼요.</li>
         <li>피드 글, 프로필, 연락 수단은 삭제돼요.</li>
         <li>탈퇴하면 계정을 복구할 수 없어요.</li>
       </ul>
       <CurrentPasswordField value={password} onChange={setPassword} />
       {withdraw.isError && <ErrorText>{withdrawalErrorMessage(toApiError(withdraw.error))}</ErrorText>}
-      <Button type="submit" size="lg" variant="destructive" className="h-12 w-full" disabled={password === '' || withdraw.isPending}>
+      <StoryButton type="submit" tone="glass" className="gh-danger" disabled={password === '' || withdraw.isPending}>
         {withdraw.isPending ? '탈퇴하는 중…' : '탈퇴하기'}
-      </Button>
+      </StoryButton>
     </form>
   )
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { useBlocker } from 'react-router'
+import { useConfirm } from '@/components/story'
 
 /**
  * 작성 화면을 나갈 때 입력한 내용이 있으면 한 번 묻는다 (IA 2장).
@@ -7,6 +8,7 @@ import { useBlocker } from 'react-router'
  */
 export function useLeaveGuard(dirty: boolean, message: string) {
   const allowed = useRef(false)
+  const confirm = useConfirm()
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
@@ -15,9 +17,10 @@ export function useLeaveGuard(dirty: boolean, message: string) {
 
   useEffect(() => {
     if (blocker.state !== 'blocked') return
-    if (window.confirm(message)) blocker.proceed()
-    else blocker.reset()
-  }, [blocker, message])
+    void confirm({ title: message, confirmLabel: '그만두기', cancelLabel: '계속 쓰기', danger: true, ghost: 'shh' }).then((ok) =>
+      ok ? blocker.proceed() : blocker.reset(),
+    )
+  }, [blocker, message, confirm])
 
   // 새로고침 · 탭 닫기는 브라우저 기본 안내
   useEffect(() => {

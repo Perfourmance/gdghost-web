@@ -1,133 +1,137 @@
 import { Link } from 'react-router'
-import { LoadError } from '@/components/PageStates'
-import { Skeleton } from '@/components/ui/skeleton'
-import { EmptyCard } from '@/features/content/Cards'
+import { Calm, EmptyState, IconFlag, IconSend, Lab, LampGrid, LampStat, Pill } from '@/components/story'
 import { questionCategoryLabel } from '@/features/content/labels'
 import { authorName } from '@/features/member/author'
 import { useOpsDashboard } from '@/features/ops/api'
-import { StatTile } from '@/features/ops/OpsBits'
 import { reportTargetLabel } from '@/features/ops/insights'
-import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
-
-/** 운영 홈 (S70) — 이번 주 숫자 · 3일 넘게 답 없는 질문 · 미처리 신고 · 확인 대기 인증 · 미확인 필독 */
+/** 운영 홈 (S70) — 시안 admin-final. 이번 주 등불(손볼 게 있는 칸만 켜짐) · 3일 넘게 답 없는 질문 · 미처리 신고 · 미확인 필독 */
 export function OpsHomePage() {
   const dashboard = useOpsDashboard()
 
-  if (dashboard.isPending) {
+  if (dashboard.isPending) return <div className="gh-ops-skel" aria-label="불러오는 중" />
+  if (dashboard.isError) {
     return (
-      <div className="space-y-3">
-        <Skeleton className="h-20 w-full rounded-xl" />
-        <Skeleton className="h-40 w-full rounded-xl" />
+      <div className="pt-6">
+        <EmptyState
+          row
+          pose="shh"
+          title="운영 홈을 불러오지 못했어요"
+          action={
+            <Pill soft className="mt-2" onClick={() => dashboard.refetch()}>
+              다시 시도
+            </Pill>
+          }
+        />
       </div>
     )
   }
-  if (dashboard.isError) return <LoadError text="운영 홈을 불러오지 못했어요." onRetry={() => dashboard.refetch()} />
 
   const d = dashboard.data
   return (
-    <div className="space-y-8">
-      <section>
-        <h2 className="mb-2 text-sm font-bold text-muted-foreground">이번 주 (월요일부터)</h2>
-        <div className="grid grid-cols-3 gap-2">
-          <StatTile label="새 질문" value={d.thisWeek.questionCount} />
-          <StatTile label="답 없는 질문" value={d.thisWeek.unansweredCount} strong={d.thisWeek.unansweredCount > 0} />
-          <StatTile label="추천 답변율" value={`${Math.round(d.thisWeek.routingConversionRate * 100)}%`} />
-        </div>
-        <div className="mt-2 grid grid-cols-2 gap-2">
-          <StatTile
-            label="확인 대기 인증"
-            value={`${d.pendingCertifications}건`}
-            to="/ops/certifications"
-            strong={d.pendingCertifications > 0}
-          />
-          <StatTile label="미처리 신고" value={`${d.openReports.total}건`} to="/ops/reports" strong={d.openReports.total > 0} />
-        </div>
-      </section>
-
-      <Section title="3일 넘게 답 없는 질문" count={d.staleQuestions.total} moreTo={d.staleQuestions.total > d.staleQuestions.items.length ? '/ops/routing' : undefined}>
-        {d.staleQuestions.items.length === 0 ? (
-          <EmptyCard>모든 질문에 3일 안에 답변이 달렸어요.</EmptyCard>
-        ) : (
-          d.staleQuestions.items.map((q) => (
-            <Link key={q.id} to={`/questions/${q.id}`} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">
-              <p className="text-xs font-bold text-brand-text">
-                {questionCategoryLabel(q.category)} · {q.waitingDays}일째
-              </p>
-              <p className="mt-1 line-clamp-1 text-[15px] font-bold text-title">{q.title}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {authorName(q.author)} · 보낸 선배 {q.sentCount}명 · 넘김 {q.passedCount}
-              </p>
+    <>
+      <h2 className="gh-ops-sh">
+        이번 주 등불<small>월요일부터</small>
+      </h2>
+      <div className="mt-4">
+        <LampGrid>
+          <LampStat label="새 질문" value={d.thisWeek.questionCount} />
+          <LampStat label="답 없는 질문" value={d.thisWeek.unansweredCount} lit={d.thisWeek.unansweredCount > 0} />
+          <LampStat label="추천 답변율" value={Math.round(d.thisWeek.routingConversionRate * 100)} unit="%" />
+        </LampGrid>
+        <div className="mt-2.5">
+          <LampGrid columns={2}>
+            <Link to="/ops/certifications">
+              <LampStat label="확인 대기 인증" value={d.pendingCertifications} unit="건" lit={d.pendingCertifications > 0} />
             </Link>
-          ))
-        )}
-      </Section>
+            <Link to="/ops/reports">
+              <LampStat label="미처리 신고" value={d.openReports.total} unit="건" lit={d.openReports.total > 0} />
+            </Link>
+          </LampGrid>
+        </div>
+      </div>
 
-      <Section title="미처리 신고" count={d.openReports.total}>
-        {d.openReports.items.length === 0 ? (
-          <EmptyCard>처리할 신고가 없어요.</EmptyCard>
-        ) : (
-          d.openReports.items.map((r) => {
+      <h2 className="gh-ops-sh">
+        3일 넘게 답 없는 질문<em className={cn(d.staleQuestions.total === 0 && 'is-zero')}>{d.staleQuestions.total}</em>
+        {d.staleQuestions.total > d.staleQuestions.items.length && <Link to="/ops/routing">더보기</Link>}
+      </h2>
+      {d.staleQuestions.items.length === 0 ? (
+        <Calm>모든 질문에 3일 안에 답장이 닿았어요.</Calm>
+      ) : (
+        d.staleQuestions.items.map((q) => (
+          <Link key={q.id} to={`/questions/${q.id}`} className="gh-oq">
+            <div className="gh-t">
+              <Lab>{questionCategoryLabel(q.category)}</Lab>
+              <em>{q.waitingDays}일째</em>
+            </div>
+            <h3>{q.title}</h3>
+            <div className="gh-m">
+              {authorName(q.author)}
+              <span>
+                <IconSend />
+                보낸 선배 {q.sentCount}
+              </span>
+              <span>넘김 {q.passedCount}</span>
+            </div>
+          </Link>
+        ))
+      )}
+
+      <h2 className="gh-ops-sh">
+        미처리 신고<em className={cn(d.openReports.total === 0 && 'is-zero')}>{d.openReports.total}</em>
+      </h2>
+      {d.openReports.items.length === 0 ? (
+        <Calm>처리할 신고가 없어요.</Calm>
+      ) : (
+        <>
+          {d.openReports.items.map((r) => {
             const body = (
               <>
-                <p className="text-xs font-bold text-brand-text">
-                  {reportTargetLabel(r.targetType)}
-                  {r.sameTargetCount > 1 && <span className="ml-1 text-destructive">신고 {r.sameTargetCount}건</span>}
-                </p>
-                {r.targetPreview && <p className="mt-1 line-clamp-1 text-sm text-foreground">{r.targetPreview}</p>}
-                <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">사유: {r.reason}</p>
+                <div className="gh-t">
+                  <Lab tone="amber">{reportTargetLabel(r.targetType)}</Lab>
+                  {r.sameTargetCount > 1 && (
+                    <em className="is-bad">
+                      <IconFlag className="mr-1 inline size-3" />
+                      신고 {r.sameTargetCount}건
+                    </em>
+                  )}
+                </div>
+                {r.targetPreview && <h3>{r.targetPreview}</h3>}
+                <p>사유: {r.reason}</p>
               </>
             )
             return r.targetLink ? (
-              <Link key={r.id} to={r.targetLink} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">
+              <Link key={r.id} to={r.targetLink} className="gh-oq is-plain">
                 {body}
               </Link>
             ) : (
-              <div key={r.id} className="rounded-xl bg-card px-4 py-3">
+              <div key={r.id} className="gh-oq is-plain">
                 {body}
               </div>
             )
-          })
-        )}
-        {d.openReports.total > 0 && (
-          <Link to="/ops/reports" className="block text-center text-sm font-bold text-brand-text hover:underline">
-            신고 처리하러 가기
+          })}
+          <Link to="/ops/reports" className="gh-ops-go">
+            신고 처리하러 가기 ›
           </Link>
-        )}
-      </Section>
+        </>
+      )}
 
-      <Section title="확인이 덜 된 필독 공지">
-        {d.unconfirmedMustRead.length === 0 ? (
-          <EmptyCard>확인할 필독 공지가 없어요.</EmptyCard>
-        ) : (
-          d.unconfirmedMustRead.map((n) => (
-            <Link key={n.noticeId} to={`/notices/${n.noticeId}`} className="block rounded-xl bg-card px-4 py-3 transition-colors hover:bg-accent">
-              <p className="line-clamp-1 text-[15px] font-bold text-title">{n.title}</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {n.memberCount}명 중 <b className="text-brand-text">{n.confirmedCount}명</b> 확인
-              </p>
-            </Link>
-          ))
-        )}
-      </Section>
-    </div>
-  )
-}
-
-function Section({ title, count, moreTo, children }: { title: string; count?: number; moreTo?: string; children: ReactNode }) {
-  return (
-    <section>
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-base font-bold text-title">
-          {title} {count != null && <span className="text-brand-text">{count}</span>}
-        </h2>
-        {moreTo && (
-          <Link to={moreTo} className="text-xs text-muted-foreground hover:text-foreground">
-            더보기
+      <h2 className="gh-ops-sh">확인이 덜 된 필독 공지</h2>
+      {d.unconfirmedMustRead.length === 0 ? (
+        <Calm>확인할 필독 공지가 없어요.</Calm>
+      ) : (
+        d.unconfirmedMustRead.map((n) => (
+          <Link key={n.noticeId} to={`/notices/${n.noticeId}`} className="gh-oq is-plain">
+            <h3 className="!mt-0">{n.title}</h3>
+            <div className="gh-m">
+              <span>
+                {n.memberCount}명 중 <b>{n.confirmedCount}명</b> 확인
+              </span>
+            </div>
           </Link>
-        )}
-      </div>
-      <div className="space-y-2">{children}</div>
-    </section>
+        ))
+      )}
+    </>
   )
 }

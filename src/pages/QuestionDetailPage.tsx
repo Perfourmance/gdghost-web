@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react'
-import { MoreVertical } from 'lucide-react'
-import { Link, useLocation, useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import { LinkifiedText } from '@/components/LinkifiedText'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, Ghost, GoneSlot, IconCheck, IconEye, IconFlag, IconSparkle, Pill, PopMenu, RoundSend, StorySubPage, useConfirm } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { questionCategoryLabel, questionStateLabel } from '@/features/content/labels'
@@ -21,6 +17,7 @@ import { passErrorMessage, usePassRouting, type PassResult } from '@/features/ro
 import { toApiError } from '@/lib/api'
 import { formatRelative, useNowEveryMinute } from '@/lib/time'
 import { cn } from '@/lib/utils'
+import '@/styles/questions.css'
 
 /** 질문 상세 (S21) — 본문 · 전달 현황 · 답변 트리. 비회원은 잠금 안내(상세 API가 401) */
 export function QuestionDetailPage() {
@@ -42,13 +39,11 @@ export function QuestionDetailPage() {
 
   if (!me) {
     return (
-      <SubPageLayout fallback="/questions">
-        <LockPanel
+      <LockPanel
           next={location.pathname + location.hash}
           title="선배의 답변은 부원만 볼 수 있어요."
           buttonText="로그인하고 답변 보기"
         />
-      </SubPageLayout>
     )
   }
 
@@ -58,39 +53,38 @@ export function QuestionDetailPage() {
   const menu = !detail.data ? null : detail.data.mine ? (
     <QuestionOwnerMenu questionId={detail.data.id} onError={setActionError} />
   ) : (
-    <ReportMenu label="질문 메뉴 열기" onReport={() => setReport({ type: 'QUESTION', id: detail.data.id })} />
+    <PopMenu
+      label="질문 메뉴 열기"
+      actions={[{ label: '신고하기', icon: <IconFlag />, onSelect: () => setReport({ type: 'QUESTION', id: detail.data.id }) }]}
+    />
   )
 
   return (
-    <SubPageLayout fallback="/questions" actions={menu}>
-      {actionError && (
-        <p className="mb-4 rounded-lg bg-muted px-3 py-2.5 text-sm text-destructive" role="alert">
-          {actionError}
-        </p>
-      )}
+    <StorySubPage fallback="/questions" right={menu} className="gh-qdetail">
+      {actionError && <p className="gh-qnote is-err" role="alert">{actionError}</p>}
       {notFound && <GoneNotice />}
       {detail.data && <DirectResultNotice state={location.state as DirectResultState | null} />}
 
-      {!notFound && detail.isPending && (
-        <div className="space-y-3">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-7 w-4/5" />
-          <Skeleton className="h-24 w-full rounded-xl" />
-        </div>
-      )}
+      {!notFound && detail.isPending && <div className="gh-qskel !ml-4 !h-60" aria-label="불러오는 중" />}
 
       {!notFound && detail.isError && (
-        <div className="space-y-3 rounded-xl bg-card p-5 text-center" role="alert">
-          <p className="text-sm">질문을 불러오지 못했어요.</p>
-          <Button variant="secondary" onClick={() => detail.refetch()}>
-            다시 시도
-          </Button>
+        <div className="px-4 pt-4">
+          <EmptyState
+            row
+            pose="shh"
+            title="질문을 불러오지 못했어요"
+            action={
+              <Pill soft className="mt-2" onClick={() => detail.refetch()}>
+                다시 시도
+              </Pill>
+            }
+          />
         </div>
       )}
 
       {detail.data && <QuestionBody question={detail.data} now={now} onReport={setReport} />}
       <ReportSheet target={report} onClose={() => setReport(null)} />
-    </SubPageLayout>
+    </StorySubPage>
   )
 }
 
@@ -103,43 +97,38 @@ function QuestionBody({
   now: number
   onReport: (target: ReportTarget) => void
 }) {
+  const deliveries = question.routing?.deliveries ?? []
   return (
-    <article className={question.canAnswer ? 'pb-28' : 'pb-10'}>
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-bold text-brand-text">{questionCategoryLabel(question.category)}</p>
-        <span
-          className={cn('text-xs font-bold', question.state === 'WAITING' ? 'text-muted-foreground' : 'text-brand-text')}
-        >
-          {questionStateLabel(question.state)}
-        </span>
-      </div>
-      <h1 className="mt-2 text-[22px] leading-snug font-bold text-title">{question.title}</h1>
-      <p className="mt-3 flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground">
-        <AuthorLink author={question.author} />
-        <span aria-hidden>·</span>
-        <span>{formatRelative(question.createdAt, now)}</span>
-        <span aria-hidden>·</span>
-        <span>조회 {question.viewCount}</span>
-        {question.editedAfterAnswer && (
-          <>
-            <span aria-hidden>·</span>
-            <span>답변이 달린 뒤에 수정한 글이에요.</span>
-          </>
-        )}
-      </p>
+    <>
+      <article className="gh-qletter">
+        <span className="gh-qstamp">{questionCategoryLabel(question.category)}</span>
+        <div className="gh-qfrom">
+          보낸 사람 <AuthorLink author={question.author} className="" />
+          {question.mine && ' · 내 질문'}
+        </div>
+        <h1>{question.title}</h1>
+        {question.body && <LinkifiedText text={question.body} className="gh-qbody" />}
+        <div className="gh-qpost">
+          <span>
+            {formatRelative(question.createdAt, now)}
+            <span className={cn('gh-qstate', question.state !== 'WAITING' && 'is-pick')}>{questionStateLabel(question.state)}</span>
+          </span>
+          <span className="gh-qv" aria-label={`조회 ${question.viewCount}`}>
+            <IconEye />
+            {question.viewCount}
+          </span>
+        </div>
+        {question.editedAfterAnswer && <p className="mt-2 text-xs text-gh-d-sub">답장이 달린 뒤에 고친 편지예요.</p>}
+      </article>
 
-      {question.body && (
-        <LinkifiedText text={question.body} className="mt-5 text-[15px] leading-relaxed text-foreground" />
+      {deliveries.length > 0 && (
+        <RoutingStatus deliveries={deliveries} reasonsHidden={question.routing!.reasonsHidden} mine={question.mine} />
       )}
 
       {question.routing?.mine && <MyRouting questionId={question.id} mine={question.routing.mine} />}
 
-      {question.routing && question.routing.deliveries.length > 0 && (
-        <RoutingStatus deliveries={question.routing.deliveries} reasonsHidden={question.routing.reasonsHidden} />
-      )}
-
       <QuestionAnswers question={question} now={now} onReport={onReport} />
-    </article>
+    </>
   )
 }
 
@@ -154,7 +143,7 @@ function DirectResultNotice({ state }: { state: DirectResultState | null }) {
         ? `오전 8시에 ${name} 선배에게 알림이 가요.`
         : `${name} 선배는 지금 질문을 받지 않아요. 같은 분야의 다른 선배에게 보낼게요.`
   return (
-    <p className="mb-5 rounded-lg bg-brand-soft px-3 py-2.5 text-sm text-brand-text" role="status">
+    <p className="gh-qnote" role="status">
       {text}
     </p>
   )
@@ -163,38 +152,38 @@ function DirectResultNotice({ state }: { state: DirectResultState | null }) {
 /** 나에게 온 질문 — 답하기 어려우면 다른 선배에게 넘긴다 (F9-03). 넘겨도 답변은 달 수 있다 */
 function MyRouting({ questionId, mine }: { questionId: number; mine: { state: string; canPass: boolean } }) {
   const pass = usePassRouting(questionId)
+  const confirm = useConfirm()
   const [result, setResult] = useState<PassResult | null>(null)
 
-  function handlePass() {
-    if (!window.confirm('다른 선배에게 넘길까요? 넘긴 뒤에도 답변할 수 있어요.')) return
+  async function handlePass() {
+    if (!(await confirm({ title: '다른 선배에게 넘길까요?', description: '넘긴 뒤에도 답장할 수 있어요.', confirmLabel: '넘기기' }))) return
     pass.mutate(undefined, { onSuccess: setResult })
   }
 
   const passed = result != null || mine.state === 'PASSED'
   return (
-    <section className="mt-8 rounded-xl bg-brand-soft p-4">
+    <section className="gh-qnote">
       {mine.state === 'ANSWERED' ? (
-        <p className="text-sm text-brand-text">답변 완료</p>
+        <b>답장을 보냈어요</b>
       ) : passed ? (
-        <p className="text-sm text-brand-text">
-          {result && !result.nextCandidateNotified
-            ? '다른 선배에게 넘겼어요. 야간에는 오전 8시에 전달돼요.'
-            : '다른 선배에게 넘긴 질문이에요.'}{' '}
-          생각이 바뀌면 지금도 답변할 수 있어요.
-        </p>
+        <>
+          <b>다른 선배에게 넘겼어요</b>
+          {result && !result.nextCandidateNotified ? '밤에는 오전 8시에 전달돼요. ' : ''}
+          생각이 바뀌면 지금도 답장할 수 있어요.
+        </>
       ) : (
         <>
-          <p className="text-sm font-bold text-brand-text">나에게 온 질문이에요</p>
-          <p className="mt-1 text-xs text-brand-text/80">답하기 어렵다면 같은 분야의 다른 선배에게 넘겨주세요.</p>
+          <b>나에게 온 질문이에요</b>
+          답하기 어렵다면 같은 분야의 다른 선배에게 넘겨 주세요.
           {mine.canPass && (
-            <Button variant="secondary" className="mt-3 w-full" disabled={pass.isPending} onClick={handlePass}>
+            <Pill soft className="mt-3 w-full justify-center" disabled={pass.isPending} onClick={handlePass}>
               {pass.isPending ? '넘기는 중…' : '다른 선배에게 넘기기'}
-            </Button>
+            </Pill>
           )}
         </>
       )}
       {pass.isError && (
-        <p className="mt-2 text-sm text-destructive" role="alert">
+        <p className="mt-2 text-gh-error-night" role="alert">
           {passErrorMessage(toApiError(pass.error))}
         </p>
       )}
@@ -204,53 +193,72 @@ function MyRouting({ questionId, mine }: { questionId: number; mine: { state: st
 
 // 전달 현황 — 누구에게 왜 갔는지 (F9-04)
 const STAGE_TAGS: Record<string, string> = { MEMBER: 'AI 추천', DIRECT: '지목' }
-const DELIVERY_STATES: Record<string, string> = { SENT: '전달 완료', ANSWERED: '답변 완료', PASSED: '넘김' }
+const DELIVERY_STATES: Record<string, string> = { SENT: '전달 완료', ANSWERED: '답장 완료', PASSED: '넘김' }
 /** 익명 질문에서 이름이 가려진 줄(to = null)에 대신 쓰는 이름 */
 const HIDDEN_NAMES: Record<string, string> = { MEMBER: '추천받은 선배', DIRECT: '지목받은 선배' }
 
-/** 한 줄: 이름(또는 가린 이름) + 단계 태그 · 상태, 아래에 이유. 운영진 줄은 이름이 곧 단계라 태그 없음 */
-function RoutingStatus({ deliveries, reasonsHidden }: { deliveries: RoutingDelivery[]; reasonsHidden: boolean }) {
+/**
+ * 배달 영수증 — 이 질문을 받은 선배들. 이름(또는 가린 이름) + 단계 태그 · 상태, 아래에 이유.
+ * 이름이 모두 가려진 익명 질문이면 한 줄 요약만
+ */
+function RoutingStatus({ deliveries, reasonsHidden, mine }: { deliveries: RoutingDelivery[]; reasonsHidden: boolean; mine: boolean }) {
+  const allHidden = deliveries.every((d) => d.to == null)
+  if (allHidden) {
+    return (
+      <div className="gh-receipt">
+        <div className="gh-rh">
+          <Ghost pose="glass" />
+          <div>
+            <b>맞는 선배에게 전달했어요</b>
+            <span>{reasonsHidden ? '익명 질문 · 이름은 공개되지 않아요' : `${deliveries.length}명에게 전달`}</span>
+          </div>
+          <i>{deliveries.some((d) => d.state === 'ANSWERED') ? '답장 도착' : '전달 완료'}</i>
+        </div>
+      </div>
+    )
+  }
   return (
-    <section className="mt-8 rounded-xl bg-card p-4">
-      <h2 className="text-sm font-bold text-title">이 질문을 받은 사람</h2>
-      <ul className="mt-3 space-y-3">
-        {deliveries.map((d, i) => {
-          const hidden = d.to == null
-          const tag = STAGE_TAGS[d.stage]
-          return (
-            <li key={`${d.stage}-${i}`} className="text-sm">
-              <div className="flex items-center justify-between gap-2">
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <b className={cn('truncate font-bold', hidden ? 'text-muted-foreground' : 'text-title')}>
-                    {d.to?.nickname ?? HIDDEN_NAMES[d.stage] ?? '선배'}
-                  </b>
-                  {tag && !hidden && (
-                    <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">{tag}</span>
-                  )}
+    <div className="gh-receipt">
+      <div className="gh-rh">
+        <Ghost pose="glass" />
+        <div>
+          <b>
+            이 편지를 받은 선배<em>{deliveries.length}</em>
+          </b>
+          <span>{mine ? '내 질문에 맞는 선배에게 배달했어요' : '질문에 맞는 선배에게 배달했어요'}</span>
+        </div>
+      </div>
+      {deliveries.map((d, i) => {
+        const hidden = d.to == null
+        const tag = STAGE_TAGS[d.stage]
+        return (
+          <div key={`${d.stage}-${i}`} className="gh-rcv">
+            <div>
+              <b className={cn(hidden && 'is-hidden')}>{d.to?.nickname ?? HIDDEN_NAMES[d.stage] ?? '선배'}</b>
+              {tag && !hidden && (
+                <span className="gh-ai">
+                  {d.stage === 'MEMBER' && <IconSparkle />}
+                  {tag}
                 </span>
-                <span
-                  className={cn('shrink-0 text-xs font-bold', d.state === 'ANSWERED' ? 'text-brand-text' : 'text-muted-foreground')}
-                >
-                  {DELIVERY_STATES[d.state] ?? '기타'}
-                </span>
-              </div>
-              {d.reasons.length > 0 ? (
-                <p className="mt-1 flex flex-wrap gap-1">
-                  {d.reasons.map((r) => (
-                    <span key={r} className="rounded bg-brand-soft px-1.5 py-0.5 text-[11px] text-brand-text">
-                      {r}
-                    </span>
-                  ))}
-                </p>
-              ) : (
-                reasonsHidden &&
-                hidden && <p className="mt-1 text-xs text-muted-foreground">익명 질문 · 이름 비공개</p>
               )}
-            </li>
-          )
-        })}
-      </ul>
-    </section>
+              <span className={cn('gh-done', d.state === 'ANSWERED' && 'is-on')}>
+                {d.state === 'ANSWERED' && <IconCheck />}
+                {DELIVERY_STATES[d.state] ?? '기타'}
+              </span>
+            </div>
+            {d.reasons.length > 0 ? (
+              <ul>
+                {d.reasons.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+            ) : (
+              reasonsHidden && hidden && <p className="mt-1 text-xs text-gh-sub">익명 질문 · 이름 비공개</p>
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
@@ -268,6 +276,7 @@ function QuestionAnswers({
   const [error, setError] = useState<string | null>(null)
   const remove = useDeleteAnswer(question.id)
   const adoption = useAdoption(question.id)
+  const confirm = useConfirm()
 
   const onError = (e: unknown) => setError(answerErrorMessage(toApiError(e)))
 
@@ -276,11 +285,14 @@ function QuestionAnswers({
     disabled: remove.isPending || adoption.isPending,
     onReply: (parent) => setSheet({ kind: 'reply', parent }),
     onEdit: (answer) => setSheet({ kind: 'edit', answer }),
-    onDelete: (answer) => {
-      const message = answer.adopted
-        ? '채택된 답변을 삭제할까요? 채택도 함께 취소돼요.'
-        : '삭제할까요? 삭제는 되돌릴 수 없어요.'
-      if (!window.confirm(message)) return
+    onDelete: async (answer) => {
+      const ok = await confirm({
+        title: answer.adopted ? '채택된 답장을 삭제할까요?' : '삭제할까요?',
+        description: answer.adopted ? '채택도 함께 취소돼요.' : '되돌릴 수 없어요.',
+        confirmLabel: '삭제',
+        danger: true,
+      })
+      if (!ok) return
       setError(null)
       remove.mutate(answer.id, { onError })
     },
@@ -294,38 +306,30 @@ function QuestionAnswers({
   const replyCount = countReplies(question.answers)
 
   return (
-    <section className="mt-8">
-      <h2 className="mb-3 text-base font-bold text-title">
-        답변 <span className="text-brand-text">{countAnswers(question.answers)}</span>
-        {replyCount > 0 && <span className="ml-1.5 text-sm font-normal text-muted-foreground">· 답글 {replyCount}</span>}
+    <section>
+      <h2 className="gh-ah">
+        답장 {countAnswers(question.answers)}
+        {replyCount > 0 && <small>· 답글 {replyCount}</small>}
       </h2>
-      {error && (
-        <p className="mb-3 rounded-lg bg-muted px-3 py-2.5 text-sm text-destructive" role="alert">
-          {error}
-        </p>
-      )}
-      {question.answers.length === 0 ? (
-        <p className="rounded-xl border border-dashed px-4 py-5 text-center text-sm text-muted-foreground">
-          {question.canAnswer ? '아직 답변이 없어요.' : '아직 답변이 없어요.'}
-        </p>
-      ) : (
-        <AnswerList answers={question.answers} now={now} actions={actions} />
-      )}
+      {error && <p className="gh-qnote is-err !mt-0 !mb-3" role="alert">{error}</p>}
+      <div className="gh-alist">
+        {question.answers.length === 0 ? (
+          <EmptyState row pose="star" title="아직 답장이 없어요">
+            {question.canAnswer ? '첫 답장으로 빛을 보내 주세요.' : '맞는 선배에게 전해 두었어요.'}
+          </EmptyState>
+        ) : (
+          <AnswerList answers={question.answers} now={now} actions={actions} />
+        )}
+      </div>
 
-      {/* 하단 고정 답변 바 — 내 질문에는 답글만 달 수 있어 없다 (F2-04) */}
+      {/* 하단 고정 답장 막대 — 내 질문에는 답글만 달 수 있어 없다 (F2-04) */}
       {question.canAnswer && (
-        <div className="fixed inset-x-0 bottom-0 z-10 border-t bg-card pb-[env(safe-area-inset-bottom)]">
-          <div className="mx-auto flex max-w-md items-center gap-2 px-4 py-3">
-            <button
-              type="button"
-              onClick={() => setSheet({ kind: 'answer' })}
-              className="h-11 flex-1 rounded-lg border border-input bg-background px-3 text-left text-sm text-muted-foreground"
-            >
+        <div className="gh-abar">
+          <div>
+            <button type="button" className="gh-fake" onClick={() => setSheet({ kind: 'answer' })}>
               선배의 경험을 나눠 주세요
             </button>
-            <Button size="lg" className="h-11 px-4 font-bold" onClick={() => setSheet({ kind: 'answer' })}>
-              답변 달기
-            </Button>
+            <RoundSend type="button" label="답장 쓰기" onClick={() => setSheet({ kind: 'answer' })} />
           </div>
         </div>
       )}
@@ -354,29 +358,7 @@ function countReplies(answers: QuestionDetail['answers']): number {
   )
 }
 
-/** 남의 글 상단의 ⋮ 메뉴 — 신고하기 */
-function ReportMenu({ label, onReport }: { label: string; onReport: () => void }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="flex size-10 items-center justify-center rounded-lg hover:bg-accent" aria-label={label}>
-        <MoreVertical className="size-5" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem onClick={onReport}>신고하기</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
-}
-
 /** 삭제 · 숨김 · 없는 글 — 안내 후 목록으로 (IA 2장) */
 function GoneNotice() {
-  return (
-    <div className="rounded-2xl bg-card px-6 py-10 text-center">
-      <p className="text-lg font-bold text-title">글을 찾을 수가 없어요.</p>
-      <p className="mt-1 text-sm text-muted-foreground">삭제됐거나 운영진이 숨긴 글이에요.</p>
-      <Link to="/questions" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
-        질문 목록으로
-      </Link>
-    </div>
-  )
+  return <GoneSlot to="/questions" link="질문 목록으로" />
 }

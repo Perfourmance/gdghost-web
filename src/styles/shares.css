@@ -1,0 +1,294 @@
+/* 공유 묶음 (share · shdetail) — 화면 전용 모양. 공통 부품은 story.css */
+
+/* JS가 불러와 index.css보다 먼저 들어갈 수 있다 — 층 순서를 먼저 못 박는다 */
+@layer theme, base, components, utilities;
+
+@layer components {
+  .gh-shsky {
+    position: relative;
+    background: linear-gradient(rgba(18, 26, 45, 0) 55%, var(--color-gh-night)), url('../assets/scene/bg-sky.webp') center top / 430px auto no-repeat;
+  }
+  .gh-shttl {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 16px 22px 0;
+  }
+  .gh-shttl h1 {
+    font: 400 34px var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-shttl h1::after {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    margin: 4px 0 0 22px;
+    border-radius: 50%;
+    background: var(--color-gh-amber);
+    box-shadow: 0 0 10px 3px rgba(245, 185, 82, 0.6);
+  }
+  .gh-shttl a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 36px;
+    margin-bottom: 14px;
+    padding: 0 13px;
+    border-radius: 18px;
+    background: rgba(74, 124, 245, 0.14);
+    font: 400 12.5px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-shttl a svg {
+    width: 15px;
+    height: 15px;
+  }
+  .gh-shdesc {
+    padding: 8px 22px 0;
+    font-size: 13.5px;
+    color: var(--color-gh-sub);
+  }
+  .gh-shfind {
+    position: relative;
+    margin: 16px 14px 0;
+  }
+  .gh-shfind > img {
+    position: absolute;
+    right: 10px;
+    bottom: 22px;
+    width: 86px;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5));
+  }
+  .gh-shfind small {
+    display: block;
+    margin: 6px 6px 0;
+    font-size: 12px;
+    color: var(--color-gh-sub);
+  }
+  .gh-shsky .gh-dotchips {
+    padding-top: 16px;
+  }
+  .gh-shsort {
+    display: flex;
+    justify-content: flex-end;
+    padding: 14px 22px 0;
+  }
+  .gh-shelfwrap {
+    padding: 0 14px;
+  }
+  .gh-shmore {
+    display: block;
+    width: calc(100% - 28px);
+    margin: 30px 14px 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 0 0 1px var(--color-gh-line);
+    font: 400 14px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-shskel {
+    height: 160px;
+    margin: 22px 14px 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    animation: gh-sh-pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes gh-sh-pulse {
+    50% {
+      opacity: 0.5;
+    }
+  }
+}
+
+/* ── 공유 상세 (shdetail-final '책갈피 펼치기') ── */
+@layer components {
+  .gh-shd {
+    --c: var(--color-gh-mint);
+    min-height: 100dvh;
+    padding-bottom: 140px;
+    background: radial-gradient(90% 40% at 50% 20%, color-mix(in srgb, var(--c) 14%, transparent), transparent 70%), var(--color-gh-night);
+  }
+  .gh-shd-wrap {
+    position: relative;
+  }
+  .gh-shd-bk {
+    position: relative;
+    margin: 8px 16px 0;
+    padding: 26px 22px 52px;
+    border-radius: 16px 16px 0 0;
+    background: var(--color-gh-paper);
+    color: var(--color-gh-d-ink);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 26px), 0 100%);
+    filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.5));
+  }
+  .gh-shd-bk::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 10px;
+    background: var(--c);
+  }
+  .gh-shd-bk .gh-cat {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--c) 35%, #fff);
+    font: 400 12px var(--font-title);
+  }
+  .gh-shd-bk h1 {
+    margin-top: 12px;
+    padding-right: 64px;
+    font: 400 25px/1.35 var(--font-title);
+    letter-spacing: -0.03em;
+  }
+  .gh-shd-bk .gh-by {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--color-gh-d-sub);
+  }
+  .gh-shd-bk .gh-by b,
+  .gh-shd-bk .gh-by a {
+    margin-right: 4px;
+    font: 400 13.5px var(--font-title);
+    color: var(--color-gh-d-ink);
+  }
+  .gh-shd-bk .gh-photos {
+    margin-top: 16px;
+  }
+  .gh-shd-bk .gh-body {
+    margin-top: 16px;
+    background: repeating-linear-gradient(180deg, transparent 0 31px, #ede6d3 31px 32px);
+    font-size: 15px;
+    line-height: 32px;
+  }
+  .gh-shd-bk .gh-body a {
+    color: #3b57c9;
+    text-decoration: underline;
+  }
+  .gh-shd-bk .gh-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+  .gh-shd-bk .gh-tags li {
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: #e8eeff;
+    font: 400 12.5px var(--font-title);
+    color: #3b57c9;
+  }
+  /* 리본 = 저장 */
+  .gh-ribwrap {
+    position: absolute;
+    right: 16px;
+    top: 8px;
+    z-index: 3;
+    width: 68px;
+    text-align: center;
+  }
+  .gh-rib {
+    display: block;
+    width: 52px;
+    margin: -2px auto 0;
+    padding: 12px 0 22px;
+    background: #3b57c9;
+    color: #fff;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+    transition: background 0.2s;
+  }
+  .gh-rib svg {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+  }
+  .gh-rib b {
+    display: block;
+    margin-top: 2px;
+    font: 400 14px var(--font-title);
+  }
+  .gh-ribwrap[aria-pressed='false'] .gh-rib {
+    background: #e3dcc8;
+    color: #8c8775;
+  }
+  .gh-ribwrap small {
+    display: block;
+    margin-top: 6px;
+    font: 400 11px var(--font-title);
+    color: var(--color-gh-sky);
+  }
+  .gh-shd-err {
+    margin: 10px 16px 0;
+    font-size: 13px;
+    color: var(--color-gh-error-night);
+  }
+  .gh-shd-sh {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 28px 22px 12px;
+    font: 400 18px var(--font-title);
+  }
+  .gh-shd-sh em {
+    font-style: normal;
+    color: var(--color-gh-sky);
+  }
+  .gh-notes {
+    padding: 0 16px;
+  }
+  .gh-notes > li + li {
+    margin-top: 12px;
+  }
+  .gh-nempty {
+    position: relative;
+    min-height: 96px;
+    margin: 0 16px;
+    padding: 18px 18px 18px 96px;
+    border: 2px dashed rgba(169, 199, 255, 0.25);
+    border-radius: 20px;
+  }
+  .gh-nempty img {
+    position: absolute;
+    left: 4px;
+    top: -6px;
+    width: 90px;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
+  }
+  .gh-nempty b {
+    display: block;
+    font: 400 15px var(--font-title);
+  }
+  .gh-nempty span {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-gh-sub);
+  }
+  .gh-inputbar input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: transparent;
+    outline: none;
+  }
+  .gh-inputbar .gh-in.is-note input::placeholder {
+    color: #a88f55;
+  }
+  .gh-nerr {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    z-index: 21;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--color-gh-error-night);
+  }
+}

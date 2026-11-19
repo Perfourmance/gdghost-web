@@ -18,36 +18,31 @@ export function RecruitStateBadge({ state }: { state: 'OPEN' | 'CLOSED' }) {
   )
 }
 
-/** 모집 목록의 한 줄. 누르면 상세 시트 */
+/** 모집 목록의 한 장 — 자리 = 등불(앉은 자리는 켜짐). 누르면 상세 시트 */
 export function RecruitCard({ recruit, onOpen }: { recruit: RecruitSummary; onOpen: (id: number) => void }) {
   const closed = recruit.state === 'CLOSED'
+  const seats = Math.min(recruit.capacity, 12)
   return (
     <button
       type="button"
       onClick={() => onOpen(recruit.id)}
-      className={cn(
-        'block w-full rounded-xl bg-card px-4 py-3.5 text-left transition-colors hover:bg-accent',
-        closed && 'opacity-60',
-      )}
+      className={cn('gh-rc', closed && 'is-closed', (recruit.mine || recruit.joined) && 'is-mine')}
     >
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-bold text-brand-text">{recruitKindLabel(recruit.kind)}</p>
-        <RecruitStateBadge state={recruit.state} />
+      <div className="gh-top">
+        <span className="gh-lab">{recruitKindLabel(recruit.kind)}</span>
+        <span className={cn('gh-est', !closed && 'is-live')}>{closed ? '마감' : '모집 중'}</span>
       </div>
-      <p className="mt-1 line-clamp-2 text-[15px] leading-snug font-bold text-title">{recruit.title}</p>
-      <p className="mt-1.5 text-xs text-muted-foreground">
-        {formatMeetAt(recruit.meetAt)}
-        <span aria-hidden> · </span>
-        <span className="tabular-nums">
-          {recruit.joinedCount} / {recruit.capacity}명
+      <h3>{recruit.title}</h3>
+      <p className="gh-when">{formatMeetAt(recruit.meetAt)}</p>
+      <div className="gh-seats" aria-label={`${recruit.capacity}명 중 ${recruit.joinedCount}명 참여`}>
+        {Array.from({ length: seats }, (_, i) => (
+          <i key={i} className={cn(i < recruit.joinedCount && 'is-on')} aria-hidden />
+        ))}
+        <span>
+          {recruit.joinedCount} / {recruit.capacity}
         </span>
-        {(recruit.mine || recruit.joined) && (
-          <>
-            <span aria-hidden> · </span>
-            <span className="font-bold text-brand-text">{recruit.mine ? '내가 연 모집' : '참여 중'}</span>
-          </>
-        )}
-      </p>
+        {(recruit.mine || recruit.joined) && <span className="is-me">{recruit.mine ? '내가 연 모집' : '참여 중'}</span>}
+      </div>
     </button>
   )
 }

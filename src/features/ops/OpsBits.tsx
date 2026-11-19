@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
-import { SubPageLayout } from '@/components/layout/SubPageLayout'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { EmptyState, Ghost, IconBack, PillLink, StorySubPage } from '@/components/story'
 import { LockPanel } from '@/features/auth/LockPanel'
 import { useMe } from '@/features/auth/session'
 import { cn } from '@/lib/utils'
+import '@/styles/ops.css'
 
 /** 운영 페이지 탭 (IA S70–S76) */
 const OPS_TABS = [
@@ -27,58 +26,46 @@ export function OpsGuard({ children }: { children: ReactNode }) {
   if (isPending) return null
   if (!me) {
     return (
-      <SubPageLayout>
-        <LockPanel next={location.pathname + location.search} title="운영진 전용 페이지" />
-      </SubPageLayout>
+      <LockPanel next={location.pathname + location.search} title="운영진 전용 페이지" />
     )
   }
   if (me.role !== 'STAFF') {
     return (
-      <SubPageLayout>
-        <div className="rounded-2xl bg-card px-6 py-10 text-center">
-          <p className="text-lg font-bold text-title">운영진만 볼 수 있어요</p>
-          <p className="mt-1 text-sm text-muted-foreground">운영진으로 지정하면 설정에 ‘관리’ 메뉴가 표시돼요.</p>
-          <Link to="/" replace className={buttonVariants({ size: 'lg', className: 'mt-6 h-12 w-full' })}>
-            홈으로
-          </Link>
+      <StorySubPage>
+        <div className="px-4 pt-8">
+          <EmptyState pose="shh" title="운영진만 볼 수 있어요" action={<PillLink to="/" className="mt-3">홈으로</PillLink>}>
+            운영진으로 지정되면 설정에 ‘운영 관리’가 생겨요.
+          </EmptyState>
         </div>
-      </SubPageLayout>
+      </StorySubPage>
     )
   }
   return <>{children}</>
 }
 
-/** 운영 페이지 틀 — 제목 + 가로 탭 + 내용 */
+/** 운영 페이지 틀 — 시안 admin-final '망루의 등불'. 하늘 + 제목 + 가로 메뉴 + 내용 */
 export function OpsLayout() {
   return (
     <OpsGuard>
-      <SubPageLayout fallback="/settings">
-        <h1 className="text-[22px] leading-snug font-bold text-title">운영</h1>
-        <nav aria-label="운영 메뉴" className="-mx-4 mt-3 overflow-x-auto border-b px-4 [scrollbar-width:none]">
-          <ul className="flex w-max gap-4">
+      <StorySubPage fallback="/settings" className="gh-ops">
+        <div className="gh-ops-sky">
+          <div className="gh-ops-ttl">
+            <h1>운영</h1>
+            <p>마을 망루에서 불빛을 살펴요</p>
+          </div>
+          <Ghost pose="lantern" className="gh-ops-peek" />
+          <nav aria-label="운영 메뉴" className="gh-ops-menu">
             {OPS_TABS.map((t) => (
-              <li key={t.to}>
-                <NavLink
-                  to={t.to}
-                  end={t.end}
-                  replace
-                  className={({ isActive }) =>
-                    cn(
-                      'block border-b-2 py-2.5 text-sm transition-colors',
-                      isActive ? 'border-brand-text font-bold text-brand-text' : 'border-transparent text-muted-foreground',
-                    )
-                  }
-                >
-                  {t.label}
-                </NavLink>
-              </li>
+              <NavLink key={t.to} to={t.to} end={t.end} replace>
+                {t.label}
+              </NavLink>
             ))}
-          </ul>
-        </nav>
-        <div className="pt-5 pb-12">
+          </nav>
+        </div>
+        <div className="gh-ops-body gh-bridge">
           <Outlet />
         </div>
-      </SubPageLayout>
+      </StorySubPage>
     </OpsGuard>
   )
 }
@@ -88,16 +75,16 @@ export function Pager({ page, size, total, onChange }: { page: number; size: num
   const last = Math.max(0, Math.ceil(total / size) - 1)
   if (last === 0) return null
   return (
-    <div className="mt-4 flex items-center justify-center gap-3 text-sm">
-      <Button variant="secondary" size="icon" disabled={page <= 0} onClick={() => onChange(page - 1)} aria-label="이전 쪽">
-        <ChevronLeft />
-      </Button>
-      <span className="text-muted-foreground tabular-nums">
+    <div className="gh-pager">
+      <button type="button" disabled={page <= 0} onClick={() => onChange(page - 1)} aria-label="이전 쪽">
+        <IconBack />
+      </button>
+      <span className="tabular-nums">
         {page + 1} / {last + 1}
       </span>
-      <Button variant="secondary" size="icon" disabled={page >= last} onClick={() => onChange(page + 1)} aria-label="다음 쪽">
-        <ChevronRight />
-      </Button>
+      <button type="button" disabled={page >= last} onClick={() => onChange(page + 1)} aria-label="다음 쪽">
+        <IconBack className="rotate-180" />
+      </button>
     </div>
   )
 }
@@ -106,13 +93,13 @@ export function Pager({ page, size, total, onChange }: { page: number; size: num
 export function StatTile({ label, value, to, strong }: { label: string; value: ReactNode; to?: string; strong?: boolean }) {
   const body = (
     <>
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className={cn('mt-1 text-xl font-bold tabular-nums', strong ? 'text-brand-text' : 'text-title')}>{value}</p>
+      <small>{label}</small>
+      <b className="tabular-nums">{value}</b>
     </>
   )
-  const cls = 'block rounded-xl bg-card px-4 py-3'
+  const cls = cn('gh-stat', strong && 'is-strong')
   return to ? (
-    <Link to={to} className={cn(cls, 'transition-colors hover:bg-accent')}>
+    <Link to={to} className={cls}>
       {body}
     </Link>
   ) : (
